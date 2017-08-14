@@ -97,9 +97,10 @@ NimBuildConfiguration::NimBuildConfiguration(Target *target, Utils::Id id)
             break;
         }
         buildStep->setDefaultCompilerOptions(defaultOption);
+        buildStep->setUserCompilerOptions(QStringList() << "build");
 
         const Utils::FilePaths nimFiles = project()->files([](const Node *n) {
-            return Project::AllFiles(n) && n->path().endsWith(".nim");
+            return Project::AllFiles(n) && n->path().endsWith(".toml");
         });
 
         if (!nimFiles.isEmpty())

@@ -39,7 +39,7 @@ using namespace Utils;
 
 namespace Nim {
 
-const char SETTINGS_KEY[] = "Nim.BuildSystem";
+const char SETTINGS_KEY[] = "Rust.BuildSystem";
 const char EXCLUDED_FILES_KEY[] = "ExcludedFiles";
 
 NimProjectScanner::NimProjectScanner(Project *project)
@@ -59,18 +59,15 @@ void NimProjectScanner::startScan()
     m_scanner = std::make_unique<TreeScanner>();
     m_scanner->setFilter([this](const Utils::MimeType &, const FilePath &fp) {
         const QString path = fp.toString();
-        return excludedFiles().contains(path)
-                || path.endsWith(".nimproject")
-                || path.contains(".nimproject.user")
-                || path.contains(".nimble.user");
+        return excludedFiles().contains(path) || path.endsWith(".toml.user");
     });
 
     connect(m_scanner.get(), &TreeScanner::finished, this, [this] {
         // Collect scanned nodes
         std::vector<std::unique_ptr<FileNode>> nodes;
         for (FileNode *node : m_scanner->release()) {
-            if (!node->path().endsWith(".nim") && !node->path().endsWith(".nimble"))
-                node->setEnabled(false); // Disable files that do not end in .nim
+            if (!node->path().endsWith(".toml"))
+                node->setEnabled(false); // Disable files that do not end in .toml
             nodes.emplace_back(node);
         }
 
