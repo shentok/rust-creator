@@ -65,7 +65,6 @@ bool NimPlugin::initialize(const QStringList &arguments, QString *errorMessage)
     d = new NimPluginPrivate;
 
     ToolChainManager::registerLanguage(Constants::C_NIMLANGUAGE_ID, Constants::C_NIMLANGUAGE_NAME);
-
     ProjectManager::registerProjectType<NimProject>(Constants::C_NIM_PROJECT_MIMETYPE);
 
     return true;

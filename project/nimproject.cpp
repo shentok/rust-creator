@@ -118,7 +118,7 @@ void NimProject::collectProjectFiles()
                     prjDir, [](const FileName &fn) { return new FileNode(fn, FileType::Source, false); });
     });
     m_futureWatcher.setFuture(future);
-    Core::ProgressManager::addTask(future, tr("Scanning for Nim files"), "Nim.Project.Scan");
+    Core::ProgressManager::addTask(future, tr("Scanning for Rust files"), "Rust.Project.Scan");
 }
 
 void NimProject::updateProject()
@@ -135,8 +135,7 @@ void NimProject::updateProject()
         const FileName path = fn->filePath();
         const QString fileName = path.fileName();
         return m_excludedFiles.contains(path.toString())
-                || fileName.endsWith(".nimproject", HostOsInfo::fileNameCaseSensitivity())
-                || fileName.contains(".nimproject.user", HostOsInfo::fileNameCaseSensitivity());
+                || fileName.contains(".toml.user", HostOsInfo::fileNameCaseSensitivity());
     });
 
     m_files = transform<QList>(fileNodes, [](const std::unique_ptr<FileNode> &fn) {
@@ -159,18 +158,18 @@ QList<Task> NimProject::projectIssues(const Kit *k) const
     QList<Task> result = Project::projectIssues(k);
     auto tc = dynamic_cast<NimToolChain*>(ToolChainKitInformation::toolChain(k, Constants::C_NIMLANGUAGE_ID));
     if (!tc) {
-        result.append(createProjectTask(Task::TaskType::Error, tr("No Nim compiler set.")));
+        result.append(createProjectTask(Task::TaskType::Error, tr("No Rust compiler set.")));
         return result;
     }
     if (!tc->compilerCommand().exists())
-        result.append(createProjectTask(Task::TaskType::Error, tr("Nim compiler does not exist.")));
+        result.append(createProjectTask(Task::TaskType::Error, tr("Rust compiler does not exist.")));
 
     return result;
 }
 
 FileNameList NimProject::nimFiles() const
 {
-    return files([](const ProjectExplorer::Node *n) { return AllFiles(n) && n->filePath().endsWith(".nim"); });
+    return files([](const ProjectExplorer::Node *n) { return AllFiles(n) && n->filePath().endsWith(".toml"); });
 }
 
 QVariantMap NimProject::toMap() const

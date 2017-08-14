@@ -31,53 +31,62 @@
 namespace Nim {
 namespace Constants {
 
-const char C_NIMPROJECT_ID[] = "Nim.NimProject";
+const char C_NIMPROJECT_ID[] = "Rust.RustProject";
 
 // NimToolChain
-const char C_NIMTOOLCHAIN_TYPEID[] = "Nim.NimToolChain";
-const char C_NIMTOOLCHAIN_COMPILER_COMMAND_KEY[] = "Nim.NimToolChain.CompilerCommand";
+const char C_NIMTOOLCHAIN_TYPEID[] = "Rust.RustToolChain";
+const char C_NIMTOOLCHAIN_COMPILER_COMMAND_KEY[] = "Rust.RustToolChain.CompilerCommand";
 
 // NimRunConfiguration
-const QString C_NIMRUNCONFIGURATION_EXECUTABLE_KEY = QStringLiteral("Nim.NimRunConfiguration.Executable");
+const char C_NIMRUNCONFIGURATION_ID[] = "Rust.RustRunConfiguration";
+const char C_NIMRUNCONFIGURATION_DISPLAY[] = QT_TRANSLATE_NOOP("RustRunConfiguration", "Current Build Target");
+const char C_NIMRUNCONFIGURATION_DEFAULT_DISPLAY[] = QT_TRANSLATE_NOOP("RustRunConfiguration", "Current Build Target");
+const QString C_NIMRUNCONFIGURATION_EXECUTABLE_KEY = QStringLiteral("Rust.RustRunConfiguration.Executable");
+const QString C_NIMRUNCONFIGURATION_WORKINGDIRECTORY_KEY = QStringLiteral("Rust.RustRunConfiguration.WorkingDirectory");
+const QString C_NIMRUNCONFIGURATION_COMMANDLINEARGS_KEY = QStringLiteral("Rust.RustRunConfiguration.CommandlineArgs");
+const QString C_NIMRUNCONFIGURATION_RUNMODE_KEY = QStringLiteral("Rust.RustRunConfiguration.RunMode");
+const QString C_NIMRUNCONFIGURATION_WORKINGDIRECTORYASPECT_ID = QStringLiteral("Rust.RustRunConfiguration.WorkingDirectoryAspect");
+const QString C_NIMRUNCONFIGURATION_ARGUMENTASPECT_ID = QStringLiteral("Rust.RustRunConfiguration.ArgumentAspect");
+const QString C_NIMRUNCONFIGURATION_TERMINALASPECT_ID = QStringLiteral("Rust.RustRunConfiguration.TerminalAspect");
 
 // NimProject
-const char C_NIMPROJECT_EXCLUDEDFILES[] = "Nim.NimProjectExcludedFiles";
+const char C_NIMPROJECT_EXCLUDEDFILES[] = "Rust.RustProjectExcludedFiles";
 
 // NimBuildConfiguration
-const char C_NIMBUILDCONFIGURATION_ID[] = "Nim.NimBuildConfiguration";
-const QString C_NIMBUILDCONFIGURATION_DISPLAY_KEY = QStringLiteral("Nim.NimBuildConfiguration.Display");
-const QString C_NIMBUILDCONFIGURATION_BUILDDIRECTORY_KEY = QStringLiteral("Nim.NimBuildConfiguration.BuildDirectory");
+const char C_NIMBUILDCONFIGURATION_ID[] = "Rust.RustBuildConfiguration";
+const QString C_NIMBUILDCONFIGURATION_DISPLAY_KEY = QStringLiteral("Rust.RustBuildConfiguration.Display");
+const QString C_NIMBUILDCONFIGURATION_BUILDDIRECTORY_KEY = QStringLiteral("Rust.RustBuildConfiguration.BuildDirectory");
 
 // NimBuildConfigurationWidget
-const char C_NIMBUILDCONFIGURATIONWIDGET_DISPLAY[] = QT_TRANSLATE_NOOP("NimBuildConfigurationWidget","General");
+const char C_NIMBUILDCONFIGURATIONWIDGET_DISPLAY[] = QT_TRANSLATE_NOOP("RustBuildConfigurationWidget","General");
 
 // NimCompilerBuildStep
-const char C_NIMCOMPILERBUILDSTEP_ID[] = "Nim.NimCompilerBuildStep";
-const char C_NIMCOMPILERBUILDSTEP_DISPLAY[] = QT_TRANSLATE_NOOP("NimCompilerBuildStep", "Nim Compiler Build Step");
-const QString C_NIMCOMPILERBUILDSTEP_USERCOMPILEROPTIONS = QStringLiteral("Nim.NimCompilerBuildStep.UserCompilerOptions");
-const QString C_NIMCOMPILERBUILDSTEP_DEFAULTBUILDOPTIONS = QStringLiteral("Nim.NimCompilerBuildStep.DefaultBuildOptions");
-const QString C_NIMCOMPILERBUILDSTEP_TARGETNIMFILE = QStringLiteral("Nim.NimCompilerBuildStep.TargetNimFile");
+const char C_NIMCOMPILERBUILDSTEP_ID[] = "Rust.RustCompilerBuildStep";
+const char C_NIMCOMPILERBUILDSTEP_DISPLAY[] = QT_TRANSLATE_NOOP("RustCompilerBuildStep", "Rust Compiler Build Step");
+const QString C_NIMCOMPILERBUILDSTEP_USERCOMPILEROPTIONS = QStringLiteral("Rust.RustCompilerBuildStep.UserCompilerOptions");
+const QString C_NIMCOMPILERBUILDSTEP_DEFAULTBUILDOPTIONS = QStringLiteral("Rust.RustCompilerBuildStep.DefaultBuildOptions");
+const QString C_NIMCOMPILERBUILDSTEP_TARGETNIMFILE = QStringLiteral("Rust.RustCompilerBuildStep.TargetRustFile");
 
 // NimCompilerBuildStepWidget
-const char C_NIMCOMPILERBUILDSTEPWIDGET_DISPLAY[] = QT_TRANSLATE_NOOP("NimCompilerBuildStepConfigWidget", "Nim build step");
-const char C_NIMCOMPILERBUILDSTEPWIDGET_SUMMARY[] = QT_TRANSLATE_NOOP("NimCompilerBuildStepConfigWidget", "Nim build step");
+const char C_NIMCOMPILERBUILDSTEPWIDGET_DISPLAY[] = QT_TRANSLATE_NOOP("RustCompilerBuildStepConfigWidget", "Rust build step");
+const char C_NIMCOMPILERBUILDSTEPWIDGET_SUMMARY[] = QT_TRANSLATE_NOOP("RustCompilerBuildStepConfigWidget", "Rust build step");
 
 // NimCompilerCleanStep
-const char C_NIMCOMPILERCLEANSTEP_ID[] = "Nim.NimCompilerCleanStep";
-const char C_NIMCOMPILERCLEANSTEP_DISPLAY[] = QT_TRANSLATE_NOOP("NimCompilerCleanStepFactory", "Nim Compiler Clean Step");
+const char C_NIMCOMPILERCLEANSTEP_ID[] = "Rust.RustCompilerCleanStep";
+const char C_NIMCOMPILERCLEANSTEP_DISPLAY[] = QT_TRANSLATE_NOOP("RustCompilerCleanStepFactory", "Rust Compiler Clean Step");
 
 // NimCompilerCleanStepWidget
-const char C_NIMCOMPILERCLEANSTEPWIDGET_DISPLAY[] = QT_TRANSLATE_NOOP("NimCompilerCleanStepWidget", "Nim clean step");
-const char C_NIMCOMPILERCLEANSTEPWIDGET_SUMMARY[] = QT_TRANSLATE_NOOP("NimCompilerCleanStepWidget", "Nim clean step");
+const char C_NIMCOMPILERCLEANSTEPWIDGET_DISPLAY[] = QT_TRANSLATE_NOOP("RustCompilerCleanStepWidget", "Rust clean step");
+const char C_NIMCOMPILERCLEANSTEPWIDGET_SUMMARY[] = QT_TRANSLATE_NOOP("RustCompilerCleanStepWidget", "Rust clean step");
 
-const char C_NIMLANGUAGE_ID[] = "Nim";
-const char C_NIMCODESTYLESETTINGSPAGE_ID[] = "Nim.NimCodeStyleSettings";
-const char C_NIMCODESTYLESETTINGSPAGE_DISPLAY[] = QT_TRANSLATE_NOOP("NimCodeStyleSettingsPage", "Code Style");
-const char C_NIMCODESTYLESETTINGSPAGE_CATEGORY[] = "Z.Nim";
-const char C_NIMCODESTYLESETTINGSPAGE_CATEGORY_DISPLAY[] = QT_TRANSLATE_NOOP("NimCodeStyleSettingsPage", "Nim");
-const char C_NIMLANGUAGE_NAME[] = QT_TRANSLATE_NOOP("NimCodeStylePreferencesFactory", "Nim");
-const char C_NIMGLOBALCODESTYLE_ID[] = "NimGlobal";
-const QString C_NIMSNIPPETSGROUP_ID = QStringLiteral("Nim.NimSnippetsGroup");
+const char C_NIMLANGUAGE_ID[] = "Rust";
+const char C_NIMCODESTYLESETTINGSPAGE_ID[] = "Rust.RustCodeStyleSettings";
+const char C_NIMCODESTYLESETTINGSPAGE_DISPLAY[] = QT_TRANSLATE_NOOP("RustCodeStyleSettingsPage", "Code Style");
+const char C_NIMCODESTYLESETTINGSPAGE_CATEGORY[] = "Z.Rust";
+const char C_NIMCODESTYLESETTINGSPAGE_CATEGORY_DISPLAY[] = QT_TRANSLATE_NOOP("RustCodeStyleSettingsPage", "Rust");
+const char C_NIMLANGUAGE_NAME[] = QT_TRANSLATE_NOOP("RustCodeStylePreferencesFactory", "Rust");
+const char C_NIMGLOBALCODESTYLE_ID[] = "RustGlobal";
+const QString C_NIMSNIPPETSGROUP_ID = QStringLiteral("Rust.RustSnippetsGroup");
 
 const char C_NIMCODESTYLEPREVIEWSNIPPET[] =
         "import os\n"
@@ -96,9 +105,9 @@ const char C_NIMCODESTYLEPREVIEWSNIPPET[] =
 /*******************************************************************************
  * MIME type
  ******************************************************************************/
-const char C_NIM_MIMETYPE[] = "text/x-nim";
+const char C_NIM_MIMETYPE[] = "text/x-rustsrc";
 const char C_NIM_MIME_ICON[] = "text-x-nim";
-const char C_NIM_PROJECT_MIMETYPE[] = "text/x-nim-project";
+const char C_NIM_PROJECT_MIMETYPE[] = "text/x-cargo.toml";
 
 }
 }

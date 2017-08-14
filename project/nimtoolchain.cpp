@@ -61,7 +61,7 @@ NimToolChain::NimToolChain(const NimToolChain &other)
 
 QString NimToolChain::typeDisplayName() const
 {
-    return NimToolChainFactory::tr("Nim");
+    return NimToolChainFactory::tr("Rust");
 }
 
 Abi NimToolChain::targetAbi() const
@@ -174,7 +174,7 @@ bool NimToolChain::fromMap(const QVariantMap &data)
 bool NimToolChain::parseVersion(const FileName &path, std::tuple<int, int, int> &result)
 {
     QProcess process;
-    process.setReadChannel(QProcess::StandardError);
+    process.setReadChannel(QProcess::StandardOutput);
     process.start(path.toString(), {"--version"});
     if (!process.waitForFinished())
         return false;
