@@ -42,7 +42,7 @@ namespace Nim {
 
 NimToolChainFactory::NimToolChainFactory()
 {
-    setDisplayName(tr("Nim"));
+    setDisplayName(tr("Rust"));
 }
 
 bool NimToolChainFactory::canCreate()
@@ -83,7 +83,7 @@ QList<ToolChain *> NimToolChainFactory::autoDetect(const QList<ToolChain *> &alr
     QList<ToolChain *> result;
 
     Environment systemEnvironment = Environment::systemEnvironment();
-    const FileName compilerPath = systemEnvironment.searchInPath("nim");
+    const FileName compilerPath = systemEnvironment.searchInPath("cargo");
     if (compilerPath.isEmpty())
         return result;
 

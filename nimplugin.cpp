@@ -84,7 +84,7 @@ bool NimPlugin::initialize(const QStringList &arguments, QString *errorMessage)
     addAutoReleasedObject(new NimCodeStylePreferencesFactory);
     addAutoReleasedObject(new NimToolChainFactory);
     TextEditor::SnippetProvider::registerGroup(Constants::C_NIMSNIPPETSGROUP_ID,
-                                               tr("Nim", "SnippetProvider"),
+                                               tr("Rust", "SnippetProvider"),
                                                &NimEditorFactory::decorateEditor);
 
     ProjectExplorer::ProjectManager::registerProjectType<NimProject>(Constants::C_NIM_PROJECT_MIMETYPE);
