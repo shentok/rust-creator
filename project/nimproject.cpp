@@ -122,7 +122,7 @@ void NimProject::collectProjectFiles()
                     versionControls);
     });
     m_futureWatcher.setFuture(future);
-    Core::ProgressManager::addTask(future, tr("Scanning for Nim files"), "Nim.Project.Scan");
+    Core::ProgressManager::addTask(future, tr("Scanning for Rust files"), "Rust.Project.Scan");
 }
 
 void NimProject::updateProject()
@@ -135,8 +135,7 @@ void NimProject::updateProject()
         const FileName path = fn->filePath();
         const QString fileName = path.fileName();
         const bool keep = !m_excludedFiles.contains(path.toString())
-                && !fileName.endsWith(".nimproject", HostOsInfo::fileNameCaseSensitivity())
-                && !fileName.contains(".nimproject.user", HostOsInfo::fileNameCaseSensitivity());
+                && !fileName.contains(".toml.user", HostOsInfo::fileNameCaseSensitivity());
         if (!keep)
             delete fn;
         return keep;
@@ -160,12 +159,12 @@ bool NimProject::supportsKit(Kit *k, QString *errorMessage) const
     auto tc = dynamic_cast<NimToolChain*>(ToolChainKitInformation::toolChain(k, Constants::C_NIMLANGUAGE_ID));
     if (!tc) {
         if (errorMessage)
-            *errorMessage = tr("No Nim compiler set.");
+            *errorMessage = tr("No Rust compiler set.");
         return false;
     }
     if (!tc->compilerCommand().exists()) {
         if (errorMessage)
-            *errorMessage = tr("Nim compiler does not exist");
+            *errorMessage = tr("Rust compiler does not exist");
         return false;
     }
     return true;
@@ -174,7 +173,7 @@ bool NimProject::supportsKit(Kit *k, QString *errorMessage) const
 FileNameList NimProject::nimFiles() const
 {
     const QStringList nim = files(AllFiles, [](const ProjectExplorer::Node *n) {
-        return n->filePath().endsWith(".nim");
+        return n->filePath().endsWith(".toml");
     });
     return Utils::transform(nim, [](const QString &fp) { return Utils::FileName::fromString(fp); });
 }
