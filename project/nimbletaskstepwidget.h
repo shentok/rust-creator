@@ -27,8 +27,8 @@
 
 #include <projectexplorer/buildstep.h>
 
-#include <nim/project/nimbleproject.h>
-#include <nim/project/nimblebuildsystem.h>
+#include <project/nimbleproject.h>
+#include <project/nimblebuildsystem.h>
 
 #include <QStandardItemModel>
 
