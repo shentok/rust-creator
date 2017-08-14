@@ -63,7 +63,8 @@ NimbleBuildStep::NimbleBuildStep(BuildStepList *parentList, Id id)
 
     setCommandLineProvider([this, arguments] {
         return CommandLine(Nim::nimblePathFromKit(kit()),
-                           {"build", arguments->arguments(macroExpander())});
+                           arguments->arguments(macroExpander()),
+                           CommandLine::Raw);
     });
     setWorkingDirectoryProvider([this] { return project()->projectDirectory(); });
     setEnvironmentModifier([this](Environment &env) {
@@ -94,14 +95,14 @@ void NimbleBuildStep::setupOutputFormatter(OutputFormatter *formatter)
 QString NimbleBuildStep::defaultArguments() const
 {
     if (buildType() == BuildConfiguration::Debug)
-        return {"--debugger:native"};
-    return {};
+        return {"build"};
+    return {"build\n--release"};
 }
 
 NimbleBuildStepFactory::NimbleBuildStepFactory()
 {
     registerStep<NimbleBuildStep>(Constants::C_NIMBLEBUILDSTEP_ID);
-    setDisplayName(NimbleBuildStep::tr("Nimble Build"));
+    setDisplayName(NimbleBuildStep::tr("Cargo Build"));
     setSupportedStepList(ProjectExplorer::Constants::BUILDSTEPS_BUILD);
     setSupportedConfiguration(Constants::C_NIMBLEBUILDCONFIGURATION_ID);
     setRepeatable(true);

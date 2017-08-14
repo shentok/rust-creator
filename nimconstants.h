@@ -31,36 +31,36 @@
 namespace Nim {
 namespace Constants {
 
-const char C_NIMBLEPROJECT_ID[] = "Nim.NimbleProject";
+const char C_NIMBLEPROJECT_ID[] = "Rust.CargoProject";
 
-// NimToolChain
-const char C_NIMTOOLCHAIN_TYPEID[] = "Nim.NimToolChain";
+// RustToolChain
+const char C_NIMTOOLCHAIN_TYPEID[] = "Rust.RustToolChain";
 
-// NimBuildConfiguration
-const char C_NIMBLEBUILDCONFIGURATION_ID[] = "Nim.NimbleBuildConfiguration";
-const char C_NIMBLEBUILDCONFIGURATION_BUILDTYPE[] = "Nim.NimbleBuildConfiguration.BuildType";
+// RustBuildConfiguration
+const char C_NIMBLEBUILDCONFIGURATION_ID[] = "Rust.CargoBuildConfiguration";
+const char C_NIMBLEBUILDCONFIGURATION_BUILDTYPE[] = "Rust.CargoBuildConfiguration.BuildType";
 
-// NimbleBuildStep
-const char C_NIMBLEBUILDSTEP_ID[] = "Nim.NimbleBuildStep";
-const char C_NIMBLEBUILDSTEP_ARGUMENTS[] = "Nim.NimbleBuildStep.Arguments";
+// CargoBuildStep
+const char C_NIMBLEBUILDSTEP_ID[] = "Rust.CargoBuildStep";
+const char C_NIMBLEBUILDSTEP_ARGUMENTS[] = "Rust.CargoBuildStep.Arguments";
 
-// NimbleTaskStep
-const char C_NIMBLETASKSTEP_ID[] = "Nim.NimbleTaskStep";
-const char C_NIMBLETASKSTEP_DISPLAY[] = QT_TRANSLATE_NOOP("NimbleTaskStep", "Nimble Task");
-const QString C_NIMBLETASKSTEP_TASKNAME = QStringLiteral("Nim.NimbleTaskStep.TaskName");
-const QString C_NIMBLETASKSTEP_TASKARGS = QStringLiteral("Nim.NimbleTaskStep.TaskArgs");
+// CargoTaskStep
+const char C_NIMBLETASKSTEP_ID[] = "Rust.CargoTaskStep";
+const char C_NIMBLETASKSTEP_DISPLAY[] = QT_TRANSLATE_NOOP("CargoTaskStep", "Cargo Task");
+const QString C_NIMBLETASKSTEP_TASKNAME = QStringLiteral("Rust.CargoTaskStep.TaskName");
+const QString C_NIMBLETASKSTEP_TASKARGS = QStringLiteral("Rust.CargoTaskStep.TaskArgs");
 
 // Nim task category (Issues pane)
-const char C_NIMPARSE_ID[] = "Nim.NimParse";
+const char C_NIMPARSE_ID[] = "Rust.RustParse";
 
-const char C_NIMLANGUAGE_ID[] = "Nim";
-const char C_NIMLANGUAGE_NAME[] = QT_TRANSLATE_NOOP("NimCodeStylePreferencesFactory", "Nim");
+const char C_NIMLANGUAGE_ID[] = "Rust";
+const char C_NIMLANGUAGE_NAME[] = QT_TRANSLATE_NOOP("RustCodeStylePreferencesFactory", "Rust");
 
 /*******************************************************************************
  * MIME type
  ******************************************************************************/
-const char C_NIM_MIMETYPE[] = "text/x-nim";
-const char C_NIMBLE_MIMETYPE[] = "text/x-nimble";
+const char C_NIM_MIMETYPE[] = "text/rust";
+const char C_NIMBLE_MIMETYPE[] = "text/x-cargo.toml";
 
 }
 }
