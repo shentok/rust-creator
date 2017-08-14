@@ -123,8 +123,6 @@ void NimSettings::InitializeCodeStyleSettings()
 
     TextEditorSettings::registerMimeTypeForLanguageId(Nim::Constants::C_NIM_MIMETYPE,
                                                       Nim::Constants::C_NIMLANGUAGE_ID);
-    TextEditorSettings::registerMimeTypeForLanguageId(Nim::Constants::C_NIM_SCRIPT_MIMETYPE,
-                                                      Nim::Constants::C_NIMLANGUAGE_ID);
 }
 
 void NimSettings::InitializeNimSuggestSettings()

@@ -100,7 +100,6 @@ const char C_NIMCODESTYLEPREVIEWSNIPPET[] =
  ******************************************************************************/
 const char C_NIM_MIMETYPE[] = "text/x-nim";
 const char C_NIMBLE_MIMETYPE[] = "text/x-nimble";
-const char C_NIM_SCRIPT_MIMETYPE[] = "text/x-nim-script";
 const char C_NIM_MIME_ICON[] = "text-x-nim";
 const char C_NIM_PROJECT_MIMETYPE[] = "text/x-nim-project";
 
