@@ -42,7 +42,7 @@ namespace Nim {
 
 NimToolChainFactory::NimToolChainFactory()
 {
-    setDisplayName(tr("Nim"));
+    setDisplayName(tr("Rust"));
     setSupportedToolChainType(Constants::C_NIMTOOLCHAIN_TYPEID);
     setSupportedLanguages({Constants::C_NIMLANGUAGE_ID});
     setToolchainConstructor([] { return new NimToolChain; });
@@ -54,7 +54,7 @@ QList<ToolChain *> NimToolChainFactory::autoDetect(const QList<ToolChain *> &alr
     QList<ToolChain *> result;
 
     Environment systemEnvironment = Environment::systemEnvironment();
-    const FilePath compilerPath = systemEnvironment.searchInPath("nim");
+    const FilePath compilerPath = systemEnvironment.searchInPath("rustc");
     if (compilerPath.isEmpty())
         return result;
 

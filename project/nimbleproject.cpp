@@ -26,8 +26,10 @@
 #include "nimbleproject.h"
 #include "nimconstants.h"
 #include "nimblebuildsystem.h"
+#include "nimtoolchain.h"
 
 #include <coreplugin/icontext.h>
+#include <projectexplorer/kitinformation.h>
 #include <projectexplorer/projectexplorerconstants.h>
 
 using namespace Nim;
@@ -38,7 +40,21 @@ NimbleProject::NimbleProject(const Utils::FilePath &fileName)
 {
     setId(Constants::C_NIMBLEPROJECT_ID);
     setDisplayName(fileName.toFileInfo().completeBaseName());
-    // ensure debugging is enabled (Nim plugin translates nim code to C code)
+    // ensure debugging is enabled
     setProjectLanguages(Core::Context(ProjectExplorer::Constants::CXX_LANGUAGE_ID));
     setBuildSystemCreator([] (Target *t) { return new NimbleBuildSystem(t); });
+}
+
+Tasks NimbleProject::projectIssues(const Kit *k) const
+{
+    Tasks result = Project::projectIssues(k);
+    auto tc = dynamic_cast<NimToolChain *>(ToolChainKitAspect::toolChain(k, Constants::C_NIMLANGUAGE_ID));
+    if (!tc) {
+        result.append(createProjectTask(Task::TaskType::Error, tr("No Rust compiler set.")));
+        return result;
+    }
+    if (!tc->compilerCommand().exists())
+        result.append(createProjectTask(Task::TaskType::Error, tr("Rust compiler does not exist.")));
+
+    return result;
 }

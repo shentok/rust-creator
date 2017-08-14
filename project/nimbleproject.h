@@ -36,6 +36,8 @@ class NimbleProject : public ProjectExplorer::Project
 
 public:
     NimbleProject(const Utils::FilePath &filename);
+
+    ProjectExplorer::Tasks projectIssues(const ProjectExplorer::Kit *k) const final;
 };
 
 }

@@ -38,7 +38,6 @@
 #include <projectexplorer/projectexplorer.h>
 #include <projectexplorer/projectmacroexpander.h>
 #include <utils/fileutils.h>
-#include <utils/osspecificaspects.h>
 
 #include <QFileInfo>
 #include <QDir>
@@ -54,11 +53,6 @@ NimbleBuildConfiguration::NimbleBuildConfiguration(Target *target, Core::Id id)
     setConfigWidgetHasFrame(true);
     setBuildDirectorySettingsKey("Nim.NimbleBuildConfiguration.BuildDirectory");
     appendInitialBuildStep(Constants::C_NIMBLEBUILDSTEP_ID);
-
-    setInitializer([this](const BuildInfo &info) {
-        setBuildType(info.buildType);
-        setBuildDirectory(project()->projectDirectory());
-    });
 }
 
 BuildConfiguration::BuildType NimbleBuildConfiguration::buildType() const
@@ -100,7 +94,11 @@ NimbleBuildConfigurationFactory::NimbleBuildConfigurationFactory()
             info.typeName = typeName;
             if (forSetup) {
                 info.displayName = info.typeName;
-                info.buildDirectory = projectPath.parentDir();
+                info.buildDirectory = projectPath.parentDir()
+                                                 .pathAppended("target")
+                                                 .pathAppended(buildType == BuildConfiguration::Debug
+                                                               ? QStringLiteral("debug")
+                                                               : QStringLiteral("release"));
             }
             return info;
         };

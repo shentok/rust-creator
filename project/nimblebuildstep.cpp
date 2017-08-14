@@ -43,52 +43,108 @@ using namespace Utils;
 
 namespace {
 
+class LineStateMachine
+{
+public:
+    LineStateMachine() :
+        m_message(),
+        m_fileName(),
+        m_lineNumber(0),
+        m_type(Task::Unknown)
+    {
+    }
+
+    Task addLine(const QString &line)
+    {
+        static const QRegularExpression error(QStringLiteral("^error(\\[E\\d+\\])?: "));
+        static const QRegularExpression warning(QStringLiteral("^warning(\\[.\\d+\\])?: "));
+        static const QRegularExpression location(QStringLiteral("^\\S*--> (.*):(\\d+):(\\d+)"));
+
+        if (error.match(line).hasMatch()) {
+            m_type = Task::Error;
+            m_message += line;
+            return Task();
+        }
+
+        if (warning.match(line).hasMatch()) {
+            m_type = Task::Warning;
+            m_message += line;
+            return Task();
+        }
+
+        const QRegularExpressionMatch locationMatch = location.match(line);
+        if (locationMatch.hasMatch()) {
+            m_fileName = locationMatch.captured(1);
+            m_lineNumber = locationMatch.captured(2).toInt();
+//            const int rowNumber = locationMatch.captured(3).toInt();
+            m_message += line;
+            return Task();
+        }
+
+        if (m_message.isEmpty()) {
+            return Task();
+        }
+
+        if (!line.trimmed().isEmpty()) {
+            m_message += line;
+            return Task();
+        }
+
+        const Task task(m_type,
+                        m_message,
+                        FilePath::fromUserInput(m_fileName),
+                        m_lineNumber,
+                        ProjectExplorer::Constants::TASK_CATEGORY_COMPILE);
+
+        m_message.clear();
+        m_fileName.clear();
+        m_lineNumber = 0;
+        m_type = Task::Unknown;
+
+        return task;
+    }
+
+private:
+    QString m_message;
+    QString m_fileName;
+    int m_lineNumber;
+    Task::TaskType m_type;
+};
+
 class NimParser : public IOutputParser
 {
 public:
+    NimParser() :
+        m_stdOutput(),
+        m_stdError()
+    {
+    }
+
     void stdOutput(const QString &line) final
     {
-        parseLine(line.trimmed());
+        const Task task = m_stdOutput.addLine(line);
+
+        if (!task.isNull()) {
+            emit addTask(task);
+        }
+
         IOutputParser::stdOutput(line);
     }
 
     void stdError(const QString &line) final
     {
-        parseLine(line.trimmed());
+        const Task task = m_stdError.addLine(line);
+
+        if (!task.isNull()) {
+            emit addTask(task);
+        }
+
         IOutputParser::stdError(line);
     }
 
 private:
-    void parseLine(const QString &line)
-    {
-        static QRegularExpression regex("(.+.nim)\\((\\d+), (\\d+)\\) (.+)",
-                                        QRegularExpression::OptimizeOnFirstUsageOption);
-        static QRegularExpression warning("(Warning):(.*)",
-                                          QRegularExpression::OptimizeOnFirstUsageOption);
-        static QRegularExpression error("(Error):(.*)",
-                                        QRegularExpression::OptimizeOnFirstUsageOption);
-
-        QRegularExpressionMatch match = regex.match(line);
-        if (!match.hasMatch())
-            return;
-        const QString filename = match.captured(1);
-        bool lineOk = false;
-        const int lineNumber = match.captured(2).toInt(&lineOk);
-        const QString message = match.captured(4);
-        if (!lineOk)
-            return;
-
-        Task::TaskType type = Task::Unknown;
-
-        if (warning.match(message).hasMatch())
-            type = Task::Warning;
-        else if (error.match(message).hasMatch())
-            type = Task::Error;
-        else
-            return;
-
-        emit addTask(CompileTask(type, message, FilePath::fromUserInput(filename), lineNumber));
-    }
+    LineStateMachine m_stdOutput;
+    LineStateMachine m_stdError;
 };
 
 }

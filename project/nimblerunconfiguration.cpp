@@ -73,7 +73,7 @@ public:
 NimbleRunConfigurationFactory::NimbleRunConfigurationFactory()
     : RunConfigurationFactory()
 {
-    registerRunConfiguration<NimbleRunConfiguration>("Nim.NimbleRunConfiguration");
+    registerRunConfiguration<NimbleRunConfiguration>("Rust.CargoRunConfiguration");
     addSupportedProjectType(Constants::C_NIMBLEPROJECT_ID);
     addSupportedTargetDeviceType(ProjectExplorer::Constants::DESKTOP_DEVICE_TYPE);
 }
@@ -89,20 +89,20 @@ public:
     NimbleTestConfiguration(ProjectExplorer::Target *target, Core::Id id)
         : RunConfiguration(target, id)
     {
-        addAspect<ExecutableAspect>()->setExecutable(Utils::FilePath::fromString(QStandardPaths::findExecutable("nimble")));
+        addAspect<ExecutableAspect>()->setExecutable(Utils::FilePath::fromString(QStandardPaths::findExecutable("cargo")));
         addAspect<ArgumentsAspect>()->setArguments("test");
         addAspect<WorkingDirectoryAspect>()->setDefaultWorkingDirectory(project()->projectDirectory());
         addAspect<TerminalAspect>();
 
-        setDisplayName(tr("Nimble Test"));
-        setDefaultDisplayName(tr("Nimble Test"));
+        setDisplayName(tr("Cargo Test"));
+        setDefaultDisplayName(tr("Cargo Test"));
     }
 };
 
 NimbleTestConfigurationFactory::NimbleTestConfigurationFactory()
     : FixedRunConfigurationFactory(QString())
 {
-    registerRunConfiguration<NimbleTestConfiguration>("Nim.NimbleTestConfiguration");
+    registerRunConfiguration<NimbleTestConfiguration>("Rust.CargoTestConfiguration");
     addSupportedProjectType(Constants::C_NIMBLEPROJECT_ID);
 }
 
