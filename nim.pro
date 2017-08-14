@@ -1,4 +1,5 @@
-include(../../qtcreatorplugin.pri)
+QTCREATOR_SOURCES = $$QTC_SOURCE
+IDE_BUILD_TREE = $$QTC_BUILD
 
 DEFINES += \
     NIM_LIBRARY
@@ -83,3 +84,7 @@ SOURCES += \
 FORMS += \
     settings/nimcodestylepreferenceswidget.ui \
     settings/nimtoolssettingswidget.ui
+
+include(nim_dependencies.pri)
+
+include($$QTCREATOR_SOURCES/src/qtcreatorplugin.pri)

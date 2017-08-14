@@ -1,3 +1,16 @@
+cmake_minimum_required(VERSION 3.10)
+
+project(Nim)
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
+set(CMAKE_CXX_STANDARD 17)
+
+find_package(QtCreator COMPONENTS Core TextEditor ProjectExplorer REQUIRED)
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
+set(QtX Qt${QT_VERSION_MAJOR})
+
 add_qtc_plugin(Nim
   PLUGIN_DEPENDS Core TextEditor ProjectExplorer
   SOURCES
