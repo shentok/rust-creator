@@ -45,52 +45,108 @@ using namespace Utils;
 
 namespace Nim {
 
+class LineStateMachine
+{
+public:
+    LineStateMachine() :
+        m_message(),
+        m_fileName(),
+        m_lineNumber(0),
+        m_type(Task::Unknown)
+    {
+    }
+
+    Task addLine(const QString &line)
+    {
+        static const QRegularExpression error(QStringLiteral("^error(\\[E\\d+\\])?: "));
+        static const QRegularExpression warning(QStringLiteral("^warning(\\[.\\d+\\])?: "));
+        static const QRegularExpression location(QStringLiteral("^\\S*--> (.*):(\\d+):(\\d+)"));
+
+        if (error.match(line).hasMatch()) {
+            m_type = Task::Error;
+            m_message += line;
+            return Task();
+        }
+
+        if (warning.match(line).hasMatch()) {
+            m_type = Task::Warning;
+            m_message += line;
+            return Task();
+        }
+
+        const QRegularExpressionMatch locationMatch = location.match(line);
+        if (locationMatch.hasMatch()) {
+            m_fileName = locationMatch.captured(1);
+            m_lineNumber = locationMatch.captured(2).toInt();
+//            const int rowNumber = locationMatch.captured(3).toInt();
+            m_message += line;
+            return Task();
+        }
+
+        if (m_message.isEmpty()) {
+            return Task();
+        }
+
+        if (!line.trimmed().isEmpty()) {
+            m_message += line;
+            return Task();
+        }
+
+        const Task task(m_type,
+                        m_message,
+                        FilePath::fromUserInput(m_fileName),
+                        m_lineNumber,
+                        ProjectExplorer::Constants::TASK_CATEGORY_COMPILE);
+
+        m_message.clear();
+        m_fileName.clear();
+        m_lineNumber = 0;
+        m_type = Task::Unknown;
+
+        return task;
+    }
+
+private:
+    QString m_message;
+    QString m_fileName;
+    int m_lineNumber;
+    Task::TaskType m_type;
+};
+
 class NimParser : public ProjectExplorer::IOutputParser
 {
 public:
+    NimParser() :
+        m_stdOutput(),
+        m_stdError()
+    {
+    }
+
     void stdOutput(const QString &line) final
     {
-        parseLine(line.trimmed());
+        const Task task = m_stdOutput.addLine(line);
+
+        if (!task.isNull()) {
+            emit addTask(task);
+        }
+
         IOutputParser::stdOutput(line);
     }
 
     void stdError(const QString &line) final
     {
-        parseLine(line.trimmed());
+        const Task task = m_stdError.addLine(line);
+
+        if (!task.isNull()) {
+            emit addTask(task);
+        }
+
         IOutputParser::stdError(line);
     }
 
 private:
-    void parseLine(const QString &line)
-    {
-        static QRegularExpression regex("(.+.nim)\\((\\d+), (\\d+)\\) (.+)",
-                                        QRegularExpression::OptimizeOnFirstUsageOption);
-        static QRegularExpression warning("(Warning):(.*)",
-                                          QRegularExpression::OptimizeOnFirstUsageOption);
-        static QRegularExpression error("(Error):(.*)",
-                                        QRegularExpression::OptimizeOnFirstUsageOption);
-
-        QRegularExpressionMatch match = regex.match(line);
-        if (!match.hasMatch())
-            return;
-        const QString filename = match.captured(1);
-        bool lineOk = false;
-        const int lineNumber = match.captured(2).toInt(&lineOk);
-        const QString message = match.captured(4);
-        if (!lineOk)
-            return;
-
-        Task::TaskType type = Task::Unknown;
-
-        if (warning.match(message).hasMatch())
-            type = Task::Warning;
-        else if (error.match(message).hasMatch())
-            type = Task::Error;
-        else
-            return;
-
-        emit addTask(CompileTask(type, message, FilePath::fromUserInput(filename), lineNumber));
-    }
+    LineStateMachine m_stdOutput;
+    LineStateMachine m_stdError;
 };
 
 NimCompilerBuildStep::NimCompilerBuildStep(BuildStepList *parentList, Core::Id id)
@@ -199,7 +255,7 @@ void NimCompilerBuildStep::updateWorkingDirectory()
 
 void NimCompilerBuildStep::updateCommand()
 {
-    auto bc = qobject_cast<NimBuildConfiguration *>(buildConfiguration());
+    auto bc = buildConfiguration();
     QTC_ASSERT(bc, return);
 
     QTC_ASSERT(target(), return);
@@ -210,22 +266,16 @@ void NimCompilerBuildStep::updateCommand()
 
     CommandLine cmd{tc->compilerCommand()};
 
-    cmd.addArg("c");
-
-    if (m_defaultOptions == Release)
-        cmd.addArg("-d:release");
-    else if (m_defaultOptions == Debug)
-        cmd.addArgs({"--debugInfo", "--lineDir:on"});
-
-    cmd.addArg("--out:" + bc->outFilePath().toString());
-
     for (const QString &arg : m_userCompilerOptions) {
         if (!arg.isEmpty())
             cmd.addArg(arg);
     }
 
-    if (!m_targetNimFile.isEmpty())
-        cmd.addArg(m_targetNimFile.toString());
+    if (m_defaultOptions == Release)
+        cmd.addArg("--release");
+
+    cmd.addArg("--target-dir=" + bc->buildDirectory().toString());
+    cmd.addArg("--manifest-path=" + bc->project()->projectFilePath().toString());
 
     processParameters()->setCommandLine(cmd);
 }
@@ -242,7 +292,7 @@ void NimCompilerBuildStep::updateTargetNimFile()
     if (!m_targetNimFile.isEmpty())
         return;
     const Utils::FilePaths nimFiles = project()->files([](const Node *n) {
-        return Project::AllFiles(n) && n->path().endsWith(".nim");
+        return Project::AllFiles(n) && n->path().endsWith(".toml");
     });
     if (!nimFiles.isEmpty())
         setTargetNimFile(nimFiles.at(0));
@@ -253,7 +303,7 @@ void NimCompilerBuildStep::updateTargetNimFile()
 NimCompilerBuildStepFactory::NimCompilerBuildStepFactory()
 {
     registerStep<NimCompilerBuildStep>(Constants::C_NIMCOMPILERBUILDSTEP_ID);
-    setDisplayName(NimCompilerBuildStep::tr("Nim Compiler Build Step"));
+    setDisplayName(NimCompilerBuildStep::tr("Rust Compiler Build Step"));
     setSupportedStepList(ProjectExplorer::Constants::BUILDSTEPS_BUILD);
     setSupportedConfiguration(Constants::C_NIMBUILDCONFIGURATION_ID);
     setRepeatable(false);

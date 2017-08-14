@@ -49,7 +49,7 @@ NimToolChain::NimToolChain(Core::Id typeId)
     , m_version(std::make_tuple(-1,-1,-1))
 {
     setLanguage(Constants::C_NIMLANGUAGE_ID);
-    setTypeDisplayName(NimToolChainFactory::tr("Nim"));
+    setTypeDisplayName(NimToolChainFactory::tr("Rust"));
 }
 
 Abi NimToolChain::targetAbi() const

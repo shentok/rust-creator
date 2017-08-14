@@ -58,12 +58,12 @@ public:
     NimToolChainFactory toolChainFactory;
 };
 
-NimPlugin::~NimPlugin()
+RustPlugin::~RustPlugin()
 {
     delete d;
 }
 
-bool NimPlugin::initialize(const QStringList &arguments, QString *errorMessage)
+bool RustPlugin::initialize(const QStringList &arguments, QString *errorMessage)
 {
     Q_UNUSED(arguments)
     Q_UNUSED(errorMessage)
@@ -77,7 +77,7 @@ bool NimPlugin::initialize(const QStringList &arguments, QString *errorMessage)
     return true;
 }
 
-void NimPlugin::extensionsInitialized()
+void RustPlugin::extensionsInitialized()
 {
     // Add MIME overlay icons (these icons displayed at Project dock panel)
     const QIcon icon = Utils::Icon({{":/nim/images/settingscategory_nim.png",

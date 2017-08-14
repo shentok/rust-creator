@@ -29,14 +29,14 @@
 
 namespace Nim {
 
-class NimPlugin final : public ExtensionSystem::IPlugin
+class RustPlugin final : public ExtensionSystem::IPlugin
 {
     Q_OBJECT
     Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QtCreatorPlugin" FILE "Rust.json")
 
 public:
-    NimPlugin() = default;
-    ~NimPlugin() final;
+    RustPlugin() = default;
+    ~RustPlugin() final;
 
     bool initialize(const QStringList &arguments, QString *errorMessage) final;
     void extensionsInitialized() final;
