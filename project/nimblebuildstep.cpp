@@ -45,39 +45,62 @@ namespace {
 
 class NimParser : public OutputTaskParser
 {
-    Result handleLine(const QString &lne, Utils::OutputFormat) override
+public:
+    Result handleLine(const QString &line, Utils::OutputFormat) override
     {
-        const QString line = lne.trimmed();
-        static const QRegularExpression regex("(.+.nim)\\((\\d+), (\\d+)\\) (.+)");
-        static const QRegularExpression warning("(Warning):(.*)");
-        static const QRegularExpression error("(Error):(.*)");
+        static const QRegularExpression error(QStringLiteral("^error(\\[E\\d+\\])?: "));
+        static const QRegularExpression warning(QStringLiteral("^warning(\\[.\\d+\\])?: "));
+        static const QRegularExpression location(QStringLiteral("^\\s*--> (.*):(\\d+):(\\d+)"));
 
-        const QRegularExpressionMatch match = regex.match(line);
-        if (!match.hasMatch())
+        if (error.match(line).hasMatch()) {
+            m_type = Task::Error;
+            m_message += line;
+            return Status::InProgress;
+        }
+
+        if (warning.match(line).hasMatch()) {
+            m_type = Task::Warning;
+            m_message += line;
+            return Status::InProgress;
+        }
+
+        const QRegularExpressionMatch locationMatch = location.match(line);
+        if (locationMatch.hasMatch()) {
+            m_fileName = locationMatch.captured(1);
+            m_lineNumber = locationMatch.captured(2).toInt();
+//            const int rowNumber = locationMatch.captured(3).toInt();
+            m_message += line;
+            return Status::InProgress;
+        }
+
+        if (m_message.isEmpty()) {
             return Status::NotHandled;
-        const QString filename = match.captured(1);
-        bool lineOk = false;
-        const int lineNumber = match.captured(2).toInt(&lineOk);
-        const QString message = match.captured(4);
-        if (!lineOk)
-            return Status::NotHandled;
+        }
 
-        Task::TaskType type = Task::Unknown;
+        if (!line.trimmed().isEmpty()) {
+            m_message += line;
+            return Status::InProgress;
+        }
 
-        if (warning.match(message).hasMatch())
-            type = Task::Warning;
-        else if (error.match(message).hasMatch())
-            type = Task::Error;
-        else
-            return Status::NotHandled;
+        const CompileTask t(m_type, m_message, absoluteFilePath(FilePath::fromUserInput(m_fileName)),
+                            m_lineNumber);
 
-        const CompileTask t(type, message, absoluteFilePath(FilePath::fromUserInput(filename)),
-                            lineNumber);
+        m_message.clear();
+        m_fileName.clear();
+        m_lineNumber = 0;
+        m_type = Task::Unknown;
+
         LinkSpecs linkSpecs;
-        addLinkSpecForAbsoluteFilePath(linkSpecs, t.file, t.line, match, 1);
+        addLinkSpecForAbsoluteFilePath(linkSpecs, t.file, t.line, locationMatch, 1);
         scheduleTask(t, 1);
         return {Status::Done, linkSpecs};
     }
+
+private:
+    QString m_message;
+    QString m_fileName;
+    int m_lineNumber = 0;
+    Task::TaskType m_type = Task::TaskType::Unknown;
 };
 
 }
@@ -99,7 +122,7 @@ bool NimbleBuildStep::init()
     params->setEnvironment(buildEnvironment());
     params->setMacroExpander(macroExpander());
     params->setWorkingDirectory(project()->projectDirectory());
-    params->setCommandLine({QStandardPaths::findExecutable("nimble"), {"build", m_arguments}});
+    params->setCommandLine({QStandardPaths::findExecutable("cargo"), QStringList("build") << m_arguments.split(QChar::Space)});
     return AbstractProcessStep::init();
 }
 
@@ -151,25 +174,25 @@ QString NimbleBuildStep::defaultArguments() const
 {
     switch (buildType()) {
     case BuildConfiguration::Debug:
-        return {"--debugger:native"};
+        return {};
     case BuildConfiguration::Unknown:
     case BuildConfiguration::Profile:
     case BuildConfiguration::Release:
     default:
-        return {};
+        return {"--release"};
     }
 }
 
 void NimbleBuildStep::onArgumentsChanged()
 {
     ProcessParameters* params = processParameters();
-    params->setCommandLine({QStandardPaths::findExecutable("nimble"), {"build", m_arguments}});
+    params->setCommandLine({QStandardPaths::findExecutable("cargo"), QStringList("build") << m_arguments.split(QChar::Space)});
 }
 
 NimbleBuildStepFactory::NimbleBuildStepFactory()
 {
     registerStep<NimbleBuildStep>(Constants::C_NIMBLEBUILDSTEP_ID);
-    setDisplayName(NimbleBuildStep::tr("Nimble Build"));
+    setDisplayName(NimbleBuildStep::tr("Cargo Build"));
     setSupportedStepList(ProjectExplorer::Constants::BUILDSTEPS_BUILD);
     setSupportedConfiguration(Constants::C_NIMBLEBUILDCONFIGURATION_ID);
     setRepeatable(true);
