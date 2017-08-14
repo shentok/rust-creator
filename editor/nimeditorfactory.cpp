@@ -66,7 +66,7 @@ NimEditorFactory::NimEditorFactory()
         return new NimHighlighter;
     });
     setCompletionAssistProvider(new NimCompletionAssistProvider());
-    setCommentDefinition(CommentDefinition::HashStyle);
+    setCommentDefinition(CommentDefinition::CppStyle);
     setParenthesesMatchingEnabled(true);
     setCodeFoldingSupported(true);
 }

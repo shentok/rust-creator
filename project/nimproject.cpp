@@ -64,7 +64,7 @@ NimProject::NimProject(const FilePath &fileName) : Project(Constants::C_NIM_MIME
 {
     setId(Constants::C_NIMPROJECT_ID);
     setDisplayName(fileName.toFileInfo().completeBaseName());
-    // ensure debugging is enabled (Nim plugin translates nim code to C code)
+    // ensure debugging is enabled
     setProjectLanguages(Core::Context(ProjectExplorer::Constants::CXX_LANGUAGE_ID));
 
     m_projectScanTimer.setSingleShot(true);
@@ -123,14 +123,13 @@ void NimProject::collectProjectFiles()
         return FileNode::scanForFiles(prjDir, [excluded](const FilePath & fn) -> FileNode * {
             const QString fileName = fn.fileName();
             if (excluded.contains(fn.toString())
-                    || fileName.endsWith(".nimproject", HostOsInfo::fileNameCaseSensitivity())
-                    || fileName.contains(".nimproject.user", HostOsInfo::fileNameCaseSensitivity()))
+                    || fileName.contains(".toml.user", HostOsInfo::fileNameCaseSensitivity()))
                 return nullptr;
             return new FileNode(fn, FileType::Source);
         });
     });
     m_futureWatcher.setFuture(future);
-    Core::ProgressManager::addTask(future, tr("Scanning for Nim files"), "Nim.Project.Scan");
+    Core::ProgressManager::addTask(future, tr("Scanning for Rust files"), "Rust.Project.Scan");
 }
 
 void NimProject::updateProject()
@@ -155,11 +154,11 @@ Tasks NimProject::projectIssues(const Kit *k) const
     Tasks result = Project::projectIssues(k);
     auto tc = dynamic_cast<NimToolChain *>(ToolChainKitAspect::toolChain(k, Constants::C_NIMLANGUAGE_ID));
     if (!tc) {
-        result.append(createProjectTask(Task::TaskType::Error, tr("No Nim compiler set.")));
+        result.append(createProjectTask(Task::TaskType::Error, tr("No Rust compiler set.")));
         return result;
     }
     if (!tc->compilerCommand().exists())
-        result.append(createProjectTask(Task::TaskType::Error, tr("Nim compiler does not exist.")));
+        result.append(createProjectTask(Task::TaskType::Error, tr("Rust compiler does not exist.")));
 
     return result;
 }
@@ -167,7 +166,7 @@ Tasks NimProject::projectIssues(const Kit *k) const
 FilePathList NimProject::nimFiles() const
 {
     return files([](const ProjectExplorer::Node *n) {
-        return AllFiles(n) && n->filePath().endsWith(".nim");
+        return AllFiles(n) && n->filePath().endsWith(".toml");
     });
 }
 

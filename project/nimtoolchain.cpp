@@ -61,7 +61,7 @@ NimToolChain::NimToolChain(const NimToolChain &other)
 
 QString NimToolChain::typeDisplayName() const
 {
-    return NimToolChainFactory::tr("Nim");
+    return NimToolChainFactory::tr("Rust");
 }
 
 Abi NimToolChain::targetAbi() const

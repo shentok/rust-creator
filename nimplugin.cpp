@@ -91,7 +91,7 @@ bool NimPlugin::initialize(const QStringList &arguments, QString *errorMessage)
     ToolChainManager::registerLanguage(Constants::C_NIMLANGUAGE_ID, Constants::C_NIMLANGUAGE_NAME);
 
     TextEditor::SnippetProvider::registerGroup(Constants::C_NIMSNIPPETSGROUP_ID,
-                                               tr("Nim", "SnippetProvider"),
+                                               tr("Rust", "SnippetProvider"),
                                                &NimEditorFactory::decorateEditor);
 
     ProjectManager::registerProjectType<NimProject>(Constants::C_NIM_PROJECT_MIMETYPE);
