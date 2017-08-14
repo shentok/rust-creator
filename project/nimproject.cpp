@@ -42,7 +42,7 @@ NimProject::NimProject(const FilePath &fileName) : Project(Constants::C_NIM_MIME
 {
     setId(Constants::C_NIMPROJECT_ID);
     setDisplayName(fileName.toFileInfo().completeBaseName());
-    // ensure debugging is enabled (Nim plugin translates nim code to C code)
+    // ensure debugging is enabled
     setProjectLanguages(Core::Context(ProjectExplorer::Constants::CXX_LANGUAGE_ID));
 
     setBuildSystemCreator([](Target *t) { return new NimBuildSystem(t); });
@@ -53,11 +53,11 @@ Tasks NimProject::projectIssues(const Kit *k) const
     Tasks result = Project::projectIssues(k);
     auto tc = dynamic_cast<NimToolChain *>(ToolChainKitAspect::toolChain(k, Constants::C_NIMLANGUAGE_ID));
     if (!tc) {
-        result.append(createProjectTask(Task::TaskType::Error, tr("No Nim compiler set.")));
+        result.append(createProjectTask(Task::TaskType::Error, tr("No Rust compiler set.")));
         return result;
     }
     if (!tc->compilerCommand().exists())
-        result.append(createProjectTask(Task::TaskType::Error, tr("Nim compiler does not exist.")));
+        result.append(createProjectTask(Task::TaskType::Error, tr("Rust compiler does not exist.")));
 
     return result;
 }

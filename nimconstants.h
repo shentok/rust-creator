@@ -31,37 +31,37 @@
 namespace Nim {
 namespace Constants {
 
-const char C_NIMPROJECT_ID[] = "Nim.NimProject";
+const char C_NIMPROJECT_ID[] = "Rust.RustProject";
 
-// NimToolChain
-const char C_NIMTOOLCHAIN_TYPEID[] = "Nim.NimToolChain";
-const char C_NIMTOOLCHAIN_COMPILER_COMMAND_KEY[] = "Nim.NimToolChain.CompilerCommand";
+// RustToolChain
+const char C_NIMTOOLCHAIN_TYPEID[] = "Rust.RustToolChain";
+const char C_NIMTOOLCHAIN_COMPILER_COMMAND_KEY[] = "Rust.RustToolChain.CompilerCommand";
 
-// NimBuildConfiguration
-const char C_NIMBUILDCONFIGURATION_ID[] = "Nim.NimBuildConfiguration";
+// RustBuildConfiguration
+const char C_NIMBUILDCONFIGURATION_ID[] = "Rust.RustBuildConfiguration";
 
-// NimCompilerBuildStep
-const char C_NIMCOMPILERBUILDSTEP_ID[] = "Nim.NimCompilerBuildStep";
-const char C_NIMCOMPILERBUILDSTEP_DISPLAY[] = QT_TRANSLATE_NOOP("NimCompilerBuildStep", "Nim Compiler Build Step");
-const QString C_NIMCOMPILERBUILDSTEP_USERCOMPILEROPTIONS = QStringLiteral("Nim.NimCompilerBuildStep.UserCompilerOptions");
-const QString C_NIMCOMPILERBUILDSTEP_DEFAULTBUILDOPTIONS = QStringLiteral("Nim.NimCompilerBuildStep.DefaultBuildOptions");
-const QString C_NIMCOMPILERBUILDSTEP_TARGETNIMFILE = QStringLiteral("Nim.NimCompilerBuildStep.TargetNimFile");
+// RustCompilerBuildStep
+const char C_NIMCOMPILERBUILDSTEP_ID[] = "Rust.RustCompilerBuildStep";
+const char C_NIMCOMPILERBUILDSTEP_DISPLAY[] = QT_TRANSLATE_NOOP("RustCompilerBuildStep", "Rust Compiler Build Step");
+const QString C_NIMCOMPILERBUILDSTEP_USERCOMPILEROPTIONS = QStringLiteral("Rust.RustCompilerBuildStep.UserCompilerOptions");
+const QString C_NIMCOMPILERBUILDSTEP_DEFAULTBUILDOPTIONS = QStringLiteral("Rust.RustCompilerBuildStep.DefaultBuildOptions");
+const QString C_NIMCOMPILERBUILDSTEP_TARGETNIMFILE = QStringLiteral("Rust.RustCompilerBuildStep.TargetRustFile");
 
-// NimCompilerBuildStepWidget
-const char C_NIMCOMPILERBUILDSTEPWIDGET_DISPLAY[] = QT_TRANSLATE_NOOP("NimCompilerBuildStepConfigWidget", "Nim build step");
-const char C_NIMCOMPILERBUILDSTEPWIDGET_SUMMARY[] = QT_TRANSLATE_NOOP("NimCompilerBuildStepConfigWidget", "Nim build step");
+// RustCompilerBuildStepWidget
+const char C_NIMCOMPILERBUILDSTEPWIDGET_DISPLAY[] = QT_TRANSLATE_NOOP("RustCompilerBuildStepConfigWidget", "Rust build step");
+const char C_NIMCOMPILERBUILDSTEPWIDGET_SUMMARY[] = QT_TRANSLATE_NOOP("RustCompilerBuildStepConfigWidget", "Rust build step");
 
-// NimCompilerCleanStep
-const char C_NIMCOMPILERCLEANSTEP_ID[] = "Nim.NimCompilerCleanStep";
+// RustCompilerCleanStep
+const char C_NIMCOMPILERCLEANSTEP_ID[] = "Rust.RustCompilerCleanStep";
 
-const char C_NIMLANGUAGE_ID[] = "Nim";
-const char C_NIMLANGUAGE_NAME[] = QT_TRANSLATE_NOOP("NimCodeStylePreferencesFactory", "Nim");
+const char C_NIMLANGUAGE_ID[] = "Rust";
+const char C_NIMLANGUAGE_NAME[] = QT_TRANSLATE_NOOP("RustCodeStylePreferencesFactory", "Rust");
 
 /*******************************************************************************
  * MIME type
  ******************************************************************************/
-const char C_NIM_MIMETYPE[] = "text/x-nim";
-const char C_NIM_PROJECT_MIMETYPE[] = "text/x-nim-project";
+const char C_NIM_MIMETYPE[] = "text/rust";
+const char C_NIM_PROJECT_MIMETYPE[] = "text/x-cargo.toml";
 
 }
 }

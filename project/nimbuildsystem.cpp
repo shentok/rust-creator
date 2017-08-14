@@ -50,18 +50,15 @@ void NimProjectScanner::startScan()
 {
     m_scanner = std::make_unique<TreeScanner>();
     m_scanner->setFilter([](const Utils::MimeType &, const FilePath &fp) {
-        const QString path = fp.toString();
-        return fp.endsWith(".nimproject")
-                || path.contains(".nimproject.user")
-                || path.contains(".nimble.user");
+        return fp.endsWith(".toml.user");
     });
 
     connect(m_scanner.get(), &TreeScanner::finished, this, [this] {
         // Collect scanned nodes
         std::vector<std::unique_ptr<FileNode>> nodes;
         for (FileNode *node : m_scanner->release()) {
-            if (!node->path().endsWith(".nim") && !node->path().endsWith(".nimble"))
-                node->setEnabled(false); // Disable files that do not end in .nim
+            if (!node->path().endsWith(".toml"))
+                node->setEnabled(false); // Disable files that do not end in .toml
             nodes.emplace_back(node);
         }
 
