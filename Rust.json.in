@@ -1,5 +1,5 @@
 {
-    \"Name\" : \"Nim\",
+    \"Name\" : \"Rust\",
     \"Version\" : \"$$QTCREATOR_VERSION\",
     \"CompatVersion\" : \"$$QTCREATOR_COMPAT_VERSION\",
     \"Vendor\" : \"Filippo Cucchetto\",

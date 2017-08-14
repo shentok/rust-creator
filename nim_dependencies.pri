@@ -1,4 +1,4 @@
-QTC_PLUGIN_NAME = Nim
+QTC_PLUGIN_NAME = Rust
 QTC_LIB_DEPENDS += \
     extensionsystem \
     utils
