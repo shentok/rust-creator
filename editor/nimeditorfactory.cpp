@@ -47,7 +47,6 @@ NimEditorFactory::NimEditorFactory()
     setId(Constants::C_NIMEDITOR_ID);
     setDisplayName(QCoreApplication::translate("OpenWith::Editors", "Nim Editor"));
     addMimeType(QLatin1String(Nim::Constants::C_NIM_MIMETYPE));
-    addMimeType(QLatin1String(Nim::Constants::C_NIM_SCRIPT_MIMETYPE));
 
     setEditorActionHandlers(TextEditorActionHandler::Format
                             | TextEditorActionHandler::UnCommentSelection
