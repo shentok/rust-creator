@@ -67,7 +67,7 @@ using namespace Utils;
 
 namespace Nim {
 
-const char SETTINGS_KEY[] = "Nim.BuildSystem";
+const char SETTINGS_KEY[] = "Rust.BuildSystem";
 const char EXCLUDED_FILES_KEY[] = "ExcludedFiles";
 
 NimBuildSystem::NimBuildSystem(Project *project)
@@ -79,8 +79,7 @@ NimBuildSystem::NimBuildSystem(Project *project)
     connect(&m_scanner, &TreeScanner::finished, this, &NimBuildSystem::updateProject);
     m_scanner.setFilter([this](const Utils::MimeType &, const Utils::FilePath &fp) {
         const QString path = fp.toString();
-        return excludedFiles().contains(path) || path.endsWith(".nimproject")
-               || path.contains(".nimproject.user");
+        return excludedFiles().contains(path) || path.endsWith(".toml.user");
     });
 
     connect(&m_directoryWatcher, &FileSystemWatcher::directoryChanged, this, [this]() {
@@ -135,7 +134,7 @@ void NimBuildSystem::parseProject(BuildSystem::ParsingContext &&ctx)
 const FilePathList NimBuildSystem::nimFiles() const
 {
     return project()->files(
-        [](const Node *n) { return Project::AllFiles(n) && n->path().endsWith(".nim"); });
+        [](const Node *n) { return Project::AllFiles(n) && n->path().endsWith(".toml"); });
 }
 
 void NimBuildSystem::loadSettings()
@@ -160,7 +159,7 @@ void NimBuildSystem::updateProject()
 
     QSet<QString> directories;
     for (FileNode *node : m_scanner.release()) {
-        if (!node->path().endsWith(".nim"))
+        if (!node->path().endsWith(".toml"))
             node->setEnabled(false); // Disable files that do not end in .nim
         directories.insert(node->directory());
         newRoot->addNestedNode(std::unique_ptr<FileNode>(node));

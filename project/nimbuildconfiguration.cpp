@@ -112,6 +112,7 @@ void NimBuildConfiguration::initialize()
             break;
         }
         nimCompilerBuildStep->setDefaultCompilerOptions(defaultOption);
+        nimCompilerBuildStep->setUserCompilerOptions(QStringList() << "build");
         Utils::FilePathList nimFiles = bs->nimFiles();
         if (!nimFiles.isEmpty())
             nimCompilerBuildStep->setTargetNimFile(nimFiles.first());
