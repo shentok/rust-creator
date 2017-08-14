@@ -26,12 +26,25 @@
 #pragma once
 
 #include <projectexplorer/ioutputparser.h>
+#include <projectexplorer/task.h>
 
 namespace Nim {
 
 class NimParser : public ProjectExplorer::OutputTaskParser
 {
+public:
     Result handleLine(const QString &line, Utils::OutputFormat) override;
+
+    bool handleLink(const QString &href) override;
+
+private:
+    static LinkSpecs adjustedLinkSpecs(const LinkSpecs &original, const QStringList &message);
+
+    QStringList m_message;
+    Utils::FilePath m_fileName;
+    int m_lineNumber = 0;
+    LinkSpecs m_linkSpecs;
+    ProjectExplorer::Task::TaskType m_type = ProjectExplorer::Task::TaskType::Unknown;
 };
 
 } // Nim

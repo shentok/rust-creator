@@ -48,9 +48,9 @@ NimToolChain::NimToolChain(Utils::Id typeId)
     , m_version(std::make_tuple(-1,-1,-1))
 {
     setLanguage(Constants::C_NIMLANGUAGE_ID);
-    setTypeDisplayName(tr("Nim"));
+    setTypeDisplayName(tr("Rust"));
     setTargetAbiNoSignal(Abi::hostAbi());
-    setCompilerCommandKey("Nim.NimToolChain.CompilerCommand");
+    setCompilerCommandKey("Rust.RustToolChain.CompilerCommand");
 }
 
 ToolChain::MacroInspectionRunner NimToolChain::createMacroInspectionRunner() const

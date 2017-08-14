@@ -45,7 +45,7 @@ namespace Nim {
 
 NimToolChainFactory::NimToolChainFactory()
 {
-    setDisplayName(NimToolChain::tr("Nim"));
+    setDisplayName(NimToolChain::tr("Rust"));
     setSupportedToolChainType(Constants::C_NIMTOOLCHAIN_TYPEID);
     setSupportedLanguages({Constants::C_NIMLANGUAGE_ID});
     setToolchainConstructor([] { return new NimToolChain; });
@@ -58,7 +58,7 @@ QList<ToolChain *> NimToolChainFactory::autoDetect(const QList<ToolChain *> &alr
     QList<ToolChain *> result;
 
     IDevice::ConstPtr dev = device ? device : DeviceManager::defaultDesktopDevice();
-    const FilePath compilerPath = dev->searchExecutableInPath("nim");
+    const FilePath compilerPath = dev->searchExecutableInPath("rustc");
     if (compilerPath.isEmpty())
         return result;
 
