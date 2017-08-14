@@ -98,7 +98,6 @@ void NimPlugin::extensionsInitialized()
     const QIcon icon((QLatin1String(Constants::C_NIM_ICON_PATH)));
     if (!icon.isNull()) {
         Core::FileIconProvider::registerIconOverlayForMimeType(icon, Constants::C_NIM_MIMETYPE);
-        Core::FileIconProvider::registerIconOverlayForMimeType(icon, Constants::C_NIM_SCRIPT_MIMETYPE);
     }
 }
 
