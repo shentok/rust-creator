@@ -111,7 +111,6 @@ void NimPlugin::extensionsInitialized()
         }}, Utils::Icon::Tint).icon();
     if (!icon.isNull()) {
         Core::FileIconProvider::registerIconOverlayForMimeType(icon, Constants::C_NIM_MIMETYPE);
-        Core::FileIconProvider::registerIconOverlayForMimeType(icon, Constants::C_NIM_SCRIPT_MIMETYPE);
     }
 }
 
