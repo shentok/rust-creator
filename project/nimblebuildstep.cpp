@@ -32,7 +32,6 @@
 #include "nimtoolchain.h"
 
 #include <projectexplorer/buildconfiguration.h>
-#include <projectexplorer/ioutputparser.h>
 #include <projectexplorer/processparameters.h>
 #include <projectexplorer/projectexplorerconstants.h>
 #include <projectexplorer/runconfigurationaspects.h>
@@ -102,12 +101,12 @@ QString NimbleBuildStep::defaultArguments() const
 {
     switch (buildType()) {
     case BuildConfiguration::Debug:
-        return {"--debugger:native"};
+        return {};
     case BuildConfiguration::Unknown:
     case BuildConfiguration::Profile:
     case BuildConfiguration::Release:
     default:
-        return {};
+        return {"--release"};
     }
 }
 
@@ -121,7 +120,7 @@ void NimbleBuildStep::onArgumentsChanged()
 NimbleBuildStepFactory::NimbleBuildStepFactory()
 {
     registerStep<NimbleBuildStep>(Constants::C_NIMBLEBUILDSTEP_ID);
-    setDisplayName(NimbleBuildStep::tr("Nimble Build"));
+    setDisplayName(NimbleBuildStep::tr("Cargo Build"));
     setSupportedStepList(ProjectExplorer::Constants::BUILDSTEPS_BUILD);
     setSupportedConfiguration(Constants::C_NIMBLEBUILDCONFIGURATION_ID);
     setRepeatable(true);
