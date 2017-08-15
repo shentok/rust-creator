@@ -25,34 +25,50 @@
 
 #pragma once
 
-#include <projectexplorer/runconfiguration.h>
-#include <projectexplorer/runnables.h>
+#include <projectexplorer/toolchain.h>
+#include <projectexplorer/toolchainconfigwidget.h>
 
-#include <QCoreApplication>
+namespace Utils { class PathChooser; }
 
 namespace Nim {
 
-class NimRunConfiguration;
+class NimToolChain;
 
-class NimRunControl : public ProjectExplorer::RunControl
+class NimToolChainFactory : public ProjectExplorer::ToolChainFactory
 {
-    Q_DECLARE_TR_FUNCTIONS(Nim::NimRunControl)
+    Q_OBJECT
 
 public:
-    NimRunControl(NimRunConfiguration *runConfiguration, Core::Id mode);
+    NimToolChainFactory();
 
-    void start() override;
-    StopResult stop() override;
-    bool isRunning() const override;
+    bool canCreate() final;
+    ProjectExplorer::ToolChain *create(Core::Id l) final;
+    bool canRestore(const QVariantMap &data) final;
+    ProjectExplorer::ToolChain *restore(const QVariantMap &data) final;
+    QSet<Core::Id> supportedLanguages() const final;
+    QList<ProjectExplorer::ToolChain *> autoDetect(const QList<ProjectExplorer::ToolChain *> &alreadyKnown) final;
+    QList<ProjectExplorer::ToolChain *> autoDetect(const Utils::FileName &compilerPath, const Core::Id &language) final;
+};
+
+class NimToolChainConfigWidget : public ProjectExplorer::ToolChainConfigWidget
+{
+    Q_OBJECT
+
+public:
+    explicit NimToolChainConfigWidget(NimToolChain *tc);
+
+protected:
+    void applyImpl() final;
+    void discardImpl() final;
+    bool isDirtyImpl() const final;
+    void makeReadOnlyImpl() final;
 
 private:
-    void processStarted();
-    void processExited(int exitCode, QProcess::ExitStatus status);
-    void slotAppendMessage(const QString &err, Utils::OutputFormat isError);
+    void fillUI();
+    void onCompilerCommandChanged(const QString &path);
 
-    ProjectExplorer::ApplicationLauncher m_applicationLauncher;
-    bool m_running;
-    ProjectExplorer::StandardRunnable m_runnable;
+    Utils::PathChooser *m_compilerCommand;
+    QLineEdit *m_compilerVersion;
 };
 
 }
