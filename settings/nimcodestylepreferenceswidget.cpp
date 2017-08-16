@@ -27,7 +27,6 @@
 #include "ui_nimcodestylepreferenceswidget.h"
 
 #include "../nimconstants.h"
-#include "../editor/nimeditorfactory.h"
 
 #include <extensionsystem/pluginmanager.h>
 #include <texteditor/displaysettings.h>
@@ -73,7 +72,6 @@ NimCodeStylePreferencesWidget::~NimCodeStylePreferencesWidget()
 void NimCodeStylePreferencesWidget::decorateEditor(const FontSettings &fontSettings)
 {
     m_ui->previewTextEdit->textDocument()->setFontSettings(fontSettings);
-    NimEditorFactory::decorateEditor(m_ui->previewTextEdit);
 }
 
 void NimCodeStylePreferencesWidget::setVisualizeWhitespace(bool on)
