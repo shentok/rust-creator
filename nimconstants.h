@@ -33,7 +33,6 @@ namespace Constants {
 
 const char C_NIMPROJECT_ID[] = "Nim.NimProject";
 const char C_NIMBLEPROJECT_ID[] = "Nim.NimbleProject";
-const char C_NIMEDITOR_ID[] = "Nim.NimEditor";
 
 // NimToolChain
 const char C_NIMTOOLCHAIN_TYPEID[] = "Nim.NimToolChain";
@@ -99,7 +98,6 @@ const char C_NIMCODESTYLEPREVIEWSNIPPET[] =
  ******************************************************************************/
 const char C_NIM_MIMETYPE[] = "text/x-nim";
 const char C_NIMBLE_MIMETYPE[] = "text/x-nimble";
-const char C_NIM_MIME_ICON[] = "text-x-nim";
 const char C_NIM_PROJECT_MIMETYPE[] = "text/x-nim-project";
 
 const char C_NIM_SETTINGS_GROUP[] = "Nim";
