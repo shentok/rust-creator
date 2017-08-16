@@ -26,8 +26,6 @@
 #include "nimplugin.h"
 
 #include "nimconstants.h"
-#include "editor/nimeditorfactory.h"
-#include "editor/nimhighlighter.h"
 #include "project/nimblerunconfiguration.h"
 #include "project/nimblebuildconfiguration.h"
 #include "project/nimbuildconfiguration.h"
@@ -49,7 +47,6 @@
 #include <projectexplorer/toolchainmanager.h>
 #include <projectexplorer/runcontrol.h>
 #include <projectexplorer/taskhub.h>
-#include <texteditor/snippets/snippetprovider.h>
 
 using namespace Utils;
 using namespace ProjectExplorer;
@@ -68,7 +65,6 @@ public:
     }
 
     NimSettings settings;
-    NimEditorFactory editorFactory;
     NimBuildConfigurationFactory buildConfigFactory;
     NimbleBuildConfigurationFactory nimbleBuildConfigFactory;
     NimRunConfigurationFactory nimRunConfigFactory;
@@ -112,10 +108,6 @@ bool NimPlugin::initialize(const QStringList &arguments, QString *errorMessage)
     d = new NimPluginPrivate;
 
     ToolChainManager::registerLanguage(Constants::C_NIMLANGUAGE_ID, Constants::C_NIMLANGUAGE_NAME);
-
-    TextEditor::SnippetProvider::registerGroup(Constants::C_NIMSNIPPETSGROUP_ID,
-                                               tr("Nim", "SnippetProvider"),
-                                               &NimEditorFactory::decorateEditor);
 
     ProjectManager::registerProjectType<NimProject>(Constants::C_NIM_PROJECT_MIMETYPE);
     ProjectManager::registerProjectType<NimbleProject>(Constants::C_NIMBLE_MIMETYPE);
