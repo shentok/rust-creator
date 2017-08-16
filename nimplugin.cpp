@@ -26,8 +26,6 @@
 #include "nimplugin.h"
 
 #include "nimconstants.h"
-#include "editor/nimeditorfactory.h"
-#include "editor/nimhighlighter.h"
 #include "project/nimbuildconfiguration.h"
 #include "project/nimcompilerbuildstep.h"
 #include "project/nimcompilercleanstep.h"
@@ -64,7 +62,6 @@ public:
     }
 
     NimSettings settings;
-    NimEditorFactory editorFactory;
     NimBuildConfigurationFactory buildConfigFactory;
     NimRunConfigurationFactory runConfigFactory;
     SimpleRunWorkerFactory<SimpleTargetRunner, NimRunConfiguration> runWorkerFactory;
@@ -91,8 +88,7 @@ bool NimPlugin::initialize(const QStringList &arguments, QString *errorMessage)
     ToolChainManager::registerLanguage(Constants::C_NIMLANGUAGE_ID, Constants::C_NIMLANGUAGE_NAME);
 
     TextEditor::SnippetProvider::registerGroup(Constants::C_NIMSNIPPETSGROUP_ID,
-                                               tr("Rust", "SnippetProvider"),
-                                               &NimEditorFactory::decorateEditor);
+                                               tr("Rust", "SnippetProvider"));
 
     ProjectManager::registerProjectType<NimProject>(Constants::C_NIM_PROJECT_MIMETYPE);
 

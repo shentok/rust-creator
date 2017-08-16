@@ -64,12 +64,6 @@
         \"            <treematch path=\'.cargo\' />\",
         \"        </treemagic>\",
         \"    </mime-type>\",
-
-        \"    <mime-type type=\'text/rust\'>\",
-        \"        <sub-class-of type=\'text/x-csrc\'/>\",
-        \"        <comment>Rust source code</comment>\",
-        \"        <glob pattern=\'*.rs\'/>\",
-        \"    </mime-type>\",
         \"</mime-info>\"
     ]
 }

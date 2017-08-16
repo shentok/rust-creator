@@ -32,8 +32,6 @@ namespace Nim {
 namespace Constants {
 
 const char C_NIMPROJECT_ID[] = "Rust.RustProject";
-const char C_NIMEDITOR_ID[] = "Rust.RustEditor";
-const char C_EDITOR_DISPLAY_NAME[] = QT_TRANSLATE_NOOP("OpenWith::Editors", "Rust Editor");
 
 // RustToolChain
 const char C_NIMTOOLCHAIN_TYPEID[] = "Rust.RustToolChain";
