@@ -12,10 +12,7 @@ INCLUDEPATH += $$PWD
 HEADERS += \
     nimplugin.h \
     nimconstants.h \
-    editor/nimcompletionassistprovider.h \
-    editor/nimhighlighter.h \
     editor/nimindenter.h \
-    editor/nimtexteditorwidget.h \
     project/nimblebuildconfiguration.h \
     project/nimblebuildstep.h \
     project/nimblebuildstepwidget.h \
@@ -34,7 +31,6 @@ HEADERS += \
     project/nimcompilerbuildstepconfigwidget.h \
     project/nimcompilercleanstep.h \
     project/nimrunconfiguration.h \
-    editor/nimeditorfactory.h \
     settings/nimcodestylesettingspage.h \
     settings/nimcodestylepreferencesfactory.h \
     settings/nimsettings.h \
@@ -52,10 +48,7 @@ HEADERS += \
 
 SOURCES += \
     nimplugin.cpp \
-    editor/nimcompletionassistprovider.cpp \
-    editor/nimhighlighter.cpp \
     editor/nimindenter.cpp \
-    editor/nimtexteditorwidget.cpp \
     project/nimblebuildconfiguration.cpp \
     project/nimblebuildstep.cpp \
     project/nimbletaskstep.cpp \
@@ -73,7 +66,6 @@ SOURCES += \
     project/nimcompilerbuildstepconfigwidget.cpp \
     project/nimcompilercleanstep.cpp \
     project/nimrunconfiguration.cpp \
-    editor/nimeditorfactory.cpp \
     settings/nimcodestylesettingspage.cpp \
     settings/nimcodestylepreferencesfactory.cpp \
     settings/nimsettings.cpp \
