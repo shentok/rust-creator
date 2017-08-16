@@ -21,12 +21,6 @@
     \"Mimetypes\" : [
         \"<?xml version=\'1.0\'?>\",
         \"<mime-info xmlns=\'http://www.freedesktop.org/standards/shared-mime-info\'>\",
-            \"<mime-type type=\'text/x-rustsrc\'>\",
-                \"<sub-class-of type=\'text/x-csrc\'/>\",
-                \"<comment>Rust source code</comment>\",
-                \"<glob pattern=\'*.rs\'/>\",
-            \"</mime-type>\",
-            \"\",
             \"<!--\",
             \"It is important that `type` matches the `mimetype` attribute in the\",
             \"toml.xml highlight file\",

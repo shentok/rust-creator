@@ -75,7 +75,7 @@ bool NimPlugin::initialize(const QStringList &arguments, QString *errorMessage)
             (ProjectExplorer::Constants::NORMAL_RUN_MODE);
 
     addAutoReleasedObject(new NimSettings);
-    addAutoReleasedObject(new NimEditorFactory);
+//    addAutoReleasedObject(new NimEditorFactory);
     addAutoReleasedObject(new NimBuildConfigurationFactory);
     addAutoReleasedObject(new NimRunConfigurationFactory);
     addAutoReleasedObject(new NimCompilerBuildStepFactory);
