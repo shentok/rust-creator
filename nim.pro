@@ -29,12 +29,10 @@ HEADERS += \
     project/nimcompilerbuildstepfactory.h \
     project/nimcompilercleanstepfactory.h \
     project/nimbuildconfigurationwidget.h \
-    project/nimruncontrolfactory.h \
     editor/nimeditorfactory.h \
     settings/nimcodestylesettingspage.h \
     settings/nimcodestylepreferencesfactory.h \
     settings/nimsettings.h \
-    settings/nimsnippetprovider.h \
     settings/nimcodestylepreferenceswidget.h \
     project/nimtoolchain.h \
     project/nimtoolchainfactory.h
@@ -58,12 +56,10 @@ SOURCES += \
     project/nimcompilerbuildstepfactory.cpp \
     project/nimcompilercleanstepfactory.cpp \
     project/nimbuildconfigurationwidget.cpp \
-    project/nimruncontrolfactory.cpp \
     editor/nimeditorfactory.cpp \
     settings/nimcodestylesettingspage.cpp \
     settings/nimcodestylepreferencesfactory.cpp \
     settings/nimsettings.cpp \
-    settings/nimsnippetprovider.cpp \
     settings/nimcodestylepreferenceswidget.cpp \
     project/nimtoolchain.cpp \
     project/nimtoolchainfactory.cpp

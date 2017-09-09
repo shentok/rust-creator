@@ -49,7 +49,6 @@ QtcPlugin {
             "nimrunconfiguration.h", "nimrunconfiguration.cpp",
             "nimrunconfigurationfactory.h", "nimrunconfigurationfactory.cpp",
             "nimrunconfigurationwidget.h", "nimrunconfigurationwidget.cpp",
-            "nimruncontrolfactory.h", "nimruncontrolfactory.cpp",
             "nimtoolchain.h", "nimtoolchain.cpp",
             "nimtoolchainfactory.h", "nimtoolchainfactory.cpp",
         ]
@@ -63,7 +62,6 @@ QtcPlugin {
             "nimcodestylepreferenceswidget.h", "nimcodestylepreferenceswidget.cpp", "nimcodestylepreferenceswidget.ui",
             "nimcodestylesettingspage.h", "nimcodestylesettingspage.cpp",
             "nimsettings.h", "nimsettings.cpp",
-            "nimsnippetprovider.h", "nimsnippetprovider.cpp",
         ]
     }
 

@@ -32,21 +32,23 @@
 #include "project/nimcompilerbuildstepfactory.h"
 #include "project/nimcompilercleanstepfactory.h"
 #include "project/nimproject.h"
+#include "project/nimrunconfiguration.h"
 #include "project/nimrunconfigurationfactory.h"
-#include "project/nimruncontrolfactory.h"
 #include "project/nimtoolchainfactory.h"
 #include "settings/nimcodestylepreferencesfactory.h"
 #include "settings/nimcodestylesettingspage.h"
 #include "settings/nimsettings.h"
-#include "settings/nimsnippetprovider.h"
 
 #include <coreplugin/fileiconprovider.h>
 #include <projectexplorer/projectmanager.h>
 #include <projectexplorer/toolchainmanager.h>
+#include <projectexplorer/runconfiguration.h>
+#include <texteditor/snippets/snippetprovider.h>
 
 #include <QtPlugin>
 
 using namespace Utils;
+using namespace ProjectExplorer;
 
 namespace Nim {
 
@@ -69,17 +71,21 @@ bool NimPlugin::initialize(const QStringList &arguments, QString *errorMessage)
 
     ProjectExplorer::ToolChainManager::registerLanguage(Constants::C_NIMLANGUAGE_ID, Constants::C_NIMLANGUAGE_NAME);
 
+    RunControl::registerWorker<NimRunConfiguration, SimpleTargetRunner>
+            (ProjectExplorer::Constants::NORMAL_RUN_MODE);
+
     addAutoReleasedObject(new NimSettings);
-    addAutoReleasedObject(new NimSnippetProvider);
     addAutoReleasedObject(new NimEditorFactory);
     addAutoReleasedObject(new NimBuildConfigurationFactory);
     addAutoReleasedObject(new NimRunConfigurationFactory);
     addAutoReleasedObject(new NimCompilerBuildStepFactory);
     addAutoReleasedObject(new NimCompilerCleanStepFactory);
-    addAutoReleasedObject(new NimRunControlFactory);
     addAutoReleasedObject(new NimCodeStyleSettingsPage);
     addAutoReleasedObject(new NimCodeStylePreferencesFactory);
     addAutoReleasedObject(new NimToolChainFactory);
+    TextEditor::SnippetProvider::registerGroup(Constants::C_NIMSNIPPETSGROUP_ID,
+                                               tr("Nim", "SnippetProvider"),
+                                               &NimEditorFactory::decorateEditor);
 
     ProjectExplorer::ProjectManager::registerProjectType<NimProject>(Constants::C_NIM_PROJECT_MIMETYPE);
 
