@@ -106,6 +106,8 @@ NimCompilerBuildStep::NimCompilerBuildStep(BuildStepList *parentList)
     auto bc = qobject_cast<NimBuildConfiguration *>(buildConfiguration());
     connect(bc, &NimBuildConfiguration::buildDirectoryChanged,
             this, &NimCompilerBuildStep::updateProcessParameters);
+    connect(bc, &BuildConfiguration::environmentChanged,
+            this, &NimCompilerBuildStep::updateProcessParameters);
     connect(this, &NimCompilerBuildStep::outFilePathChanged,
             bc, &NimBuildConfiguration::outFilePathChanged);
     connect(bc->target()->project(), &ProjectExplorer::Project::fileListChanged,
@@ -130,7 +132,7 @@ BuildStepConfigWidget *NimCompilerBuildStep::createConfigWidget()
 bool NimCompilerBuildStep::fromMap(const QVariantMap &map)
 {
     AbstractProcessStep::fromMap(map);
-    m_userCompilerOptions = map[Constants::C_NIMCOMPILERBUILDSTEP_USERCOMPILEROPTIONS].toString().split(QLatin1Char('|'));
+    m_userCompilerOptions = map[Constants::C_NIMCOMPILERBUILDSTEP_USERCOMPILEROPTIONS].toString().split('|');
     m_defaultOptions = static_cast<DefaultBuildOptions>(map[Constants::C_NIMCOMPILERBUILDSTEP_DEFAULTBUILDOPTIONS].toInt());
     m_targetNimFile = FileName::fromString(map[Constants::C_NIMCOMPILERBUILDSTEP_TARGETNIMFILE].toString());
     updateProcessParameters();
@@ -140,7 +142,7 @@ bool NimCompilerBuildStep::fromMap(const QVariantMap &map)
 QVariantMap NimCompilerBuildStep::toMap() const
 {
     QVariantMap result = AbstractProcessStep::toMap();
-    result[Constants::C_NIMCOMPILERBUILDSTEP_USERCOMPILEROPTIONS] = m_userCompilerOptions.join(QLatin1Char('|'));
+    result[Constants::C_NIMCOMPILERBUILDSTEP_USERCOMPILEROPTIONS] = m_userCompilerOptions.join('|');
     result[Constants::C_NIMCOMPILERBUILDSTEP_DEFAULTBUILDOPTIONS] = m_defaultOptions;
     result[Constants::C_NIMCOMPILERBUILDSTEP_TARGETNIMFILE] = m_targetNimFile.toString();
     return result;
@@ -283,6 +285,17 @@ void NimCompilerBuildStep::updateTargetNimFile()
     const Utils::FileNameList nimFiles = static_cast<NimProject *>(project())->nimFiles();
     if (!nimFiles.isEmpty())
         setTargetNimFile(nimFiles.at(0));
+}
+
+// NimCompilerBuildStepFactory
+
+NimCompilerBuildStepFactory::NimCompilerBuildStepFactory()
+{
+    registerStep<NimCompilerBuildStep>(Constants::C_NIMCOMPILERBUILDSTEP_ID);
+    setDisplayName(NimCompilerBuildStep::tr("Nim Compiler Build Step"));
+    setSupportedStepList(ProjectExplorer::Constants::BUILDSTEPS_BUILD);
+    setSupportedConfiguration(Constants::C_NIMBUILDCONFIGURATION_ID);
+    setRepeatable(false);
 }
 
 } // namespace Nim
