@@ -32,8 +32,6 @@ namespace Nim {
 namespace Constants {
 
 const char C_NIMPROJECT_ID[] = "Nim.NimProject";
-const char C_NIMEDITOR_ID[] = "Nim.NimEditor";
-const char C_EDITOR_DISPLAY_NAME[] = QT_TRANSLATE_NOOP("OpenWith::Editors", "Nim Editor");
 
 // NimToolChain
 const char C_NIMTOOLCHAIN_TYPEID[] = "Nim.NimToolChain";

@@ -26,22 +26,16 @@
 #include "nimplugin.h"
 
 #include "nimconstants.h"
-#include "editor/nimeditorfactory.h"
-#include "editor/nimhighlighter.h"
 #include "project/nimbuildconfiguration.h"
 #include "project/nimcompilerbuildstep.h"
 #include "project/nimcompilercleanstep.h"
 #include "project/nimproject.h"
 #include "project/nimrunconfiguration.h"
 #include "project/nimtoolchainfactory.h"
-#include "settings/nimcodestylepreferencesfactory.h"
-#include "settings/nimcodestylesettingspage.h"
-#include "settings/nimsettings.h"
 
 #include <coreplugin/fileiconprovider.h>
 #include <projectexplorer/projectmanager.h>
 #include <projectexplorer/toolchainmanager.h>
-#include <texteditor/snippets/snippetprovider.h>
 
 using namespace Utils;
 using namespace ProjectExplorer;
@@ -51,14 +45,10 @@ namespace Nim {
 class NimPluginPrivate
 {
 public:
-    NimSettings settings;
-    NimEditorFactory editorFactory;
     NimBuildConfigurationFactory buildConfigFactory;
     NimRunConfigurationFactory runConfigFactory;
     NimCompilerBuildStepFactory buildStepFactory;
     NimCompilerCleanStepFactory cleanStepFactory;
-    NimCodeStyleSettingsPage codeStyleSettingsPage;
-    NimCodeStylePreferencesFactory codeStylePreferencesPage;
     NimToolChainFactory toolChainFactory;
 };
 
@@ -75,10 +65,6 @@ bool NimPlugin::initialize(const QStringList &arguments, QString *errorMessage)
     d = new NimPluginPrivate;
 
     ToolChainManager::registerLanguage(Constants::C_NIMLANGUAGE_ID, Constants::C_NIMLANGUAGE_NAME);
-
-    TextEditor::SnippetProvider::registerGroup(Constants::C_NIMSNIPPETSGROUP_ID,
-                                               tr("Nim", "SnippetProvider"),
-                                               &NimEditorFactory::decorateEditor);
 
     ProjectManager::registerProjectType<NimProject>(Constants::C_NIM_PROJECT_MIMETYPE);
 
