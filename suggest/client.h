@@ -23,37 +23,53 @@
 **
 ****************************************************************************/
 
-#include "nimcompilercleanstepconfigwidget.h"
-#include "ui_nimcompilercleanstepconfigwidget.h"
-#include "nimcompilercleanstep.h"
+#pragma once
 
-#include "../nimconstants.h"
+#include <QObject>
+#include <QString>
+#include <QTcpSocket>
 
-#include "projectexplorer/buildconfiguration.h"
+#include <memory>
+#include <unordered_map>
+#include <vector>
 
-using namespace ProjectExplorer;
+#include "clientrequests.h"
 
 namespace Nim {
+namespace Suggest {
 
-NimCompilerCleanStepConfigWidget::NimCompilerCleanStepConfigWidget(NimCompilerCleanStep *cleanStep)
-    : BuildStepConfigWidget(cleanStep)
-    , m_ui(new Ui::NimCompilerCleanStepConfigWidget())
+class NimSuggestClient : public QObject
 {
-    m_ui->setupUi(this);
-    setDisplayName(tr(Constants::C_NIMCOMPILERCLEANSTEPWIDGET_DISPLAY));
-    setSummaryText(tr(Constants::C_NIMCOMPILERCLEANSTEPWIDGET_SUMMARY));
-    connect(cleanStep->buildConfiguration(), &BuildConfiguration::buildDirectoryChanged,
-            this, &NimCompilerCleanStepConfigWidget::updateUi);
-    updateUi();
-}
+    Q_OBJECT
 
-NimCompilerCleanStepConfigWidget::~NimCompilerCleanStepConfigWidget() = default;
+public:
+    NimSuggestClient(QObject *parent = nullptr);
 
-void NimCompilerCleanStepConfigWidget::updateUi()
-{
-    auto buildDiretory = step()->buildConfiguration()->buildDirectory();
-    m_ui->workingDirectoryLineEdit->setText(buildDiretory.toString());
-}
+    bool connectToServer(quint16 port);
 
-}
+    bool disconnectFromServer();
 
+    std::shared_ptr<SugRequest> sug(const QString &nimFile,
+                                    int line, int column,
+                                    const QString &dirtyFile);
+
+signals:
+    void connected();
+    void disconnected();
+
+private:
+    void clear();
+    void onDisconnectedFromServer();
+    void onReadyRead();
+    void parsePayload(const char *payload, std::size_t size);
+
+    QTcpSocket m_socket;
+    quint16 m_port;
+    std::unordered_map<quint64, std::weak_ptr<BaseNimSuggestClientRequest>> m_requests;
+    std::vector<QString> m_lines;
+    std::vector<char> m_readBuffer;
+    quint64 m_lastMessageId = 0;
+};
+
+} // namespace Suggest
+} // namespace Nim

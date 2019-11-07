@@ -25,34 +25,56 @@
 
 #pragma once
 
-#include <projectexplorer/namedwidget.h>
-
-QT_BEGIN_NAMESPACE
-class QComboBox;
-class QLineEdit;
-class QPushButton;
-QT_END_NAMESPACE
-
-namespace Utils { class PathChooser; }
+#include <QDebug>
+#include <QFile>
+#include <QObject>
+#include <QProcess>
 
 namespace Nim {
+namespace Suggest {
 
-class NimBuildConfiguration;
-
-class NimBuildConfigurationWidget : public ProjectExplorer::NamedWidget
+class NimSuggestServer : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit NimBuildConfigurationWidget(NimBuildConfiguration *bc);
-    ~NimBuildConfigurationWidget();
+    NimSuggestServer(QObject *parent = nullptr);
+
+    ~NimSuggestServer();
+
+    bool start(const QString &executablePath, const QString &projectFilePath);
+
+    void kill();
+
+    quint16 port() const;
+
+    QString executablePath() const;
+
+    QString projectFilePath() const;
+
+signals:
+    void started();
+
+    void finished();
+
+    void crashed();
 
 private:
-    void updateUi();
-    void onPathEdited(const QString &path);
+    void onStarted();
 
-    NimBuildConfiguration *m_bc;
-    Utils::PathChooser *m_buildDirectoryChooser;
+    void onStandardOutputAvailable();
+
+    void onFinished(int exitCode, QProcess::ExitStatus exitStatus);
+
+    void clearState();
+
+    bool m_started = false;
+    bool m_portAvailable = false;
+    QProcess m_process;
+    quint16 m_port = 0;
+    QString m_projectFilePath;
+    QString m_executablePath;
 };
 
-}
+} // namespace Suggest
+} // namespace Nim

@@ -23,37 +23,54 @@
 **
 ****************************************************************************/
 
-#include "nimcompilercleanstepconfigwidget.h"
-#include "ui_nimcompilercleanstepconfigwidget.h"
-#include "nimcompilercleanstep.h"
+#pragma once
 
-#include "../nimconstants.h"
+#include <coreplugin/dialogs/ioptionspage.h>
+#include <utils/fileutils.h>
 
-#include "projectexplorer/buildconfiguration.h"
+#include <QWidget>
 
-using namespace ProjectExplorer;
+#include <memory>
 
 namespace Nim {
 
-NimCompilerCleanStepConfigWidget::NimCompilerCleanStepConfigWidget(NimCompilerCleanStep *cleanStep)
-    : BuildStepConfigWidget(cleanStep)
-    , m_ui(new Ui::NimCompilerCleanStepConfigWidget())
+class NimSettings;
+
+namespace Ui { class NimToolsSettingsWidget; }
+
+class NimToolsSettingsWidget : public QWidget
 {
-    m_ui->setupUi(this);
-    setDisplayName(tr(Constants::C_NIMCOMPILERCLEANSTEPWIDGET_DISPLAY));
-    setSummaryText(tr(Constants::C_NIMCOMPILERCLEANSTEPWIDGET_SUMMARY));
-    connect(cleanStep->buildConfiguration(), &BuildConfiguration::buildDirectoryChanged,
-            this, &NimCompilerCleanStepConfigWidget::updateUi);
-    updateUi();
-}
+    Q_OBJECT
 
-NimCompilerCleanStepConfigWidget::~NimCompilerCleanStepConfigWidget() = default;
+public:
+    explicit NimToolsSettingsWidget(NimSettings *settings);
 
-void NimCompilerCleanStepConfigWidget::updateUi()
+    ~NimToolsSettingsWidget();
+
+    QString command() const;
+    void setCommand(const QString &filename);
+
+private:
+    Ui::NimToolsSettingsWidget *ui;
+    NimSettings *m_settings = nullptr;
+};
+
+class NimToolsSettingsPage : public Core::IOptionsPage
 {
-    auto buildDiretory = step()->buildConfiguration()->buildDirectory();
-    m_ui->workingDirectoryLineEdit->setText(buildDiretory.toString());
-}
+    Q_OBJECT
+
+public:
+    NimToolsSettingsPage(NimSettings *settings);
+
+    ~NimToolsSettingsPage();
+
+    QWidget *widget() final;
+    void apply() final;
+    void finish() final;
+
+private:
+    std::unique_ptr<NimToolsSettingsWidget> m_widget;
+    NimSettings *m_settings = nullptr;
+};
 
 }
-

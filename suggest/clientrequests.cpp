@@ -23,37 +23,46 @@
 **
 ****************************************************************************/
 
-#include "nimcompilercleanstepconfigwidget.h"
-#include "ui_nimcompilercleanstepconfigwidget.h"
-#include "nimcompilercleanstep.h"
+#include "clientrequests.h"
 
-#include "../nimconstants.h"
-
-#include "projectexplorer/buildconfiguration.h"
-
-using namespace ProjectExplorer;
+#include <QDebug>
+#include <QMetaEnum>
 
 namespace Nim {
+namespace Suggest {
 
-NimCompilerCleanStepConfigWidget::NimCompilerCleanStepConfigWidget(NimCompilerCleanStep *cleanStep)
-    : BuildStepConfigWidget(cleanStep)
-    , m_ui(new Ui::NimCompilerCleanStepConfigWidget())
+bool Line::fromString(Line::LineType &type, const std::string &str)
 {
-    m_ui->setupUi(this);
-    setDisplayName(tr(Constants::C_NIMCOMPILERCLEANSTEPWIDGET_DISPLAY));
-    setSummaryText(tr(Constants::C_NIMCOMPILERCLEANSTEPWIDGET_SUMMARY));
-    connect(cleanStep->buildConfiguration(), &BuildConfiguration::buildDirectoryChanged,
-            this, &NimCompilerCleanStepConfigWidget::updateUi);
-    updateUi();
+    static const auto metaobject = QMetaEnum::fromType<LineType>();
+    bool result = false;
+    type = static_cast<LineType>(metaobject.keyToValue(str.c_str(), &result));
+    return result;
 }
 
-NimCompilerCleanStepConfigWidget::~NimCompilerCleanStepConfigWidget() = default;
-
-void NimCompilerCleanStepConfigWidget::updateUi()
+bool Line::fromString(Line::SymbolKind &type, const std::string &str)
 {
-    auto buildDiretory = step()->buildConfiguration()->buildDirectory();
-    m_ui->workingDirectoryLineEdit->setText(buildDiretory.toString());
+    static const auto metaobject = QMetaEnum::fromType<SymbolKind>();
+    bool result = false;
+    type = static_cast<SymbolKind>(metaobject.keyToValue(str.c_str(), &result));
+    return result;
 }
 
+BaseNimSuggestClientRequest::BaseNimSuggestClientRequest(quint64 id)
+    : m_id(id)
+{}
+
+quint64 BaseNimSuggestClientRequest::id() const
+{
+    return m_id;
 }
 
+} // namespace Suggest
+} // namespace Nim
+
+QDebug operator<<(QDebug debug, const Nim::Suggest::Line &c)
+{
+    QDebugStateSaver saver(debug);
+    debug.space() << c.line_type << c.symbol_kind << c.symbol_type << c.data << c.row << c.column <<
+                  c.abs_path;
+    return debug;
+}

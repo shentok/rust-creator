@@ -30,10 +30,11 @@
 #include "nimproject.h"
 #include "nimtoolchain.h"
 
-#include <projectexplorer/projectexplorerconstants.h>
 #include <projectexplorer/buildconfiguration.h>
-#include <projectexplorer/kitinformation.h>
 #include <projectexplorer/ioutputparser.h>
+#include <projectexplorer/kitinformation.h>
+#include <projectexplorer/processparameters.h>
+#include <projectexplorer/projectexplorerconstants.h>
 #include <utils/qtcassert.h>
 
 #include <QDir>
@@ -90,7 +91,7 @@ private:
 
         Task task(type,
                   message,
-                  Utils::FileName::fromUserInput(filename),
+                  Utils::FilePath::fromUserInput(filename),
                   lineNumber,
                   ProjectExplorer::Constants::TASK_CATEGORY_COMPILE);
         emit addTask(task);
@@ -115,13 +116,13 @@ NimCompilerBuildStep::NimCompilerBuildStep(BuildStepList *parentList)
     updateProcessParameters();
 }
 
-bool NimCompilerBuildStep::init(QList<const BuildStep *> &earlierSteps)
+bool NimCompilerBuildStep::init()
 {
     setOutputParser(new NimParser());
     if (IOutputParser *parser = target()->kit()->createOutputParser())
         appendOutputParser(parser);
     outputParser()->setWorkingDirectory(processParameters()->effectiveWorkingDirectory());
-    return AbstractProcessStep::init(earlierSteps);
+    return AbstractProcessStep::init();
 }
 
 BuildStepConfigWidget *NimCompilerBuildStep::createConfigWidget()
@@ -134,7 +135,7 @@ bool NimCompilerBuildStep::fromMap(const QVariantMap &map)
     AbstractProcessStep::fromMap(map);
     m_userCompilerOptions = map[Constants::C_NIMCOMPILERBUILDSTEP_USERCOMPILEROPTIONS].toString().split('|');
     m_defaultOptions = static_cast<DefaultBuildOptions>(map[Constants::C_NIMCOMPILERBUILDSTEP_DEFAULTBUILDOPTIONS].toInt());
-    m_targetNimFile = FileName::fromString(map[Constants::C_NIMCOMPILERBUILDSTEP_TARGETNIMFILE].toString());
+    m_targetNimFile = FilePath::fromString(map[Constants::C_NIMCOMPILERBUILDSTEP_TARGETNIMFILE].toString());
     updateProcessParameters();
     return true;
 }
@@ -174,12 +175,12 @@ void NimCompilerBuildStep::setDefaultCompilerOptions(NimCompilerBuildStep::Defau
     updateProcessParameters();
 }
 
-FileName NimCompilerBuildStep::targetNimFile() const
+FilePath NimCompilerBuildStep::targetNimFile() const
 {
     return m_targetNimFile;
 }
 
-void NimCompilerBuildStep::setTargetNimFile(const FileName &targetNimFile)
+void NimCompilerBuildStep::setTargetNimFile(const FilePath &targetNimFile)
 {
     if (targetNimFile == m_targetNimFile)
         return;
@@ -188,12 +189,12 @@ void NimCompilerBuildStep::setTargetNimFile(const FileName &targetNimFile)
     updateProcessParameters();
 }
 
-FileName NimCompilerBuildStep::outFilePath() const
+FilePath NimCompilerBuildStep::outFilePath() const
 {
     return m_outFilePath;
 }
 
-void NimCompilerBuildStep::setOutFilePath(const FileName &outFilePath)
+void NimCompilerBuildStep::setOutFilePath(const FilePath &outFilePath)
 {
     if (outFilePath == m_outFilePath)
         return;
@@ -216,8 +217,7 @@ void NimCompilerBuildStep::updateOutFilePath()
     auto bc = qobject_cast<NimBuildConfiguration *>(buildConfiguration());
     QTC_ASSERT(bc, return);
     const QString targetName = Utils::HostOsInfo::withExecutableSuffix(m_targetNimFile.toFileInfo().baseName());
-    FileName outFilePath = bc->buildDirectory().appendPath(targetName);
-    setOutFilePath(outFilePath);
+    setOutFilePath(bc->buildDirectory().pathAppended(targetName));
 }
 
 void NimCompilerBuildStep::updateCommand()
@@ -225,16 +225,16 @@ void NimCompilerBuildStep::updateCommand()
     QTC_ASSERT(target(), return);
     QTC_ASSERT(target()->kit(), return);
     Kit *kit = target()->kit();
-    auto tc = dynamic_cast<NimToolChain*>(ToolChainKitInformation::toolChain(kit, Constants::C_NIMLANGUAGE_ID));
+    auto tc = dynamic_cast<NimToolChain*>(ToolChainKitAspect::toolChain(kit, Constants::C_NIMLANGUAGE_ID));
     QTC_ASSERT(tc, return);
-    processParameters()->setCommand(tc->compilerCommand().toString());
+    processParameters()->setCommand(tc->compilerCommand());
 }
 
 void NimCompilerBuildStep::updateWorkingDirectory()
 {
     auto bc = qobject_cast<NimBuildConfiguration *>(buildConfiguration());
     QTC_ASSERT(bc, return);
-    processParameters()->setWorkingDirectory(bc->buildDirectory().toString());
+    processParameters()->setWorkingDirectory(bc->buildDirectory());
 }
 
 void NimCompilerBuildStep::updateArguments()
@@ -282,7 +282,7 @@ void NimCompilerBuildStep::updateTargetNimFile()
 {
     if (!m_targetNimFile.isEmpty())
         return;
-    const Utils::FileNameList nimFiles = static_cast<NimProject *>(project())->nimFiles();
+    const Utils::FilePathList nimFiles = static_cast<NimProject *>(project())->nimFiles();
     if (!nimFiles.isEmpty())
         setTargetNimFile(nimFiles.at(0));
 }
@@ -292,7 +292,7 @@ void NimCompilerBuildStep::updateTargetNimFile()
 NimCompilerBuildStepFactory::NimCompilerBuildStepFactory()
 {
     registerStep<NimCompilerBuildStep>(Constants::C_NIMCOMPILERBUILDSTEP_ID);
-    setDisplayName(tr("Nim Compiler Build Step"));
+    setDisplayName(NimCompilerBuildStep::tr("Nim Compiler Build Step"));
     setSupportedStepList(ProjectExplorer::Constants::BUILDSTEPS_BUILD);
     setSupportedConfiguration(Constants::C_NIMBUILDCONFIGURATION_ID);
     setRepeatable(false);
@@ -316,19 +316,19 @@ void NimPlugin::testNimParser_data()
     QTest::addColumn<OutputParserTester::Channel>("inputChannel");
     QTest::addColumn<QString>("childStdOutLines");
     QTest::addColumn<QString>("childStdErrLines");
-    QTest::addColumn<QList<ProjectExplorer::Task> >("tasks");
+    QTest::addColumn<Tasks >("tasks");
     QTest::addColumn<QString>("outputLines");
 
     // negative tests
     QTest::newRow("pass-through stdout")
             << "Sometext" << OutputParserTester::STDOUT
             << "Sometext\n" << QString()
-            << QList<Task>()
+            << Tasks()
             << QString();
     QTest::newRow("pass-through stderr")
             << "Sometext" << OutputParserTester::STDERR
             << QString() << "Sometext\n"
-            << QList<Task>()
+            << Tasks()
             << QString();
 
     // positive tests
@@ -336,9 +336,9 @@ void NimPlugin::testNimParser_data()
             << QString::fromLatin1("main.nim(23, 1) Error: undeclared identifier: 'x'")
             << OutputParserTester::STDERR
             << QString("") << QString("main.nim(23, 1) Error: undeclared identifier: 'x'\n")
-            << QList<Task>({Task(Task::Error,
+            << Tasks({Task(Task::Error,
                             "Error: undeclared identifier: 'x'",
-                            Utils::FileName::fromUserInput("main.nim"), 23,
+                            Utils::FilePath::fromUserInput("main.nim"), 23,
                             ProjectExplorer::Constants::TASK_CATEGORY_COMPILE)})
             << QString();
 
@@ -346,9 +346,9 @@ void NimPlugin::testNimParser_data()
             << QString::fromLatin1("lib/pure/parseopt.nim(56, 34) Warning: quoteIfContainsWhite is deprecated [Deprecated]")
             << OutputParserTester::STDERR
             << QString("") << QString("lib/pure/parseopt.nim(56, 34) Warning: quoteIfContainsWhite is deprecated [Deprecated]\n")
-            << QList<Task>({Task(Task::Warning,
+            << Tasks({Task(Task::Warning,
                             "Warning: quoteIfContainsWhite is deprecated [Deprecated]",
-                            Utils::FileName::fromUserInput("lib/pure/parseopt.nim"), 56,
+                            Utils::FilePath::fromUserInput("lib/pure/parseopt.nim"), 56,
                             ProjectExplorer::Constants::TASK_CATEGORY_COMPILE)})
             << QString();
 }
@@ -359,7 +359,7 @@ void NimPlugin::testNimParser()
     testbench.appendOutputParser(new NimParser);
     QFETCH(QString, input);
     QFETCH(OutputParserTester::Channel, inputChannel);
-    QFETCH(QList<Task>, tasks);
+    QFETCH(Tasks, tasks);
     QFETCH(QString, childStdOutLines);
     QFETCH(QString, childStdErrLines);
     QFETCH(QString, outputLines);
