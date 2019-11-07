@@ -36,22 +36,18 @@ class NimBuildConfiguration : public ProjectExplorer::BuildConfiguration
 {
     Q_OBJECT
 
-    friend class ProjectExplorer::IBuildConfigurationFactory;
+    friend class ProjectExplorer::BuildConfigurationFactory;
     NimBuildConfiguration(ProjectExplorer::Target *target, Core::Id id);
 
-    void initialize(const ProjectExplorer::BuildInfo *info) override;
-    ProjectExplorer::NamedWidget *createConfigWidget() override;
+    void initialize(const ProjectExplorer::BuildInfo &info) override;
     ProjectExplorer::BuildConfiguration::BuildType buildType() const override;
 
-    bool fromMap(const QVariantMap &map) override;
-    QVariantMap toMap() const override;
-
 public:
-    Utils::FileName cacheDirectory() const;
-    Utils::FileName outFilePath() const;
+    Utils::FilePath cacheDirectory() const;
+    Utils::FilePath outFilePath() const;
 
 signals:
-    void outFilePathChanged(const Utils::FileName &outFilePath);
+    void outFilePathChanged(const Utils::FilePath &outFilePath);
 
 private:
     void setupBuild(const ProjectExplorer::BuildInfo *info);
@@ -59,7 +55,7 @@ private:
 };
 
 
-class NimBuildConfigurationFactory : public ProjectExplorer::IBuildConfigurationFactory
+class NimBuildConfigurationFactory : public ProjectExplorer::BuildConfigurationFactory
 {
     Q_OBJECT
 
@@ -67,14 +63,15 @@ public:
     NimBuildConfigurationFactory();
 
 private:
-    QList<ProjectExplorer::BuildInfo *> availableBuilds(const ProjectExplorer::Target *parent) const override;
+    QList<ProjectExplorer::BuildInfo> availableBuilds(const ProjectExplorer::Target *parent) const override;
 
-    QList<ProjectExplorer::BuildInfo *> availableSetups(const ProjectExplorer::Kit *k,
-                                                        const QString &projectPath) const override;
+    QList<ProjectExplorer::BuildInfo> availableSetups(const ProjectExplorer::Kit *k,
+                                                      const QString &projectPath) const override;
 
-    ProjectExplorer::BuildInfo *createBuildInfo(const ProjectExplorer::Kit *k,
-                                                const QString &projectPath,
-                                                ProjectExplorer::BuildConfiguration::BuildType buildType) const;
+    ProjectExplorer::BuildInfo createBuildInfo(const ProjectExplorer::Kit *k,
+                                               ProjectExplorer::BuildConfiguration::BuildType buildType) const;
+
+    QString displayName(ProjectExplorer::BuildConfiguration::BuildType buildType) const;
 };
 
 }

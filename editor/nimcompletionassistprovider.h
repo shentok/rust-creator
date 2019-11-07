@@ -23,37 +23,21 @@
 **
 ****************************************************************************/
 
-#include "nimcompilercleanstepconfigwidget.h"
-#include "ui_nimcompilercleanstepconfigwidget.h"
-#include "nimcompilercleanstep.h"
+#pragma once
 
-#include "../nimconstants.h"
-
-#include "projectexplorer/buildconfiguration.h"
-
-using namespace ProjectExplorer;
+#include <texteditor/codeassist/completionassistprovider.h>
 
 namespace Nim {
 
-NimCompilerCleanStepConfigWidget::NimCompilerCleanStepConfigWidget(NimCompilerCleanStep *cleanStep)
-    : BuildStepConfigWidget(cleanStep)
-    , m_ui(new Ui::NimCompilerCleanStepConfigWidget())
+class NimCompletionAssistProvider : public TextEditor::CompletionAssistProvider
 {
-    m_ui->setupUi(this);
-    setDisplayName(tr(Constants::C_NIMCOMPILERCLEANSTEPWIDGET_DISPLAY));
-    setSummaryText(tr(Constants::C_NIMCOMPILERCLEANSTEPWIDGET_SUMMARY));
-    connect(cleanStep->buildConfiguration(), &BuildConfiguration::buildDirectoryChanged,
-            this, &NimCompilerCleanStepConfigWidget::updateUi);
-    updateUi();
-}
+    Q_OBJECT
 
-NimCompilerCleanStepConfigWidget::~NimCompilerCleanStepConfigWidget() = default;
-
-void NimCompilerCleanStepConfigWidget::updateUi()
-{
-    auto buildDiretory = step()->buildConfiguration()->buildDirectory();
-    m_ui->workingDirectoryLineEdit->setText(buildDiretory.toString());
-}
+public:
+    TextEditor::IAssistProcessor *createProcessor() const final;
+    int activationCharSequenceLength() const final;
+    bool isActivationCharSequence(const QString &sequence) const final;
+    RunType runType() const final;
+};
 
 }
-

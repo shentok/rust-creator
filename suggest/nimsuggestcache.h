@@ -23,37 +23,44 @@
 **
 ****************************************************************************/
 
-#include "nimcompilercleanstepconfigwidget.h"
-#include "ui_nimcompilercleanstepconfigwidget.h"
-#include "nimcompilercleanstep.h"
+#pragma once
 
-#include "../nimconstants.h"
+#include <utils/fileutils.h>
 
-#include "projectexplorer/buildconfiguration.h"
+#include <QObject>
 
-using namespace ProjectExplorer;
+#include <unordered_map>
+
+namespace Core { class IEditor; }
 
 namespace Nim {
+namespace Suggest {
 
-NimCompilerCleanStepConfigWidget::NimCompilerCleanStepConfigWidget(NimCompilerCleanStep *cleanStep)
-    : BuildStepConfigWidget(cleanStep)
-    , m_ui(new Ui::NimCompilerCleanStepConfigWidget())
+class NimSuggest;
+
+class NimSuggestCache : public QObject
 {
-    m_ui->setupUi(this);
-    setDisplayName(tr(Constants::C_NIMCOMPILERCLEANSTEPWIDGET_DISPLAY));
-    setSummaryText(tr(Constants::C_NIMCOMPILERCLEANSTEPWIDGET_SUMMARY));
-    connect(cleanStep->buildConfiguration(), &BuildConfiguration::buildDirectoryChanged,
-            this, &NimCompilerCleanStepConfigWidget::updateUi);
-    updateUi();
-}
+    Q_OBJECT
 
-NimCompilerCleanStepConfigWidget::~NimCompilerCleanStepConfigWidget() = default;
+public:
+    static NimSuggestCache &instance();
 
-void NimCompilerCleanStepConfigWidget::updateUi()
-{
-    auto buildDiretory = step()->buildConfiguration()->buildDirectory();
-    m_ui->workingDirectoryLineEdit->setText(buildDiretory.toString());
-}
+    NimSuggest *get(const Utils::FilePath &filename);
 
-}
+    QString executablePath() const;
+    void setExecutablePath(const QString &path);
 
+private:
+    NimSuggestCache();
+    ~NimSuggestCache();
+
+    void onEditorOpened(Core::IEditor *editor);
+    void onEditorClosed(Core::IEditor *editor);
+
+    std::unordered_map<Utils::FilePath, std::unique_ptr<Suggest::NimSuggest>> m_nimSuggestInstances;
+
+    QString m_executablePath;
+};
+
+} // namespace Suggest
+} // namespace Nim

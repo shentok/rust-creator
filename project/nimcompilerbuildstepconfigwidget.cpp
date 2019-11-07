@@ -31,6 +31,8 @@
 
 #include "../nimconstants.h"
 
+#include <projectexplorer/processparameters.h>
+
 #include <utils/qtcassert.h>
 
 using namespace ProjectExplorer;
@@ -39,11 +41,14 @@ using namespace Utils;
 namespace Nim {
 
 NimCompilerBuildStepConfigWidget::NimCompilerBuildStepConfigWidget(NimCompilerBuildStep *buildStep)
-    : BuildStepConfigWidget()
+    : BuildStepConfigWidget(buildStep)
     , m_buildStep(buildStep)
     , m_ui(new Ui::NimCompilerBuildStepConfigWidget())
 {
     m_ui->setupUi(this);
+
+    setDisplayName(tr(Constants::C_NIMCOMPILERBUILDSTEPWIDGET_DISPLAY));
+    setSummaryText(tr(Constants::C_NIMCOMPILERBUILDSTEPWIDGET_SUMMARY));
 
     // Connect the project signals
     auto project = static_cast<NimProject *>(m_buildStep->project());
@@ -55,11 +60,11 @@ NimCompilerBuildStepConfigWidget::NimCompilerBuildStepConfigWidget(NimCompilerBu
             this, &NimCompilerBuildStepConfigWidget::updateUi);
 
     // Connect UI signals
-    connect(m_ui->targetComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::activated),
+    connect(m_ui->targetComboBox, QOverload<int>::of(&QComboBox::activated),
             this, &NimCompilerBuildStepConfigWidget::onTargetChanged);
     connect(m_ui->additionalArgumentsLineEdit, &QLineEdit::textEdited,
             this, &NimCompilerBuildStepConfigWidget::onAdditionalArgumentsTextEdited);
-    connect(m_ui->defaultArgumentsComboBox, static_cast<void(QComboBox::*)(int)>(&QComboBox::activated),
+    connect(m_ui->defaultArgumentsComboBox, QOverload<int>::of(&QComboBox::activated),
             this, &NimCompilerBuildStepConfigWidget::onDefaultArgumentsComboBoxIndexChanged);
 
     updateUi();
@@ -67,21 +72,11 @@ NimCompilerBuildStepConfigWidget::NimCompilerBuildStepConfigWidget(NimCompilerBu
 
 NimCompilerBuildStepConfigWidget::~NimCompilerBuildStepConfigWidget() = default;
 
-QString NimCompilerBuildStepConfigWidget::summaryText() const
-{
-    return tr(Constants::C_NIMCOMPILERBUILDSTEPWIDGET_SUMMARY);
-}
-
-QString NimCompilerBuildStepConfigWidget::displayName() const
-{
-    return tr(Constants::C_NIMCOMPILERBUILDSTEPWIDGET_DISPLAY);
-}
-
 void NimCompilerBuildStepConfigWidget::onTargetChanged(int index)
 {
     Q_UNUSED(index);
     auto data = m_ui->targetComboBox->currentData();
-    FileName path = FileName::fromString(data.toString());
+    FilePath path = FilePath::fromString(data.toString());
     m_buildStep->setTargetNimFile(path);
 }
 
@@ -109,7 +104,7 @@ void NimCompilerBuildStepConfigWidget::updateCommandLineText()
     ProcessParameters *parameters = m_buildStep->processParameters();
 
     QStringList command;
-    command << parameters->command();
+    command << parameters->command().toString();
     command << parameters->arguments();
 
     // Remove empty args
@@ -129,7 +124,7 @@ void NimCompilerBuildStepConfigWidget::updateTargetComboBox()
 
     // Re enter the files
     m_ui->targetComboBox->clear();
-    foreach (const FileName &file, project->nimFiles())
+    foreach (const FilePath &file, project->nimFiles())
         m_ui->targetComboBox->addItem(file.fileName(), file.toString());
 
     const int index = m_ui->targetComboBox->findData(m_buildStep->targetNimFile().toString());

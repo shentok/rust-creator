@@ -39,14 +39,16 @@ public:
     NimCompilerCleanStep(ProjectExplorer::BuildStepList *parentList);
 
     ProjectExplorer::BuildStepConfigWidget *createConfigWidget() override;
-    bool init(QList<const BuildStep *> &earlierSteps) override;
-    void run(QFutureInterface<bool> &fi) override;
 
 private:
+    bool init() override;
+    void doRun() override;
+    void doCancel() override;
+
     bool removeCacheDirectory();
     bool removeOutFilePath();
 
-    Utils::FileName m_buildDir;
+    Utils::FilePath m_buildDir;
 };
 
 class NimCompilerCleanStepFactory : public ProjectExplorer::BuildStepFactory

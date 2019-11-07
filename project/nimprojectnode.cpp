@@ -32,25 +32,23 @@ using namespace Utils;
 namespace Nim {
 
 NimProjectNode::NimProjectNode(NimProject &project,
-                               const FileName &projectFilePath)
+                               const FilePath &projectFilePath)
     : ProjectNode(projectFilePath)
     , m_project(project)
 {}
 
 bool NimProjectNode::supportsAction(ProjectAction action, const Node *node) const
 {
-    switch (node->nodeType()) {
-    case NodeType::File:
+    if (node->asFileNode()) {
         return action == ProjectAction::Rename
             || action == ProjectAction::RemoveFile;
-    case NodeType::Folder:
-    case NodeType::Project:
+    }
+    if (node->isFolderNodeType() || node->isProjectNodeType()) {
         return action == ProjectAction::AddNewFile
             || action == ProjectAction::RemoveFile
             || action == ProjectAction::AddExistingFile;
-    default:
-        return ProjectNode::supportsAction(action, node);
     }
+    return ProjectNode::supportsAction(action, node);
 }
 
 bool NimProjectNode::addFiles(const QStringList &filePaths, QStringList *)
