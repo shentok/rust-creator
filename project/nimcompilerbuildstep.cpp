@@ -208,7 +208,7 @@ void NimCompilerBuildStep::updateProcessParameters()
 
 void NimCompilerBuildStep::updateOutFilePath()
 {
-    auto bc = qobject_cast<NimBuildConfiguration *>(buildConfiguration());
+    auto bc = buildConfiguration();
     QTC_ASSERT(bc, return);
     const QString targetName = Utils::HostOsInfo::withExecutableSuffix(m_targetNimFile.toFileInfo().baseName());
     setOutFilePath(bc->buildDirectory().pathAppended(targetName));
@@ -216,7 +216,7 @@ void NimCompilerBuildStep::updateOutFilePath()
 
 void NimCompilerBuildStep::updateWorkingDirectory()
 {
-    auto bc = qobject_cast<NimBuildConfiguration *>(buildConfiguration());
+    auto bc = buildConfiguration();
     QTC_ASSERT(bc, return);
     processParameters()->setWorkingDirectory(bc->buildDirectory());
 }
@@ -229,7 +229,7 @@ void NimCompilerBuildStep::updateCommand()
     QTC_ASSERT(target(), return);
     QTC_ASSERT(target()->kit(), return);
     Kit *kit = target()->kit();
-    auto tc = dynamic_cast<NimToolChain*>(ToolChainKitAspect::toolChain(kit, Constants::C_NIMLANGUAGE_ID));
+    auto tc = ToolChainKitAspect::toolChain(kit, Constants::C_NIMLANGUAGE_ID);
     QTC_ASSERT(tc, return);
 
     CommandLine cmd{tc->compilerCommand()};
@@ -257,7 +257,7 @@ void NimCompilerBuildStep::updateCommand()
 
 void NimCompilerBuildStep::updateEnvironment()
 {
-    auto bc = qobject_cast<NimBuildConfiguration *>(buildConfiguration());
+    auto bc = buildConfiguration();
     QTC_ASSERT(bc, return);
     processParameters()->setEnvironment(bc->environment());
 }
