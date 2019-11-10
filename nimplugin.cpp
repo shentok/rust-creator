@@ -34,9 +34,7 @@
 #include "project/nimtoolchainfactory.h"
 #include "settings/nimcodestylepreferencesfactory.h"
 #include "settings/nimcodestylesettingspage.h"
-#include "settings/nimtoolssettingspage.h"
 #include "settings/nimsettings.h"
-#include "suggest/nimsuggestcache.h"
 
 #include <coreplugin/fileiconprovider.h>
 #include <projectexplorer/projectmanager.h>
@@ -52,15 +50,6 @@ namespace Nim {
 class NimPluginPrivate
 {
 public:
-    NimPluginPrivate()
-        : toolsSettingsPage(&settings)
-    {
-        Suggest::NimSuggestCache::instance().setExecutablePath(settings.nimSuggestPath());
-        QObject::connect(&settings, &NimSettings::nimSuggestPathChanged,
-                         &Suggest::NimSuggestCache::instance(),
-                         &Suggest::NimSuggestCache::setExecutablePath);
-    }
-
     NimSettings settings;
     NimBuildConfigurationFactory buildConfigFactory;
     NimRunConfigurationFactory runConfigFactory;
@@ -68,7 +57,6 @@ public:
     NimCompilerBuildStepFactory buildStepFactory;
     NimCompilerCleanStepFactory cleanStepFactory;
     NimCodeStyleSettingsPage codeStyleSettingsPage;
-    NimToolsSettingsPage toolsSettingsPage;
     NimCodeStylePreferencesFactory codeStylePreferencesPage;
     NimToolChainFactory toolChainFactory;
 };

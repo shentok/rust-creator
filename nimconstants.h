@@ -68,11 +68,6 @@ const char C_NIMCODESTYLESETTINGSPAGE_DISPLAY[] = QT_TRANSLATE_NOOP("RustCodeSty
 const char C_NIMCODESTYLESETTINGSPAGE_CATEGORY[] = "Z.Rust";
 const char C_NIMCODESTYLESETTINGSPAGE_CATEGORY_DISPLAY[] = QT_TRANSLATE_NOOP("RustCodeStyleSettingsPage", "Rust");
 
-const char C_NIMTOOLSSETTINGSPAGE_ID[] = "Rust.RustToolsSettings";
-const char C_NIMTOOLSSETTINGSPAGE_DISPLAY[] = QT_TRANSLATE_NOOP("RustToolsSettingsPage", "Tools");
-const char C_NIMTOOLSSETTINGSPAGE_CATEGORY[] = "Z.Rust";
-const char C_NIMTOOLSSETTINGSPAGE_CATEGORY_DISPLAY[] = QT_TRANSLATE_NOOP("RustToolsSettingsPage", "Rust");
-
 const char C_NIMLANGUAGE_NAME[] = QT_TRANSLATE_NOOP("RustCodeStylePreferencesFactory", "Rust");
 const char C_NIMGLOBALCODESTYLE_ID[] = "RustGlobal";
 const QString C_NIMSNIPPETSGROUP_ID = QStringLiteral("Rust.RustSnippetsGroup");
@@ -97,10 +92,6 @@ const char C_NIMCODESTYLEPREVIEWSNIPPET[] =
 const char C_NIM_MIMETYPE[] = "text/rust";
 const char C_NIM_MIME_ICON[] = "text-x-rust";
 const char C_NIM_PROJECT_MIMETYPE[] = "text/x-cargo.toml";
-
-const char C_NIM_SETTINGS_GROUP[] = "Rust";
-const char C_NIM_SETTINGS_NIMSUGGEST_GROUP[] = "RustSuggest";
-const char C_NIM_SETTINGS_COMMAND[] = "Command";
 
 }
 }

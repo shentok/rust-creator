@@ -27,16 +27,8 @@ HEADERS += \
     settings/nimcodestylepreferencesfactory.h \
     settings/nimsettings.h \
     settings/nimcodestylepreferenceswidget.h \
-    settings/nimtoolssettingspage.h \
     project/nimtoolchain.h \
     project/nimtoolchainfactory.h \
-    suggest/client.h \
-    suggest/clientrequests.h \
-    suggest/nimsuggest.h \
-    suggest/nimsuggestcache.h \
-    suggest/server.h \
-    suggest/sexprlexer.h \
-    suggest/sexprparser.h
 
 SOURCES += \
     nimplugin.cpp \
@@ -54,20 +46,13 @@ SOURCES += \
     settings/nimcodestylepreferencesfactory.cpp \
     settings/nimsettings.cpp \
     settings/nimcodestylepreferenceswidget.cpp \
-    settings/nimtoolssettingspage.cpp \
     project/nimtoolchain.cpp \
     project/nimtoolchainfactory.cpp \
-    suggest/client.cpp \
-    suggest/clientrequests.cpp \
-    suggest/nimsuggest.cpp \
-    suggest/nimsuggestcache.cpp \
-    suggest/server.cpp
 
 FORMS += \
     project/nimcompilerbuildstepconfigwidget.ui \
     project/nimcompilercleanstepconfigwidget.ui \
     settings/nimcodestylepreferenceswidget.ui \
-    settings/nimtoolssettingswidget.ui
 
 include(nim_dependencies.pri)
 
