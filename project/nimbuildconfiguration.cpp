@@ -117,11 +117,6 @@ bool NimBuildConfiguration::fromMap(const QVariantMap &map)
 }
 
 
-FilePath NimBuildConfiguration::cacheDirectory() const
-{
-    return buildDirectory().pathAppended("nimcache");
-}
-
 FilePath NimBuildConfiguration::outFilePath() const
 {
     const NimCompilerBuildStep *step = nimCompilerBuildStep();
