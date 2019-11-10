@@ -48,22 +48,13 @@ static SimpleCodeStylePreferences *m_globalCodeStyle = nullptr;
 NimSettings::NimSettings()
 {
     setAutoApply(false);
-    setSettingsGroups("Nim", "NimSuggest");
-
     InitializeCodeStyleSettings();
-
-    registerAspect(&nimSuggestPath);
-    nimSuggestPath.setSettingsKey("Command");
-    nimSuggestPath.setDisplayStyle(StringAspect::PathChooserDisplay);
-    nimSuggestPath.setExpectedKind(PathChooser::ExistingCommand);
-    nimSuggestPath.setLabelText(tr("Path:"));
 
     readSettings(Core::ICore::settings());
 }
 
 NimSettings::~NimSettings()
 {
-    TerminateCodeStyleSettings();
 }
 
 SimpleCodeStylePreferences *NimSettings::globalCodeStyle()
@@ -122,30 +113,6 @@ void NimSettings::TerminateCodeStyleSettings()
 
     delete m_globalCodeStyle;
     m_globalCodeStyle = nullptr;
-}
-
-
-// NimToolSettingsPage
-
-NimToolsSettingsPage::NimToolsSettingsPage(NimSettings *settings)
-{
-    setId(Nim::Constants::C_NIMTOOLSSETTINGSPAGE_ID);
-    setDisplayName(NimSettings::tr(Nim::Constants::C_NIMTOOLSSETTINGSPAGE_DISPLAY));
-    setCategory(Nim::Constants::C_NIMTOOLSSETTINGSPAGE_CATEGORY);
-    setDisplayCategory(NimSettings::tr("Nim"));
-    setCategoryIconPath(":/nim/images/settingscategory_nim.png");
-    setSettings(settings);
-
-    setLayouter([settings](QWidget *widget) {
-        using namespace Layouting;
-        Column {
-            Group {
-                Title("Nimsuggest"),
-                settings->nimSuggestPath
-            },
-            Stretch()
-        }.attachTo(widget);
-     });
 }
 
 } // namespace Nim
