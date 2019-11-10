@@ -45,36 +45,11 @@ NimSettings::NimSettings(QObject *parent)
     : QObject(parent)
 {
     InitializeCodeStyleSettings();
-    InitializeNimSuggestSettings();
 }
 
 NimSettings::~NimSettings()
 {
     TerminateCodeStyleSettings();
-}
-
-QString NimSettings::nimSuggestPath() const
-{
-    return m_nimSuggestPath;
-}
-
-void NimSettings::setNimSuggestPath(const QString &path)
-{
-    if (m_nimSuggestPath == path)
-        return;
-    m_nimSuggestPath = path;
-    emit nimSuggestPathChanged(path);
-}
-
-void NimSettings::save()
-{
-    QSettings *s = Core::ICore::settings();
-    s->beginGroup(Constants::C_NIM_SETTINGS_GROUP);
-    s->beginGroup(Constants::C_NIM_SETTINGS_NIMSUGGEST_GROUP);
-    s->setValue(QString::fromStdString(Constants::C_NIM_SETTINGS_COMMAND), nimSuggestPath());
-    s->endGroup();
-    s->endGroup();
-    s->sync();
 }
 
 SimpleCodeStylePreferences *NimSettings::globalCodeStyle()
@@ -123,17 +98,6 @@ void NimSettings::InitializeCodeStyleSettings()
 
     TextEditorSettings::registerMimeTypeForLanguageId(Nim::Constants::C_NIM_MIMETYPE,
                                                       Nim::Constants::C_NIMLANGUAGE_ID);
-}
-
-void NimSettings::InitializeNimSuggestSettings()
-{
-    QSettings *s = Core::ICore::settings();
-    s->beginGroup(Constants::C_NIM_SETTINGS_GROUP);
-    s->beginGroup(Constants::C_NIM_SETTINGS_NIMSUGGEST_GROUP);
-    setNimSuggestPath(s->value(QString::fromStdString(Constants::C_NIM_SETTINGS_COMMAND),
-                               QString()).toString());
-    s->endGroup();
-    s->endGroup();
 }
 
 void NimSettings::TerminateCodeStyleSettings()
