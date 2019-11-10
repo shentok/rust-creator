@@ -117,11 +117,6 @@ void NimBuildConfiguration::initialize()
     }
 }
 
-FilePath NimBuildConfiguration::cacheDirectory() const
-{
-    return buildDirectory().pathAppended("nimcache");
-}
-
 FilePath NimBuildConfiguration::outFilePath() const
 {
     const NimCompilerBuildStep *step = nimCompilerBuildStep();

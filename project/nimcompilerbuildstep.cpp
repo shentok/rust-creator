@@ -228,7 +228,7 @@ void NimCompilerBuildStep::updateWorkingDirectory()
 
 void NimCompilerBuildStep::updateCommand()
 {
-    auto bc = qobject_cast<NimBuildConfiguration *>(buildConfiguration());
+    auto bc = buildConfiguration();
     QTC_ASSERT(bc, return);
 
     QTC_ASSERT(target(), return);
@@ -247,7 +247,6 @@ void NimCompilerBuildStep::updateCommand()
         cmd.addArgs({"--debugInfo", "--lineDir:on"});
 
     cmd.addArg("--out:" + m_outFilePath.toString());
-    cmd.addArg("--nimCache:" + bc->cacheDirectory().toString());
 
     for (const QString &arg : m_userCompilerOptions) {
         if (!arg.isEmpty())

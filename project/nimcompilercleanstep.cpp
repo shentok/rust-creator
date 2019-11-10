@@ -73,12 +73,6 @@ void NimCompilerCleanStep::doRun()
         return;
     }
 
-    if (!removeCacheDirectory()) {
-        emit addOutput(tr("Failed to delete the cache directory."), BuildStep::OutputFormat::ErrorMessage);
-        emit finished(false);
-        return;
-    }
-
     if (!removeOutFilePath()) {
         emit addOutput(tr("Failed to delete the out file."), BuildStep::OutputFormat::ErrorMessage);
         emit finished(false);
@@ -92,20 +86,6 @@ void NimCompilerCleanStep::doRun()
 void NimCompilerCleanStep::doCancel()
 {
     // Can be left empty. The run() function hardly does anything.
-}
-
-bool NimCompilerCleanStep::removeCacheDirectory()
-{
-    auto bc = qobject_cast<NimBuildConfiguration*>(buildConfiguration());
-    QTC_ASSERT(bc, return false);
-    if (!bc->cacheDirectory().exists())
-        return true;
-    QDir dir = QDir::fromNativeSeparators(bc->cacheDirectory().toString());
-    const QString dirName = dir.dirName();
-    if (!dir.cdUp())
-        return false;
-    const QString newName = QStringLiteral("%1.bkp.%2").arg(dirName, QString::number(QDateTime::currentMSecsSinceEpoch()));
-    return dir.rename(dirName, newName);
 }
 
 bool NimCompilerCleanStep::removeOutFilePath()

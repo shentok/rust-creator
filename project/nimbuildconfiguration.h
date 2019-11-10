@@ -42,7 +42,6 @@ class NimBuildConfiguration : public ProjectExplorer::BuildConfiguration
     void initialize() override;
 
 public:
-    Utils::FilePath cacheDirectory() const;
     Utils::FilePath outFilePath() const;
 
 signals:

@@ -43,7 +43,6 @@ private:
     void doRun() override;
     void doCancel() override;
 
-    bool removeCacheDirectory();
     bool removeOutFilePath();
 
     Utils::FilePath m_buildDir;
