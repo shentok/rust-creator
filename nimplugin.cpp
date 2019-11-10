@@ -32,8 +32,6 @@
 #include "project/nimproject.h"
 #include "project/nimrunconfiguration.h"
 #include "project/nimtoolchainfactory.h"
-#include "settings/nimcodestylepreferencesfactory.h"
-#include "settings/nimcodestylesettingspage.h"
 #include "settings/nimsettings.h"
 
 #include <coreplugin/fileiconprovider.h>
@@ -59,8 +57,6 @@ public:
     };
     NimCompilerBuildStepFactory buildStepFactory;
     NimCompilerCleanStepFactory cleanStepFactory;
-    NimCodeStyleSettingsPage codeStyleSettingsPage;
-    NimCodeStylePreferencesFactory codeStylePreferencesPage;
     NimToolChainFactory toolChainFactory;
 };
 
