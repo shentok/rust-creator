@@ -32,8 +32,6 @@
 #include "project/nimtoolchainfactory.h"
 #include "project/nimblebuildstep.h"
 #include "project/nimbletaskstep.h"
-#include "settings/nimcodestylepreferencesfactory.h"
-#include "settings/nimcodestylesettingspage.h"
 #include "settings/nimsettings.h"
 
 #include <coreplugin/fileiconprovider.h>
@@ -65,8 +63,6 @@ public:
     };
     NimbleBuildStepFactory nimbleBuildStepFactory;
     NimbleTaskStepFactory nimbleTaskStepFactory;
-    NimCodeStyleSettingsPage codeStyleSettingsPage;
-    NimCodeStylePreferencesFactory codeStylePreferencesPage;
     NimToolChainFactory toolChainFactory;
 };
 
