@@ -42,7 +42,6 @@ class NimBuildConfiguration : public ProjectExplorer::BuildConfiguration
     bool fromMap(const QVariantMap &map) override;
 
 public:
-    Utils::FilePath cacheDirectory() const;
     Utils::FilePath outFilePath() const;
 
 private:
