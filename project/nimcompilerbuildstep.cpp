@@ -214,7 +214,7 @@ void NimCompilerBuildStep::updateProcessParameters()
 
 void NimCompilerBuildStep::updateOutFilePath()
 {
-    auto bc = qobject_cast<NimBuildConfiguration *>(buildConfiguration());
+    auto bc = buildConfiguration();
     QTC_ASSERT(bc, return);
     const QString targetName = Utils::HostOsInfo::withExecutableSuffix(m_targetNimFile.toFileInfo().baseName());
     setOutFilePath(bc->buildDirectory().pathAppended(targetName));
@@ -232,7 +232,7 @@ void NimCompilerBuildStep::updateCommand()
 
 void NimCompilerBuildStep::updateWorkingDirectory()
 {
-    auto bc = qobject_cast<NimBuildConfiguration *>(buildConfiguration());
+    auto bc = buildConfiguration();
     QTC_ASSERT(bc, return);
     processParameters()->setWorkingDirectory(bc->buildDirectory());
 }
@@ -273,7 +273,7 @@ void NimCompilerBuildStep::updateArguments()
 
 void NimCompilerBuildStep::updateEnvironment()
 {
-    auto bc = qobject_cast<NimBuildConfiguration *>(buildConfiguration());
+    auto bc = buildConfiguration();
     QTC_ASSERT(bc, return);
     processParameters()->setEnvironment(bc->environment());
 }
