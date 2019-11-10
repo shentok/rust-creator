@@ -40,19 +40,11 @@ public:
     NimSettings();
     ~NimSettings();
 
-    Utils::StringAspect nimSuggestPath;
-
     static TextEditor::SimpleCodeStylePreferences *globalCodeStyle();
 
 private:
     void InitializeCodeStyleSettings();
     void TerminateCodeStyleSettings();
-};
-
-class NimToolsSettingsPage final : public Core::IOptionsPage
-{
-public:
-    explicit NimToolsSettingsPage(NimSettings *settings);
 };
 
 } // namespace Nim
