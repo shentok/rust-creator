@@ -28,8 +28,6 @@
 #include <coreplugin/dialogs/ioptionspage.h>
 #include <utils/aspects.h>
 
-namespace TextEditor { class SimpleCodeStylePreferences; }
-
 namespace Nim {
 
 class NimSettings : public Utils::AspectContainer
@@ -40,11 +38,7 @@ public:
     NimSettings();
     ~NimSettings();
 
-    static TextEditor::SimpleCodeStylePreferences *globalCodeStyle();
-
 private:
-    void InitializeCodeStyleSettings();
-    void TerminateCodeStyleSettings();
 };
 
 } // namespace Nim
