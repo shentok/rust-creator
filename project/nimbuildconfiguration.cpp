@@ -132,11 +132,6 @@ BuildConfiguration::BuildType NimBuildConfiguration::buildType() const
     return BuildConfiguration::Unknown;
 }
 
-FilePath NimBuildConfiguration::cacheDirectory() const
-{
-    return buildDirectory().pathAppended("nimcache");
-}
-
 FilePath NimBuildConfiguration::outFilePath() const
 {
     const NimCompilerBuildStep *step = nimCompilerBuildStep();
