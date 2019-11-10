@@ -12,7 +12,6 @@ INCLUDEPATH += $$PWD
 HEADERS += \
     nimplugin.h \
     nimconstants.h \
-    editor/nimindenter.h \
     project/nimblebuildconfiguration.h \
     project/nimblebuildstep.h \
     project/nimblebuildstepwidget.h \
@@ -20,8 +19,6 @@ HEADERS += \
     project/nimblerunconfiguration.h \
     project/nimbletaskstep.h \
     project/nimbletaskstepwidget.h \
-    tools/nimlexer.h \
-    tools/sourcecodestream.h \
     project/nimbuildsystem.h \
     project/nimblebuildsystem.h \
     project/nimproject.h \
@@ -31,16 +28,12 @@ HEADERS += \
     project/nimcompilerbuildstepconfigwidget.h \
     project/nimcompilercleanstep.h \
     project/nimrunconfiguration.h \
-    settings/nimcodestylesettingspage.h \
-    settings/nimcodestylepreferencesfactory.h \
     settings/nimsettings.h \
-    settings/nimcodestylepreferenceswidget.h \
     project/nimtoolchain.h \
     project/nimtoolchainfactory.h \
 
 SOURCES += \
     nimplugin.cpp \
-    editor/nimindenter.cpp \
     project/nimblebuildconfiguration.cpp \
     project/nimblebuildstep.cpp \
     project/nimbletaskstep.cpp \
@@ -48,7 +41,6 @@ SOURCES += \
     project/nimbleproject.cpp \
     project/nimblerunconfiguration.cpp \
     project/nimbletaskstepwidget.cpp \
-    tools/nimlexer.cpp \
     project/nimbuildsystem.cpp \
     project/nimblebuildsystem.cpp \
     project/nimproject.cpp \
@@ -58,10 +50,7 @@ SOURCES += \
     project/nimcompilerbuildstepconfigwidget.cpp \
     project/nimcompilercleanstep.cpp \
     project/nimrunconfiguration.cpp \
-    settings/nimcodestylesettingspage.cpp \
-    settings/nimcodestylepreferencesfactory.cpp \
     settings/nimsettings.cpp \
-    settings/nimcodestylepreferenceswidget.cpp \
     project/nimtoolchain.cpp \
     project/nimtoolchainfactory.cpp \
 
@@ -69,7 +58,6 @@ FORMS += \
     project/nimblebuildstepwidget.ui \
     project/nimbletaskstepwidget.ui \
     project/nimcompilerbuildstepconfigwidget.ui \
-    settings/nimcodestylepreferenceswidget.ui \
 
 include(nim_dependencies.pri)
 
