@@ -12,9 +12,6 @@ INCLUDEPATH += $$PWD
 HEADERS += \
     nimplugin.h \
     nimconstants.h \
-    editor/nimindenter.h \
-    tools/nimlexer.h \
-    tools/sourcecodestream.h \
     project/nimproject.h \
     project/nimprojectnode.h \
     project/nimbuildconfiguration.h \
@@ -23,17 +20,12 @@ HEADERS += \
     project/nimcompilercleanstep.h \
     project/nimcompilercleanstepconfigwidget.h \
     project/nimrunconfiguration.h \
-    settings/nimcodestylesettingspage.h \
-    settings/nimcodestylepreferencesfactory.h \
     settings/nimsettings.h \
-    settings/nimcodestylepreferenceswidget.h \
     project/nimtoolchain.h \
     project/nimtoolchainfactory.h \
 
 SOURCES += \
     nimplugin.cpp \
-    editor/nimindenter.cpp \
-    tools/nimlexer.cpp \
     project/nimproject.cpp \
     project/nimprojectnode.cpp \
     project/nimbuildconfiguration.cpp \
@@ -42,17 +34,13 @@ SOURCES += \
     project/nimcompilercleanstep.cpp \
     project/nimcompilercleanstepconfigwidget.cpp \
     project/nimrunconfiguration.cpp \
-    settings/nimcodestylesettingspage.cpp \
-    settings/nimcodestylepreferencesfactory.cpp \
     settings/nimsettings.cpp \
-    settings/nimcodestylepreferenceswidget.cpp \
     project/nimtoolchain.cpp \
     project/nimtoolchainfactory.cpp \
 
 FORMS += \
     project/nimcompilerbuildstepconfigwidget.ui \
     project/nimcompilercleanstepconfigwidget.ui \
-    settings/nimcodestylepreferenceswidget.ui \
 
 include(nim_dependencies.pri)
 

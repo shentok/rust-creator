@@ -32,15 +32,12 @@
 #include "project/nimproject.h"
 #include "project/nimrunconfiguration.h"
 #include "project/nimtoolchainfactory.h"
-#include "settings/nimcodestylepreferencesfactory.h"
-#include "settings/nimcodestylesettingspage.h"
 #include "settings/nimsettings.h"
 
 #include <coreplugin/fileiconprovider.h>
 #include <projectexplorer/projectmanager.h>
 #include <projectexplorer/toolchainmanager.h>
 #include <projectexplorer/runcontrol.h>
-#include <texteditor/snippets/snippetprovider.h>
 
 using namespace Utils;
 using namespace ProjectExplorer;
@@ -56,8 +53,6 @@ public:
     SimpleRunWorkerFactory<SimpleTargetRunner, NimRunConfiguration> runWorkerFactory;
     NimCompilerBuildStepFactory buildStepFactory;
     NimCompilerCleanStepFactory cleanStepFactory;
-    NimCodeStyleSettingsPage codeStyleSettingsPage;
-    NimCodeStylePreferencesFactory codeStylePreferencesPage;
     NimToolChainFactory toolChainFactory;
 };
 
@@ -74,9 +69,6 @@ bool NimPlugin::initialize(const QStringList &arguments, QString *errorMessage)
     d = new NimPluginPrivate;
 
     ToolChainManager::registerLanguage(Constants::C_NIMLANGUAGE_ID, Constants::C_NIMLANGUAGE_NAME);
-
-    TextEditor::SnippetProvider::registerGroup(Constants::C_NIMSNIPPETSGROUP_ID,
-                                               tr("Rust", "SnippetProvider"));
 
     ProjectManager::registerProjectType<NimProject>(Constants::C_NIM_PROJECT_MIMETYPE);
 

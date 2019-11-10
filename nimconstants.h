@@ -63,28 +63,7 @@ const char C_NIMCOMPILERCLEANSTEPWIDGET_DISPLAY[] = QT_TRANSLATE_NOOP("RustCompi
 const char C_NIMCOMPILERCLEANSTEPWIDGET_SUMMARY[] = QT_TRANSLATE_NOOP("RustCompilerCleanStepWidget", "Rust clean step");
 
 const char C_NIMLANGUAGE_ID[] = "Rust";
-const char C_NIMCODESTYLESETTINGSPAGE_ID[] = "Rust.RustCodeStyleSettings";
-const char C_NIMCODESTYLESETTINGSPAGE_DISPLAY[] = QT_TRANSLATE_NOOP("RustCodeStyleSettingsPage", "Code Style");
-const char C_NIMCODESTYLESETTINGSPAGE_CATEGORY[] = "Z.Rust";
-const char C_NIMCODESTYLESETTINGSPAGE_CATEGORY_DISPLAY[] = QT_TRANSLATE_NOOP("RustCodeStyleSettingsPage", "Rust");
-
 const char C_NIMLANGUAGE_NAME[] = QT_TRANSLATE_NOOP("RustCodeStylePreferencesFactory", "Rust");
-const char C_NIMGLOBALCODESTYLE_ID[] = "RustGlobal";
-const QString C_NIMSNIPPETSGROUP_ID = QStringLiteral("Rust.RustSnippetsGroup");
-
-const char C_NIMCODESTYLEPREVIEWSNIPPET[] =
-        "import os\n"
-        "\n"
-        "type Foo = ref object of RootObj\n"
-        "  name: string\n"
-        "  value: int \n"
-        "\n"
-        "proc newFoo(): Foo =\n"
-        "  new(result)\n"
-        "\n"
-        "if isMainModule():\n"
-        "  let foo = newFoo()\n"
-        "  echo foo.name\n";
 
 /*******************************************************************************
  * MIME type
