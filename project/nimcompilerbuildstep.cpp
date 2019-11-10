@@ -204,7 +204,6 @@ void NimCompilerBuildStep::updateCommand()
         cmd.addArgs({"--debugInfo", "--lineDir:on"});
 
     cmd.addArg("--out:" + bc->outFilePath().toString());
-    cmd.addArg("--nimCache:" + bc->cacheDirectory().toString());
 
     for (const QString &arg : m_userCompilerOptions) {
         if (!arg.isEmpty())
