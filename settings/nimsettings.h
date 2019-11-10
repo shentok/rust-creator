@@ -27,8 +27,6 @@
 
 #include <QObject>
 
-namespace TextEditor { class SimpleCodeStylePreferences; }
-
 namespace Nim {
 
 class NimSettings : public QObject
@@ -39,11 +37,7 @@ public:
     NimSettings(QObject *parent = nullptr);
     ~NimSettings() override;
 
-    static TextEditor::SimpleCodeStylePreferences *globalCodeStyle();
-
 private:
-    void InitializeCodeStyleSettings();
-    void TerminateCodeStyleSettings();
 };
 
 } // namespace Nim

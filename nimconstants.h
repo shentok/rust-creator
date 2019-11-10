@@ -72,33 +72,7 @@ const char C_NIMCOMPILERBUILDSTEPWIDGET_SUMMARY[] = QT_TRANSLATE_NOOP("NimCompil
 const char C_NIMCOMPILERCLEANSTEP_ID[] = "Nim.NimCompilerCleanStep";
 
 const char C_NIMLANGUAGE_ID[] = "Nim";
-const char C_NIMCODESTYLESETTINGSPAGE_ID[] = "Nim.NimCodeStyleSettings";
-const char C_NIMCODESTYLESETTINGSPAGE_DISPLAY[] = QT_TRANSLATE_NOOP("NimCodeStyleSettingsPage", "Code Style");
-const char C_NIMCODESTYLESETTINGSPAGE_CATEGORY[] = "Z.Nim";
-const char C_NIMCODESTYLESETTINGSPAGE_CATEGORY_DISPLAY[] = QT_TRANSLATE_NOOP("NimCodeStyleSettingsPage", "Nim");
-
-const char C_NIMTOOLSSETTINGSPAGE_ID[] = "Nim.NimToolsSettings";
-const char C_NIMTOOLSSETTINGSPAGE_DISPLAY[] = QT_TRANSLATE_NOOP("NimToolsSettingsPage", "Tools");
-const char C_NIMTOOLSSETTINGSPAGE_CATEGORY[] = "Z.Nim";
-const char C_NIMTOOLSSETTINGSPAGE_CATEGORY_DISPLAY[] = QT_TRANSLATE_NOOP("NimToolsSettingsPage", "Nim");
-
 const char C_NIMLANGUAGE_NAME[] = QT_TRANSLATE_NOOP("NimCodeStylePreferencesFactory", "Nim");
-const char C_NIMGLOBALCODESTYLE_ID[] = "NimGlobal";
-const QString C_NIMSNIPPETSGROUP_ID = QStringLiteral("Nim.NimSnippetsGroup");
-
-const char C_NIMCODESTYLEPREVIEWSNIPPET[] =
-        "import os\n"
-        "\n"
-        "type Foo = ref object of RootObj\n"
-        "  name: string\n"
-        "  value: int \n"
-        "\n"
-        "proc newFoo(): Foo =\n"
-        "  new(result)\n"
-        "\n"
-        "if isMainModule():\n"
-        "  let foo = newFoo()\n"
-        "  echo foo.name\n";
 
 /*******************************************************************************
  * MIME type
