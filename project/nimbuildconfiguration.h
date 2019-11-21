@@ -42,16 +42,6 @@ class NimBuildConfiguration : public ProjectExplorer::BuildConfiguration
     bool fromMap(const QVariantMap &map) override;
     void initialize(const ProjectExplorer::BuildInfo &info) override;
     ProjectExplorer::BuildConfiguration::BuildType buildType() const override;
-
-public:
-    Utils::FilePath outFilePath() const;
-
-signals:
-    void outFilePathChanged(const Utils::FilePath &outFilePath);
-
-private:
-    void setupBuild(const ProjectExplorer::BuildInfo *info);
-    const NimCompilerBuildStep *nimCompilerBuildStep() const;
 };
 
 

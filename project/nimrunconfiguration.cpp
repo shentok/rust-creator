@@ -62,33 +62,29 @@ NimRunConfiguration::NimRunConfiguration(Target *target, Core::Id id)
 
 void NimRunConfiguration::updateConfiguration()
 {
-    auto buildConfiguration = qobject_cast<NimBuildConfiguration *>(activeBuildConfiguration());
+    auto buildConfiguration = activeBuildConfiguration();
     QTC_ASSERT(buildConfiguration, return);
     setActiveBuildConfiguration(buildConfiguration);
-    const QFileInfo outFileInfo = buildConfiguration->outFilePath().toFileInfo();
+    const QFileInfo outFileInfo = buildConfiguration->buildDirectory().toFileInfo();
     aspect<ExecutableAspect>()->setExecutable(FilePath::fromString(outFileInfo.absoluteFilePath()));
     const QString workingDirectory = outFileInfo.absoluteDir().absolutePath();
     aspect<WorkingDirectoryAspect>()->setDefaultWorkingDirectory(FilePath::fromString(workingDirectory));
 }
 
-void NimRunConfiguration::setActiveBuildConfiguration(NimBuildConfiguration *activeBuildConfiguration)
+void NimRunConfiguration::setActiveBuildConfiguration(ProjectExplorer::BuildConfiguration *activeBuildConfiguration)
 {
     if (m_buildConfiguration == activeBuildConfiguration)
         return;
 
     if (m_buildConfiguration) {
-        disconnect(m_buildConfiguration, &NimBuildConfiguration::buildDirectoryChanged,
-                   this, &NimRunConfiguration::updateConfiguration);
-        disconnect(m_buildConfiguration, &NimBuildConfiguration::outFilePathChanged,
+        disconnect(m_buildConfiguration, &ProjectExplorer::BuildConfiguration::buildDirectoryChanged,
                    this, &NimRunConfiguration::updateConfiguration);
     }
 
     m_buildConfiguration = activeBuildConfiguration;
 
     if (m_buildConfiguration) {
-        connect(m_buildConfiguration, &NimBuildConfiguration::buildDirectoryChanged,
-                this, &NimRunConfiguration::updateConfiguration);
-        connect(m_buildConfiguration, &NimBuildConfiguration::outFilePathChanged,
+        connect(m_buildConfiguration, &ProjectExplorer::BuildConfiguration::buildDirectoryChanged,
                 this, &NimRunConfiguration::updateConfiguration);
     }
 }

@@ -132,23 +132,6 @@ BuildConfiguration::BuildType NimBuildConfiguration::buildType() const
     return BuildConfiguration::Unknown;
 }
 
-FilePath NimBuildConfiguration::outFilePath() const
-{
-    const NimCompilerBuildStep *step = nimCompilerBuildStep();
-    QTC_ASSERT(step, return FilePath());
-    return step->outFilePath();
-}
-
-const NimCompilerBuildStep *NimBuildConfiguration::nimCompilerBuildStep() const
-{
-    BuildStepList *steps = stepList(ProjectExplorer::Constants::BUILDSTEPS_BUILD);
-    QTC_ASSERT(steps, return nullptr);
-    foreach (BuildStep *step, steps->steps())
-        if (step->id() == Constants::C_NIMCOMPILERBUILDSTEP_ID)
-            return qobject_cast<NimCompilerBuildStep *>(step);
-    return nullptr;
-}
-
 
 NimBuildConfigurationFactory::NimBuildConfigurationFactory()
 {

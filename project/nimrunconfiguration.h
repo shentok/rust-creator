@@ -40,9 +40,9 @@ public:
 
 private:
     void updateConfiguration();
-    void setActiveBuildConfiguration(NimBuildConfiguration *activeBuildConfiguration);
+    void setActiveBuildConfiguration(ProjectExplorer::BuildConfiguration *activeBuildConfiguration);
 
-    NimBuildConfiguration *m_buildConfiguration = nullptr;
+    ProjectExplorer::BuildConfiguration *m_buildConfiguration = nullptr;
 };
 
 class NimRunConfigurationFactory : public ProjectExplorer::FixedRunConfigurationFactory

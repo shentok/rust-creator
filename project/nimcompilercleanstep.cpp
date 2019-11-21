@@ -86,11 +86,11 @@ void NimCompilerCleanStep::doCancel()
 
 bool NimCompilerCleanStep::removeOutFilePath()
 {
-    auto bc = qobject_cast<NimBuildConfiguration*>(buildConfiguration());
+    auto bc = buildConfiguration();
     QTC_ASSERT(bc, return false);
-    if (!bc->outFilePath().exists())
+    if (!bc->buildDirectory().exists())
         return true;
-    return QFile(bc->outFilePath().toFileInfo().absoluteFilePath()).remove();
+    return QFile(bc->buildDirectory().toFileInfo().absoluteFilePath()).remove();
 }
 
 // NimCompilerCleanStepFactory

@@ -160,8 +160,6 @@ NimCompilerBuildStep::NimCompilerBuildStep(BuildStepList *parentList)
             this, &NimCompilerBuildStep::updateProcessParameters);
     connect(bc, &BuildConfiguration::environmentChanged,
             this, &NimCompilerBuildStep::updateProcessParameters);
-    connect(this, &NimCompilerBuildStep::outFilePathChanged,
-            bc, &NimBuildConfiguration::outFilePathChanged);
     connect(bc->target()->project(), &ProjectExplorer::Project::fileListChanged,
             this, &NimCompilerBuildStep::updateTargetNimFile);
     updateProcessParameters();
@@ -240,34 +238,13 @@ void NimCompilerBuildStep::setTargetNimFile(const FilePath &targetNimFile)
     updateProcessParameters();
 }
 
-FilePath NimCompilerBuildStep::outFilePath() const
-{
-    return m_outFilePath;
-}
-
-void NimCompilerBuildStep::setOutFilePath(const FilePath &outFilePath)
-{
-    if (outFilePath == m_outFilePath)
-        return;
-    m_outFilePath = outFilePath;
-    emit outFilePathChanged(outFilePath);
-}
-
 void NimCompilerBuildStep::updateProcessParameters()
 {
-    updateOutFilePath();
     updateCommand();
     updateArguments();
     updateWorkingDirectory();
     updateEnvironment();
     emit processParametersChanged();
-}
-
-void NimCompilerBuildStep::updateOutFilePath()
-{
-    auto bc = buildConfiguration();
-    QTC_ASSERT(bc, return);
-    setOutFilePath(bc->buildDirectory());
 }
 
 void NimCompilerBuildStep::updateCommand()
@@ -289,7 +266,7 @@ void NimCompilerBuildStep::updateWorkingDirectory()
 
 void NimCompilerBuildStep::updateArguments()
 {
-    auto bc = qobject_cast<NimBuildConfiguration *>(buildConfiguration());
+    auto bc = buildConfiguration();
     QTC_ASSERT(bc, return);
 
     QStringList arguments;
@@ -305,7 +282,7 @@ void NimCompilerBuildStep::updateArguments()
         break;
     }
 
-    arguments << QStringLiteral("--target-dir=%1").arg(m_outFilePath.toString());
+    arguments << QStringLiteral("--target-dir=%1").arg(bc->buildDirectory().toString());
 
     arguments << m_userCompilerOptions;
     arguments << QStringLiteral("--manifest-path=\"%1\"").arg(m_targetNimFile.toString());
