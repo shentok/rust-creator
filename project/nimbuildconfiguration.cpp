@@ -108,6 +108,15 @@ NimBuildConfiguration::NimBuildConfiguration(Target *target, Core::Id id)
 }
 
 
+bool NimBuildConfiguration::fromMap(const QVariantMap &map)
+{
+    if (!ProjectExplorer::ProjectConfiguration::fromMap(map))
+        return false;
+
+    return ProjectExplorer::BuildConfiguration::fromMap(map);
+}
+
+
 FilePath NimBuildConfiguration::cacheDirectory() const
 {
     return buildDirectory().pathAppended("nimcache");
