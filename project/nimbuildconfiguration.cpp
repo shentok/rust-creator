@@ -76,6 +76,14 @@ NimBuildConfiguration::NimBuildConfiguration(Target *target, Core::Id id)
     setBuildDirectorySettingsKey("Nim.NimBuildConfiguration.BuildDirectory");
 }
 
+bool NimBuildConfiguration::fromMap(const QVariantMap &map)
+{
+    if (!ProjectExplorer::ProjectConfiguration::fromMap(map))
+        return false;
+
+    return ProjectExplorer::BuildConfiguration::fromMap(map);
+}
+
 void NimBuildConfiguration::initialize(const BuildInfo &info)
 {
     BuildConfiguration::initialize(info);

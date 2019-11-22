@@ -39,6 +39,7 @@ class NimBuildConfiguration : public ProjectExplorer::BuildConfiguration
     friend class ProjectExplorer::BuildConfigurationFactory;
     NimBuildConfiguration(ProjectExplorer::Target *target, Core::Id id);
 
+    bool fromMap(const QVariantMap &map) override;
     void initialize(const ProjectExplorer::BuildInfo &info) override;
     ProjectExplorer::BuildConfiguration::BuildType buildType() const override;
 
