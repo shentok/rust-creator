@@ -64,8 +64,6 @@ NimCompilerBuildStepConfigWidget::NimCompilerBuildStepConfigWidget(NimCompilerBu
             this, &NimCompilerBuildStepConfigWidget::onTargetChanged);
     connect(m_ui->additionalArgumentsLineEdit, &QLineEdit::textEdited,
             this, &NimCompilerBuildStepConfigWidget::onAdditionalArgumentsTextEdited);
-    connect(m_ui->defaultArgumentsComboBox, QOverload<int>::of(&QComboBox::activated),
-            this, &NimCompilerBuildStepConfigWidget::onDefaultArgumentsComboBoxIndexChanged);
 
     updateUi();
 }
@@ -77,13 +75,6 @@ void NimCompilerBuildStepConfigWidget::onTargetChanged(int index)
     Q_UNUSED(index);
     auto data = m_ui->targetComboBox->currentData();
     FilePath path = FilePath::fromString(data.toString());
-    m_buildStep->setTargetNimFile(path);
-}
-
-void NimCompilerBuildStepConfigWidget::onDefaultArgumentsComboBoxIndexChanged(int index)
-{
-    auto options = static_cast<NimCompilerBuildStep::DefaultBuildOptions>(index);
-    m_buildStep->setDefaultCompilerOptions(options);
 }
 
 void NimCompilerBuildStepConfigWidget::updateUi()
@@ -91,7 +82,6 @@ void NimCompilerBuildStepConfigWidget::updateUi()
     updateCommandLineText();
     updateTargetComboBox();
     updateAdditionalArgumentsLineEdit();
-    updateDefaultArgumentsComboBox();
 }
 
 void NimCompilerBuildStepConfigWidget::onAdditionalArgumentsTextEdited(const QString &text)
@@ -127,7 +117,7 @@ void NimCompilerBuildStepConfigWidget::updateTargetComboBox()
     foreach (const FilePath &file, project->nimFiles())
         m_ui->targetComboBox->addItem(file.fileName(), file.toString());
 
-    const int index = m_ui->targetComboBox->findData(m_buildStep->targetNimFile().toString());
+    const int index = m_ui->targetComboBox->findData(project->projectFilePath().toString());
     m_ui->targetComboBox->setCurrentIndex(index);
 }
 
@@ -135,12 +125,6 @@ void NimCompilerBuildStepConfigWidget::updateAdditionalArgumentsLineEdit()
 {
     const QString text = m_buildStep->userCompilerOptions().join(QChar::Space);
     m_ui->additionalArgumentsLineEdit->setText(text);
-}
-
-void NimCompilerBuildStepConfigWidget::updateDefaultArgumentsComboBox()
-{
-    const int index = m_buildStep->defaultCompilerOptions();
-    m_ui->defaultArgumentsComboBox->setCurrentIndex(index);
 }
 
 }

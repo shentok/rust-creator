@@ -160,8 +160,6 @@ NimCompilerBuildStep::NimCompilerBuildStep(BuildStepList *parentList)
             this, &NimCompilerBuildStep::updateProcessParameters);
     connect(bc, &BuildConfiguration::environmentChanged,
             this, &NimCompilerBuildStep::updateProcessParameters);
-    connect(bc->target()->project(), &ProjectExplorer::Project::fileListChanged,
-            this, &NimCompilerBuildStep::updateTargetNimFile);
     updateProcessParameters();
 }
 
@@ -183,8 +181,6 @@ bool NimCompilerBuildStep::fromMap(const QVariantMap &map)
 {
     AbstractProcessStep::fromMap(map);
     m_userCompilerOptions = map[Constants::C_NIMCOMPILERBUILDSTEP_USERCOMPILEROPTIONS].toString().split('|');
-    m_defaultOptions = static_cast<DefaultBuildOptions>(map[Constants::C_NIMCOMPILERBUILDSTEP_DEFAULTBUILDOPTIONS].toInt());
-    m_targetNimFile = FilePath::fromString(map[Constants::C_NIMCOMPILERBUILDSTEP_TARGETNIMFILE].toString());
     updateProcessParameters();
     return true;
 }
@@ -193,8 +189,6 @@ QVariantMap NimCompilerBuildStep::toMap() const
 {
     QVariantMap result = AbstractProcessStep::toMap();
     result[Constants::C_NIMCOMPILERBUILDSTEP_USERCOMPILEROPTIONS] = m_userCompilerOptions.join('|');
-    result[Constants::C_NIMCOMPILERBUILDSTEP_DEFAULTBUILDOPTIONS] = m_defaultOptions;
-    result[Constants::C_NIMCOMPILERBUILDSTEP_TARGETNIMFILE] = m_targetNimFile.toString();
     return result;
 }
 
@@ -207,34 +201,6 @@ void NimCompilerBuildStep::setUserCompilerOptions(const QStringList &options)
 {
     m_userCompilerOptions = options;
     emit userCompilerOptionsChanged(options);
-    updateProcessParameters();
-}
-
-NimCompilerBuildStep::DefaultBuildOptions NimCompilerBuildStep::defaultCompilerOptions() const
-{
-    return m_defaultOptions;
-}
-
-void NimCompilerBuildStep::setDefaultCompilerOptions(NimCompilerBuildStep::DefaultBuildOptions options)
-{
-    if (m_defaultOptions == options)
-        return;
-    m_defaultOptions = options;
-    emit defaultCompilerOptionsChanged(options);
-    updateProcessParameters();
-}
-
-FilePath NimCompilerBuildStep::targetNimFile() const
-{
-    return m_targetNimFile;
-}
-
-void NimCompilerBuildStep::setTargetNimFile(const FilePath &targetNimFile)
-{
-    if (targetNimFile == m_targetNimFile)
-        return;
-    m_targetNimFile = targetNimFile;
-    emit targetNimFileChanged(targetNimFile);
     updateProcessParameters();
 }
 
@@ -270,22 +236,11 @@ void NimCompilerBuildStep::updateArguments()
     QTC_ASSERT(bc, return);
 
     QStringList arguments;
-    arguments << QStringLiteral("build");
-
-    switch (m_defaultOptions) {
-    case Release:
-        arguments << QStringLiteral("--release");
-        break;
-    case Debug:
-        break;
-    default:
-        break;
-    }
-
-    arguments << QStringLiteral("--target-dir=%1").arg(bc->buildDirectory().toString());
-
     arguments << m_userCompilerOptions;
-    arguments << QStringLiteral("--manifest-path=\"%1\"").arg(m_targetNimFile.toString());
+
+    arguments << QStringLiteral("--target-dir=\"%1\"").arg(bc->buildDirectory().toString());
+
+    arguments << QStringLiteral("--manifest-path=\"%1\"").arg(bc->project()->projectFilePath().toString());
 
     // Remove empty args
     auto predicate = [](const QString &str) { return str.isEmpty(); };
@@ -300,15 +255,6 @@ void NimCompilerBuildStep::updateEnvironment()
     auto bc = buildConfiguration();
     QTC_ASSERT(bc, return);
     processParameters()->setEnvironment(bc->environment());
-}
-
-void NimCompilerBuildStep::updateTargetNimFile()
-{
-    if (!m_targetNimFile.isEmpty())
-        return;
-    const Utils::FilePathList nimFiles = static_cast<NimProject *>(project())->nimFiles();
-    if (!nimFiles.isEmpty())
-        setTargetNimFile(nimFiles.at(0));
 }
 
 // NimCompilerBuildStepFactory

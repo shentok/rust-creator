@@ -46,11 +46,9 @@ private:
     void updateCommandLineText();
     void updateTargetComboBox();
     void updateAdditionalArgumentsLineEdit();
-    void updateDefaultArgumentsComboBox();
 
     void onAdditionalArgumentsTextEdited(const QString &text);
     void onTargetChanged(int index);
-    void onDefaultArgumentsComboBoxIndexChanged(int index);
 
     NimCompilerBuildStep *m_buildStep;
     QScopedPointer<Ui::NimCompilerBuildStepConfigWidget> m_ui;

@@ -37,8 +37,6 @@ class NimCompilerBuildStep : public ProjectExplorer::AbstractProcessStep
     Q_OBJECT
 
 public:
-    enum DefaultBuildOptions { Empty = 0, Debug, Release};
-
     NimCompilerBuildStep(ProjectExplorer::BuildStepList *parentList);
 
     bool init() override;
@@ -50,16 +48,8 @@ public:
     QStringList userCompilerOptions() const;
     void setUserCompilerOptions(const QStringList &options);
 
-    DefaultBuildOptions defaultCompilerOptions() const;
-    void setDefaultCompilerOptions(DefaultBuildOptions options);
-
-    Utils::FilePath targetNimFile() const;
-    void setTargetNimFile(const Utils::FilePath &targetNimFile);
-
 signals:
     void userCompilerOptionsChanged(const QStringList &options);
-    void defaultCompilerOptionsChanged(DefaultBuildOptions options);
-    void targetNimFileChanged(const Utils::FilePath &targetNimFile);
     void processParametersChanged();
 
 private:
@@ -69,11 +59,7 @@ private:
     void updateArguments();
     void updateEnvironment();
 
-    void updateTargetNimFile();
-
-    DefaultBuildOptions m_defaultOptions;
     QStringList m_userCompilerOptions;
-    Utils::FilePath m_targetNimFile;
 };
 
 class NimCompilerBuildStepFactory : public ProjectExplorer::BuildStepFactory

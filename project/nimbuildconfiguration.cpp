@@ -88,35 +88,32 @@ void NimBuildConfiguration::initialize(const BuildInfo &info)
 {
     BuildConfiguration::initialize(info);
 
-    auto project = qobject_cast<NimProject *>(target()->project());
+    auto project = target()->project();
     QTC_ASSERT(project, return);
 
     // Create the build configuration and initialize it from build info
-    setBuildDirectory(defaultBuildDirectory(target()->kit(),
-                                            project->projectFilePath().toString(),
-                                            info.displayName,
-                                            info.buildType));
+    setBuildDirectory(info.buildDirectory);
 
     // Add nim compiler build step
     {
         BuildStepList *buildSteps = stepList(ProjectExplorer::Constants::BUILDSTEPS_BUILD);
         auto nimCompilerBuildStep = new NimCompilerBuildStep(buildSteps);
-        NimCompilerBuildStep::DefaultBuildOptions defaultOption;
-        switch (info.buildType) {
-        case BuildConfiguration::Release:
-            defaultOption = NimCompilerBuildStep::DefaultBuildOptions::Release;
-            break;
-        case BuildConfiguration::Debug:
-            defaultOption = NimCompilerBuildStep::DefaultBuildOptions::Debug;
-            break;
-        default:
-            defaultOption = NimCompilerBuildStep::DefaultBuildOptions::Empty;
-            break;
+        if (info.typeName == "build (debug)")
+        {
+            nimCompilerBuildStep->setUserCompilerOptions(QStringList{"build"});
         }
-        nimCompilerBuildStep->setDefaultCompilerOptions(defaultOption);
-        Utils::FilePathList nimFiles = project->nimFiles();
-        if (!nimFiles.isEmpty())
-            nimCompilerBuildStep->setTargetNimFile(nimFiles.first());
+        else if (info.typeName == "build (release)")
+        {
+            nimCompilerBuildStep->setUserCompilerOptions(QStringList{"build", "--release"});
+        }
+        else if (info.typeName == "test (debug)")
+        {
+            nimCompilerBuildStep->setUserCompilerOptions(QStringList{"test"});
+        }
+        else if (info.typeName == "test (release)")
+        {
+            nimCompilerBuildStep->setUserCompilerOptions(QStringList{"test", "--release"});
+        }
         buildSteps->appendStep(nimCompilerBuildStep);
     }
 
@@ -143,29 +140,29 @@ NimBuildConfigurationFactory::NimBuildConfigurationFactory()
 QList<BuildInfo> NimBuildConfigurationFactory::availableBuilds(const Target *parent) const
 {
     QList<BuildInfo> result;
-    for (auto buildType : {BuildConfiguration::Debug, BuildConfiguration::Release})
-        result.push_back(createBuildInfo(parent->kit(), buildType));
+    for (auto typeName : QStringList{"build (debug)", "build (release)", "test (debug)", "test (release)"})
+        result.push_back(createBuildInfo(parent->kit(), typeName));
     return result;
 }
 
 QList<BuildInfo> NimBuildConfigurationFactory::availableSetups(const Kit *k, const QString &projectPath) const
 {
     QList<BuildInfo> result;
-    for (auto buildType : {BuildConfiguration::Debug, BuildConfiguration::Release}) {
-        BuildInfo info = createBuildInfo(k, buildType);
-        info.displayName = info.typeName;
-        info.buildDirectory = defaultBuildDirectory(k, projectPath, info.typeName, buildType);
+    for (auto typeName : QStringList{"build (debug)", "build (release)", "test (debug)", "test (release)"}) {
+        BuildInfo info = createBuildInfo(k, typeName);
+        info.buildDirectory = defaultBuildDirectory(k, projectPath, info.typeName, info.buildType);
         result.push_back(info);
     }
     return result;
 }
 
-BuildInfo NimBuildConfigurationFactory::createBuildInfo(const Kit *k, BuildConfiguration::BuildType buildType) const
+BuildInfo NimBuildConfigurationFactory::createBuildInfo(const Kit *k, const QString &typeName) const
 {
     BuildInfo info(this);
-    info.buildType = buildType;
+    info.buildType = BuildConfiguration::Unknown;
     info.kitId = k->id();
-    info.typeName = displayName(buildType);
+    info.typeName = typeName;
+    info.displayName = typeName;
     return info;
 }
 

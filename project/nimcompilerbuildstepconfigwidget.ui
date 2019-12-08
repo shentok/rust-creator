@@ -29,24 +29,24 @@
      <item row="0" column="1">
       <widget class="QComboBox" name="targetComboBox"/>
      </item>
-     <item row="2" column="0">
+     <item row="1" column="0">
       <widget class="QLabel" name="additionalArgumentsLabel">
        <property name="text">
         <string>Extra arguments:</string>
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
+     <item row="1" column="1">
       <widget class="QLineEdit" name="additionalArgumentsLineEdit"/>
      </item>
-     <item row="3" column="0">
+     <item row="2" column="0">
       <widget class="QLabel" name="commandLabel">
        <property name="text">
         <string>Command:</string>
        </property>
       </widget>
      </item>
-     <item row="3" column="1">
+     <item row="2" column="1">
       <widget class="QTextEdit" name="commandTextEdit">
        <property name="enabled">
         <bool>false</bool>
@@ -59,39 +59,12 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="defaultArgumentsLabel">
-       <property name="text">
-        <string>Default arguments:</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="1">
-      <widget class="QComboBox" name="defaultArgumentsComboBox">
-       <item>
-        <property name="text">
-         <string>None</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Debug</string>
-        </property>
-       </item>
-       <item>
-        <property name="text">
-         <string>Release</string>
-        </property>
-       </item>
-      </widget>
-     </item>
     </layout>
    </item>
   </layout>
  </widget>
  <tabstops>
   <tabstop>targetComboBox</tabstop>
-  <tabstop>defaultArgumentsComboBox</tabstop>
   <tabstop>additionalArgumentsLineEdit</tabstop>
   <tabstop>commandTextEdit</tabstop>
  </tabstops>
