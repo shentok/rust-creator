@@ -16,13 +16,13 @@ HEADERS += \
     editor/nimindenter.h \
     tools/nimlexer.h \
     tools/sourcecodestream.h \
+    project/nimbuildsystem.h \
     project/nimproject.h \
     project/nimprojectnode.h \
     project/nimbuildconfiguration.h \
     project/nimcompilerbuildstep.h \
     project/nimcompilerbuildstepconfigwidget.h \
     project/nimcompilercleanstep.h \
-    project/nimcompilercleanstepconfigwidget.h \
     project/nimrunconfiguration.h \
     editor/nimeditorfactory.h \
     settings/nimcodestylesettingspage.h \
@@ -46,13 +46,13 @@ SOURCES += \
     editor/nimhighlighter.cpp \
     editor/nimindenter.cpp \
     tools/nimlexer.cpp \
+    project/nimbuildsystem.cpp \
     project/nimproject.cpp \
     project/nimprojectnode.cpp \
     project/nimbuildconfiguration.cpp \
     project/nimcompilerbuildstep.cpp \
     project/nimcompilerbuildstepconfigwidget.cpp \
     project/nimcompilercleanstep.cpp \
-    project/nimcompilercleanstepconfigwidget.cpp \
     project/nimrunconfiguration.cpp \
     editor/nimeditorfactory.cpp \
     settings/nimcodestylesettingspage.cpp \
@@ -70,6 +70,5 @@ SOURCES += \
 
 FORMS += \
     project/nimcompilerbuildstepconfigwidget.ui \
-    project/nimcompilercleanstepconfigwidget.ui \
     settings/nimcodestylepreferenceswidget.ui \
     settings/nimtoolssettingswidget.ui

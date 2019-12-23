@@ -31,21 +31,22 @@ namespace Utils { class FilePath; }
 
 namespace Nim {
 
-class NimProject;
+class NimBuildSystem;
 
 class NimProjectNode : public ProjectExplorer::ProjectNode
 {
 public:
-    NimProjectNode(NimProject &project, const Utils::FilePath &projectFilePath);
+    NimProjectNode(const Utils::FilePath &projectFilePath);
 
     bool supportsAction(ProjectExplorer::ProjectAction action, const Node *node) const override;
     bool addFiles(const QStringList &filePaths, QStringList *) override;
-    bool removeFiles(const QStringList &filePaths, QStringList *) override;
+    ProjectExplorer::RemovedFilesFromProject removeFiles(const QStringList &filePaths,
+                                                         QStringList *) override;
     bool deleteFiles(const QStringList &) override;
     bool renameFile(const QString &filePath, const QString &newFilePath) override;
 
 private:
-    NimProject &m_project;
+    NimBuildSystem *buildSystem() const;
 };
 
 }

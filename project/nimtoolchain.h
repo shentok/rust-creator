@@ -36,7 +36,6 @@ public:
     NimToolChain();
     explicit NimToolChain(Core::Id typeId);
 
-    QString typeDisplayName() const override;
     ProjectExplorer::Abi targetAbi() const override;
     bool isValid() const override;
 
@@ -45,9 +44,11 @@ public:
     Utils::LanguageExtensions languageExtensions(const QStringList &flags) const final;
     ProjectExplorer::WarningFlags warningFlags(const QStringList &flags) const final;
 
-    BuiltInHeaderPathsRunner createBuiltInHeaderPathsRunner() const override;
+    BuiltInHeaderPathsRunner createBuiltInHeaderPathsRunner(
+            const Utils::Environment &) const override;
     ProjectExplorer::HeaderPaths builtInHeaderPaths(const QStringList &flags,
-                                                    const Utils::FilePath &sysRoot) const final;
+                                                    const Utils::FilePath &sysRoot,
+                                                    const Utils::Environment &) const final;
     void addToEnvironment(Utils::Environment &env) const final;
     Utils::FilePath makeCommand(const Utils::Environment &env) const final;
     Utils::FilePath compilerCommand() const final;
@@ -62,8 +63,6 @@ public:
     static bool parseVersion(const Utils::FilePath &path, std::tuple<int, int, int> &version);
 
 private:
-    NimToolChain(const NimToolChain &other);
-
     Utils::FilePath m_compilerCommand;
     std::tuple<int, int, int> m_version;
 };

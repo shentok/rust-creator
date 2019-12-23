@@ -23,37 +23,47 @@
 **
 ****************************************************************************/
 
-#include "nimcompilercleanstepconfigwidget.h"
-#include "ui_nimcompilercleanstepconfigwidget.h"
-#include "nimcompilercleanstep.h"
+#pragma once
 
-#include "../nimconstants.h"
+#include <projectexplorer/buildsystem.h>
+#include <projectexplorer/treescanner.h>
 
-#include "projectexplorer/buildconfiguration.h"
-
-using namespace ProjectExplorer;
+#include <utils/filesystemwatcher.h>
 
 namespace Nim {
 
-NimCompilerCleanStepConfigWidget::NimCompilerCleanStepConfigWidget(NimCompilerCleanStep *cleanStep)
-    : BuildStepConfigWidget(cleanStep)
-    , m_ui(new Ui::NimCompilerCleanStepConfigWidget())
+class NimBuildSystem : public ProjectExplorer::BuildSystem
 {
-    m_ui->setupUi(this);
-    setDisplayName(tr(Constants::C_NIMCOMPILERCLEANSTEPWIDGET_DISPLAY));
-    setSummaryText(tr(Constants::C_NIMCOMPILERCLEANSTEPWIDGET_SUMMARY));
-    connect(cleanStep->buildConfiguration(), &BuildConfiguration::buildDirectoryChanged,
-            this, &NimCompilerCleanStepConfigWidget::updateUi);
-    updateUi();
-}
+    Q_OBJECT
 
-NimCompilerCleanStepConfigWidget::~NimCompilerCleanStepConfigWidget() = default;
+public:
+    explicit NimBuildSystem(ProjectExplorer::Project *project);
 
-void NimCompilerCleanStepConfigWidget::updateUi()
-{
-    auto buildDiretory = step()->buildConfiguration()->buildDirectory();
-    m_ui->workingDirectoryLineEdit->setText(buildDiretory.toString());
-}
+    bool addFiles(const QStringList &filePaths);
+    bool removeFiles(const QStringList &filePaths);
+    bool renameFile(const QString &filePath, const QString &newFilePath);
 
-}
+    void setExcludedFiles(const QStringList &list); // Keep for compatibility with Qt Creator 4.10
+    QStringList excludedFiles(); // Make private when no longer supporting Qt Creator 4.10
 
+    void parseProject(ParsingContext &&ctx) final;
+
+    const Utils::FilePathList nimFiles() const;
+
+private:
+    void loadSettings();
+    void saveSettings();
+
+    void collectProjectFiles();
+    void updateProject();
+
+    QStringList m_excludedFiles;
+
+    ProjectExplorer::TreeScanner m_scanner;
+
+    ParsingContext m_currentContext;
+
+    Utils::FileSystemWatcher m_directoryWatcher;
+};
+
+} // namespace Nim
