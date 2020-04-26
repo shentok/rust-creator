@@ -25,14 +25,26 @@
 
 #pragma once
 
-#include <coreplugin/dialogs/ioptionspage.h>
+#include <projectexplorer/buildstep.h>
+#include <projectexplorer/buildconfiguration.h>
 
 namespace Nim {
 
-class NimCodeStyleSettingsPage final : public Core::IOptionsPage
+class NimbleBuildStep;
+
+namespace Ui { class NimbleBuildStepWidget; }
+
+class NimbleBuildStepWidget : public ProjectExplorer::BuildStepConfigWidget
 {
+    Q_OBJECT
+
 public:
-    NimCodeStyleSettingsPage();
+    explicit NimbleBuildStepWidget(NimbleBuildStep *bs);
+
+    ~NimbleBuildStepWidget();
+
+private:
+    Ui::NimbleBuildStepWidget *ui;
 };
 
-} // Nim
+}

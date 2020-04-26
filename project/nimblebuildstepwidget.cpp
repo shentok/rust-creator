@@ -23,16 +23,36 @@
 **
 ****************************************************************************/
 
-#pragma once
+#include "nimblebuildstepwidget.h"
+#include "ui_nimblebuildstepwidget.h"
 
-#include <coreplugin/dialogs/ioptionspage.h>
+#include "nimblebuildstep.h"
+#include "nimbleproject.h"
 
-namespace Nim {
+#include <QAction>
 
-class NimCodeStyleSettingsPage final : public Core::IOptionsPage
+#include <projectexplorer/buildconfiguration.h>
+#include <utils/utilsicons.h>
+
+
+using namespace Nim;
+using namespace ProjectExplorer;
+
+NimbleBuildStepWidget::NimbleBuildStepWidget(NimbleBuildStep *bs)
+    : BuildStepConfigWidget(bs)
+    , ui(new Ui::NimbleBuildStepWidget)
 {
-public:
-    NimCodeStyleSettingsPage();
-};
+    ui->setupUi(this);
 
-} // Nim
+    ui->argumentsLineEdit->setText(bs->arguments());
+    QObject::connect(bs, &NimbleBuildStep::argumentsChanged, ui->argumentsLineEdit, &QLineEdit::setText);
+    QObject::connect(ui->argumentsLineEdit, &QLineEdit::textEdited, bs, &NimbleBuildStep::setArguments);
+
+    ui->resetButton->setIcon(Utils::Icons::RESET.icon());
+    QObject::connect(ui->resetButton, &QToolButton::clicked, bs, &NimbleBuildStep::resetArguments);
+}
+
+NimbleBuildStepWidget::~NimbleBuildStepWidget()
+{
+    delete ui;
+}

@@ -39,8 +39,6 @@ class NimBuildConfiguration : public ProjectExplorer::BuildConfiguration
     friend class ProjectExplorer::BuildConfigurationFactory;
     NimBuildConfiguration(ProjectExplorer::Target *target, Core::Id id);
 
-    void initialize() override;
-
 public:
     Utils::FilePath cacheDirectory() const;
     Utils::FilePath outFilePath() const;
@@ -54,17 +52,10 @@ private:
 };
 
 
-class NimBuildConfigurationFactory : public ProjectExplorer::BuildConfigurationFactory
+class NimBuildConfigurationFactory final : public ProjectExplorer::BuildConfigurationFactory
 {
-    Q_OBJECT
-
 public:
     NimBuildConfigurationFactory();
-
-private:
-    QList<ProjectExplorer::BuildInfo> availableBuilds(const ProjectExplorer::Kit *k,
-                                                      const Utils::FilePath &projectPath,
-                                                      bool forSetup) const override;
 };
 
-}
+} // Nim

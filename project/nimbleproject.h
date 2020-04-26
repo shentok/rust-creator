@@ -25,14 +25,29 @@
 
 #pragma once
 
-#include <coreplugin/dialogs/ioptionspage.h>
+#include <projectexplorer/buildsystem.h>
+#include <projectexplorer/project.h>
 
 namespace Nim {
 
-class NimCodeStyleSettingsPage final : public Core::IOptionsPage
+class NimbleProject : public ProjectExplorer::Project
 {
+    Q_OBJECT
+
 public:
-    NimCodeStyleSettingsPage();
+    NimbleProject(const Utils::FilePath &filename);
+
+    // Keep for compatibility with Qt Creator 4.10
+    QVariantMap toMap() const final;
+
+    QStringList excludedFiles() const;
+    void setExcludedFiles(const QStringList &excludedFiles);
+
+protected:
+    // Keep for compatibility with Qt Creator 4.10
+    RestoreResult fromMap(const QVariantMap &map, QString *errorMessage) final;
+
+    QStringList m_excludedFiles;
 };
 
-} // Nim
+}

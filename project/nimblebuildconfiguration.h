@@ -25,14 +25,35 @@
 
 #pragma once
 
-#include <coreplugin/dialogs/ioptionspage.h>
+#include <projectexplorer/buildconfiguration.h>
+#include <projectexplorer/target.h>
 
 namespace Nim {
 
-class NimCodeStyleSettingsPage final : public Core::IOptionsPage
+class NimbleBuildConfiguration : public ProjectExplorer::BuildConfiguration
+{
+    Q_OBJECT
+
+    friend class ProjectExplorer::BuildConfigurationFactory;
+
+    NimbleBuildConfiguration(ProjectExplorer::Target *target, Core::Id id);
+
+    BuildType buildType() const override;
+
+    bool fromMap(const QVariantMap &map) override;
+
+    QVariantMap toMap() const override;
+
+private:
+    void setBuildType(BuildType buildType);
+
+    BuildType m_buildType;
+};
+
+class NimbleBuildConfigurationFactory final : public ProjectExplorer::BuildConfigurationFactory
 {
 public:
-    NimCodeStyleSettingsPage();
+    NimbleBuildConfigurationFactory();
 };
 
 } // Nim

@@ -23,67 +23,49 @@
 **
 ****************************************************************************/
 
-#include "nimproject.h"
-
-#include "../nimconstants.h"
-#include "nimbuildsystem.h"
-#include "nimtoolchain.h"
+#include "nimbleproject.h"
+#include "nimconstants.h"
+#include "nimblebuildsystem.h"
 
 #include <coreplugin/icontext.h>
-#include <projectexplorer/kitinformation.h>
 #include <projectexplorer/projectexplorerconstants.h>
+#include <utils/qtcassert.h>
 
+using namespace Nim;
 using namespace ProjectExplorer;
-using namespace Utils;
 
-namespace Nim {
-
-NimProject::NimProject(const FilePath &fileName) : Project(Constants::C_NIM_MIMETYPE, fileName)
+NimbleProject::NimbleProject(const Utils::FilePath &fileName)
+    : ProjectExplorer::Project(Constants::C_NIMBLE_MIMETYPE, fileName)
 {
-    setId(Constants::C_NIMPROJECT_ID);
+    setId(Constants::C_NIMBLEPROJECT_ID);
     setDisplayName(fileName.toFileInfo().completeBaseName());
     // ensure debugging is enabled (Nim plugin translates nim code to C code)
     setProjectLanguages(Core::Context(ProjectExplorer::Constants::CXX_LANGUAGE_ID));
-
-    setBuildSystemCreator([](Target *t) { return new NimBuildSystem(t); });
+    setBuildSystemCreator([] (Target *t) { return new NimbleBuildSystem(t); });
 }
 
-Tasks NimProject::projectIssues(const Kit *k) const
-{
-    Tasks result = Project::projectIssues(k);
-    auto tc = dynamic_cast<NimToolChain *>(ToolChainKitAspect::toolChain(k, Constants::C_NIMLANGUAGE_ID));
-    if (!tc) {
-        result.append(createProjectTask(Task::TaskType::Error, tr("No Nim compiler set.")));
-        return result;
-    }
-    if (!tc->compilerCommand().exists())
-        result.append(createProjectTask(Task::TaskType::Error, tr("Nim compiler does not exist.")));
-
-    return result;
-}
-
-QVariantMap NimProject::toMap() const
+QVariantMap NimbleProject::toMap() const
 {
     QVariantMap result = Project::toMap();
     result[Constants::C_NIMPROJECT_EXCLUDEDFILES] = m_excludedFiles;
     return result;
 }
 
-Project::RestoreResult NimProject::fromMap(const QVariantMap &map, QString *errorMessage)
+Project::RestoreResult NimbleProject::fromMap(const QVariantMap &map, QString *errorMessage)
 {
     auto result = Project::fromMap(map, errorMessage);
     m_excludedFiles = map.value(Constants::C_NIMPROJECT_EXCLUDEDFILES).toStringList();
     return result;
 }
 
-QStringList NimProject::excludedFiles() const
+QStringList NimbleProject::excludedFiles() const
 {
     return m_excludedFiles;
 }
 
-void NimProject::setExcludedFiles(const QStringList &excludedFiles)
+void NimbleProject::setExcludedFiles(const QStringList &excludedFiles)
 {
     m_excludedFiles = excludedFiles;
 }
 
-} // namespace Nim
+

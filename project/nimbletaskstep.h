@@ -25,14 +25,51 @@
 
 #pragma once
 
-#include <coreplugin/dialogs/ioptionspage.h>
+#include <projectexplorer/processstep.h>
 
 namespace Nim {
 
-class NimCodeStyleSettingsPage final : public Core::IOptionsPage
+class NimbleTaskStep : public ProjectExplorer::AbstractProcessStep
 {
+    Q_OBJECT
+
 public:
-    NimCodeStyleSettingsPage();
+    NimbleTaskStep(ProjectExplorer::BuildStepList *parentList, Core::Id id);
+
+    bool init() override;
+
+    ProjectExplorer::BuildStepConfigWidget *createConfigWidget() override;
+
+    bool fromMap(const QVariantMap &map) override;
+
+    QVariantMap toMap() const override;
+
+    QString taskName() const { return m_taskName; }
+
+    void setTaskName(const QString &name);
+
+    QString taskArgs() const { return m_taskArgs; }
+
+    void setTaskArgs(const QString &args);
+
+signals:
+    void taskNameChanged(const QString &name);
+
+    void taskArgsChanged(const QString &args);
+
+private:
+    void updateCommandLine();
+
+    bool validate();
+
+    QString m_taskName;
+    QString m_taskArgs;
 };
 
-} // Nim
+class NimbleTaskStepFactory : public ProjectExplorer::BuildStepFactory
+{
+public:
+    NimbleTaskStepFactory();
+};
+
+}

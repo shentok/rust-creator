@@ -26,41 +26,14 @@
 #include "nimbuildsystem.h"
 
 #include "nimproject.h"
+#include "nimbleproject.h"
 #include "nimprojectnode.h"
+
+#include <projectexplorer/target.h>
 
 #include <utils/algorithm.h>
 #include <utils/fileutils.h>
 #include <utils/qtcassert.h>
-
-#include <QVariantMap>
-
-#if 0
-#include "nimbuildconfiguration.h"
-#include "nimtoolchain.h"
-
-#include "../nimconstants.h"
-
-#include <coreplugin/icontext.h>
-#include <coreplugin/progressmanager/progressmanager.h>
-#include <coreplugin/iversioncontrol.h>
-#include <coreplugin/vcsmanager.h>
-#include <projectexplorer/buildconfiguration.h>
-#include <projectexplorer/kit.h>
-#include <projectexplorer/projectexplorerconstants.h>
-#include <projectexplorer/projectnodes.h>
-#include <projectexplorer/target.h>
-#include <projectexplorer/toolchain.h>
-#include <projectexplorer/kitinformation.h>
-#include <texteditor/textdocument.h>
-
-#include <utils/runextensions.h>
-
-#include <coreplugin/editormanager/editormanager.h>
-#include <coreplugin/editormanager/ieditor.h>
-
-#include <QFileInfo>
-#include <QQueue>
-#endif
 
 using namespace ProjectExplorer;
 using namespace Utils;
@@ -70,79 +43,159 @@ namespace Nim {
 const char SETTINGS_KEY[] = "Nim.BuildSystem";
 const char EXCLUDED_FILES_KEY[] = "ExcludedFiles";
 
-NimBuildSystem::NimBuildSystem(Project *project)
-    : BuildSystem(project)
+NimProjectScanner::NimProjectScanner(Project *project)
+    : m_project(project)
 {
-    connect(project, &Project::settingsLoaded, this, &NimBuildSystem::loadSettings);
-    connect(project, &Project::aboutToSaveSettings, this, &NimBuildSystem::saveSettings);
-
-    connect(&m_scanner, &TreeScanner::finished, this, &NimBuildSystem::updateProject);
-    m_scanner.setFilter([this](const Utils::MimeType &, const Utils::FilePath &fp) {
+    setFilter([this](const Utils::MimeType &, const FilePath &fp) {
         const QString path = fp.toString();
-        return excludedFiles().contains(path) || path.endsWith(".nimproject")
-               || path.contains(".nimproject.user");
+        return excludedFiles().contains(path)
+                || path.endsWith(".nimproject")
+                || path.contains(".nimproject.user")
+                || path.contains(".nimble.user");
     });
 
-    connect(&m_directoryWatcher, &FileSystemWatcher::directoryChanged, this, [this]() {
-        requestParse();
+    connect(&m_directoryWatcher, &FileSystemWatcher::directoryChanged,
+            this, &NimProjectScanner::directoryChanged);
+    connect(&m_directoryWatcher, &FileSystemWatcher::fileChanged,
+            this, &NimProjectScanner::fileChanged);
+
+    connect(m_project, &Project::settingsLoaded, this, &NimProjectScanner::loadSettings);
+    connect(m_project, &Project::aboutToSaveSettings, this, &NimProjectScanner::saveSettings);
+
+    connect(&m_scanner, &TreeScanner::finished, this, [this] {
+        // Collect scanned nodes
+        std::vector<std::unique_ptr<FileNode>> nodes;
+        for (FileNode *node : m_scanner.release()) {
+            if (!node->path().endsWith(".nim") && !node->path().endsWith(".nimble"))
+                node->setEnabled(false); // Disable files that do not end in .nim
+            nodes.emplace_back(node);
+        }
+
+        // Sync watched dirs
+        const QSet<QString> fsDirs = Utils::transform<QSet>(nodes, &FileNode::directory);
+        const QSet<QString> projectDirs = Utils::toSet(m_directoryWatcher.directories());
+        m_directoryWatcher.addDirectories(Utils::toList(fsDirs - projectDirs), FileSystemWatcher::WatchAllChanges);
+        m_directoryWatcher.removeDirectories(Utils::toList(projectDirs - fsDirs));
+
+        // Sync project files
+        const QSet<FilePath> fsFiles = Utils::transform<QSet>(nodes, &FileNode::filePath);
+        const QSet<FilePath> projectFiles = Utils::toSet(m_project->files([](const Node *n) { return Project::AllFiles(n); }));
+
+        if (fsFiles != projectFiles) {
+            auto projectNode = std::make_unique<ProjectNode>(m_project->projectDirectory());
+            projectNode->setDisplayName(m_project->displayName());
+            projectNode->addNestedNodes(std::move(nodes));
+            m_project->setRootProjectNode(std::move(projectNode));
+        }
+
+        emit finished();
     });
 }
 
-bool NimBuildSystem::addFiles(const QStringList &filePaths)
+void NimProjectScanner::loadSettings()
 {
-    m_excludedFiles = Utils::filtered(m_excludedFiles, [&](const QString & f) {
+    QVariantMap settings = m_project->namedSettings(SETTINGS_KEY).toMap();
+    if (settings.contains(EXCLUDED_FILES_KEY))
+        setExcludedFiles(settings.value(EXCLUDED_FILES_KEY, excludedFiles()).toStringList());
+
+    emit requestReparse();
+}
+
+void NimProjectScanner::saveSettings()
+{
+    QVariantMap settings;
+    settings.insert(EXCLUDED_FILES_KEY, excludedFiles());
+    m_project->setNamedSettings(SETTINGS_KEY, settings);
+}
+
+void NimProjectScanner::setFilter(const TreeScanner::FileFilter &filter)
+{
+    m_scanner.setFilter(filter);
+}
+
+void NimProjectScanner::startScan()
+{
+    m_scanner.asyncScanForFiles(m_project->projectDirectory());
+}
+
+void NimProjectScanner::watchProjectFilePath()
+{
+    m_directoryWatcher.addFile(m_project->projectFilePath().toString(), FileSystemWatcher::WatchModifiedDate);
+}
+
+void NimProjectScanner::setExcludedFiles(const QStringList &list)
+{
+    static_cast<NimbleProject *>(m_project)->setExcludedFiles(list);
+}
+
+QStringList NimProjectScanner::excludedFiles() const
+{
+    return static_cast<NimbleProject *>(m_project)->excludedFiles();
+}
+
+bool NimProjectScanner::addFiles(const QStringList &filePaths)
+{
+    setExcludedFiles(Utils::filtered(excludedFiles(), [&](const QString & f) {
         return !filePaths.contains(f);
+    }));
+
+    requestReparse();
+
+    return true;
+}
+
+RemovedFilesFromProject NimProjectScanner::removeFiles(const QStringList &filePaths)
+{
+    setExcludedFiles(Utils::filteredUnique(excludedFiles() + filePaths));
+
+    requestReparse();
+
+    return RemovedFilesFromProject::Ok;
+}
+
+bool NimProjectScanner::renameFile(const QString &, const QString &to)
+{
+    QStringList files = excludedFiles();
+    files.removeOne(to);
+    setExcludedFiles(files);
+
+    requestReparse();
+
+    return true;
+}
+
+NimBuildSystem::NimBuildSystem(Target *target)
+    : BuildSystem(target), m_projectScanner(target->project())
+{
+    connect(&m_projectScanner, &NimProjectScanner::finished, this, [this] {
+        m_guard.markAsSuccess();
+        m_guard = {}; // Trigger destructor of previous object, emitting parsingFinished()
+
+        emitBuildSystemUpdated();
     });
-    requestParse();
-    return true;
+
+    connect(&m_projectScanner, &NimProjectScanner::requestReparse,
+            this, &NimBuildSystem::requestDelayedParse);
+
+    connect(&m_projectScanner, &NimProjectScanner::directoryChanged, this, [this] {
+        if (!isWaitingForParse())
+            requestDelayedParse();
+    });
+
+    requestDelayedParse();
 }
 
-bool NimBuildSystem::removeFiles(const QStringList &filePaths)
+void NimBuildSystem::triggerParsing()
 {
-    m_excludedFiles.append(filePaths);
-    m_excludedFiles = Utils::filteredUnique(m_excludedFiles);
-    requestParse();
-    return true;
-}
-
-bool NimBuildSystem::renameFile(const QString &filePath, const QString &newFilePath)
-{
-    Q_UNUSED(filePath)
-    m_excludedFiles.removeOne(newFilePath);
-    requestParse();
-    return true;
-}
-
-void NimBuildSystem::setExcludedFiles(const QStringList &list)
-{
-    m_excludedFiles = list;
-}
-
-QStringList NimBuildSystem::excludedFiles()
-{
-    return m_excludedFiles;
-}
-
-void NimBuildSystem::parseProject(BuildSystem::ParsingContext &&ctx)
-{
-    QTC_ASSERT(!m_currentContext.project, return );
-    m_currentContext = std::move(ctx);
-    QTC_CHECK(m_currentContext.project);
-
-    m_scanner.asyncScanForFiles(m_currentContext.project->projectDirectory());
-}
-
-const FilePathList NimBuildSystem::nimFiles() const
-{
-    return project()->files(
-        [](const Node *n) { return Project::AllFiles(n) && n->path().endsWith(".nim"); });
+    m_guard = guardParsingRun();
+    m_projectScanner.startScan();
 }
 
 void NimBuildSystem::loadSettings()
 {
     QVariantMap settings = project()->namedSettings(SETTINGS_KEY).toMap();
     if (settings.contains(EXCLUDED_FILES_KEY))
-        m_excludedFiles = settings.value(EXCLUDED_FILES_KEY, m_excludedFiles).toStringList();
+        m_projectScanner.setExcludedFiles(settings.value(EXCLUDED_FILES_KEY, m_projectScanner.excludedFiles()).toStringList());
 
     requestParse();
 }
@@ -150,30 +203,44 @@ void NimBuildSystem::loadSettings()
 void NimBuildSystem::saveSettings()
 {
     QVariantMap settings;
-    settings.insert(EXCLUDED_FILES_KEY, m_excludedFiles);
+    settings.insert(EXCLUDED_FILES_KEY, m_projectScanner.excludedFiles());
     project()->setNamedSettings(SETTINGS_KEY, settings);
 }
 
-void NimBuildSystem::updateProject()
+bool NimBuildSystem::supportsAction(Node *context, ProjectAction action, const Node *node) const
 {
-    auto newRoot = std::make_unique<NimProjectNode>(project()->projectDirectory());
-
-    QSet<QString> directories;
-    for (FileNode *node : m_scanner.release()) {
-        if (!node->path().endsWith(".nim"))
-            node->setEnabled(false); // Disable files that do not end in .nim
-        directories.insert(node->directory());
-        newRoot->addNestedNode(std::unique_ptr<FileNode>(node));
+    if (node->asFileNode()) {
+        return action == ProjectAction::Rename
+            || action == ProjectAction::RemoveFile;
     }
+    if (node->isFolderNodeType() || node->isProjectNodeType()) {
+        return action == ProjectAction::AddNewFile
+            || action == ProjectAction::RemoveFile
+            || action == ProjectAction::AddExistingFile;
+    }
+    return BuildSystem::supportsAction(context, action, node);
+}
 
-    newRoot->setDisplayName(project()->displayName());
-    project()->setRootProjectNode(std::move(newRoot));
+bool NimBuildSystem::addFiles(Node *, const QStringList &filePaths, QStringList *)
+{
+    return m_projectScanner.addFiles(filePaths);
+}
 
-    m_directoryWatcher.addDirectories(Utils::toList(directories), FileSystemWatcher::WatchAllChanges);
+RemovedFilesFromProject NimBuildSystem::removeFiles(Node *,
+                                                    const QStringList &filePaths,
+                                                    QStringList *)
+{
+    return m_projectScanner.removeFiles(filePaths);
+}
 
-    m_currentContext.guard.markAsSuccess();
+bool NimBuildSystem::deleteFiles(Node *, const QStringList &)
+{
+    return true;
+}
 
-    m_currentContext = {};
+bool NimBuildSystem::renameFile(Node *, const QString &filePath, const QString &newFilePath)
+{
+    return m_projectScanner.renameFile(filePath, newFilePath);
 }
 
 } // namespace Nim

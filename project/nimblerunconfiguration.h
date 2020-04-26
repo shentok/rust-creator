@@ -1,7 +1,7 @@
 /****************************************************************************
 **
-** Copyright (C) Filippo Cucchetto <filippocucchetto@gmail.com>
-** Contact: http://www.qt.io/licensing
+** Copyright (C) 2016 The Qt Company Ltd.
+** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of Qt Creator.
 **
@@ -25,14 +25,20 @@
 
 #pragma once
 
-#include <coreplugin/dialogs/ioptionspage.h>
+#include <projectexplorer/runconfiguration.h>
 
 namespace Nim {
 
-class NimCodeStyleSettingsPage final : public Core::IOptionsPage
+class NimbleRunConfigurationFactory final : public ProjectExplorer::RunConfigurationFactory
 {
 public:
-    NimCodeStyleSettingsPage();
+    NimbleRunConfigurationFactory();
+};
+
+class NimbleTestConfigurationFactory final : public ProjectExplorer::FixedRunConfigurationFactory
+{
+public:
+    NimbleTestConfigurationFactory();
 };
 
 } // Nim

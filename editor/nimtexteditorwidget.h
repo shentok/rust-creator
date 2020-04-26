@@ -25,14 +25,25 @@
 
 #pragma once
 
-#include <coreplugin/dialogs/ioptionspage.h>
+#include <texteditor/texteditor.h>
 
 namespace Nim {
+namespace Suggest { class NimSuggestClientRequest; }
 
-class NimCodeStyleSettingsPage final : public Core::IOptionsPage
+class NimTextEditorWidget : public TextEditor::TextEditorWidget
 {
 public:
-    NimCodeStyleSettingsPage();
+    NimTextEditorWidget(QWidget* parent = nullptr);
+
+protected:
+    void findLinkAt(const QTextCursor &, Utils::ProcessLinkCallback &&processLinkCallback, bool resolveTarget, bool inNextSplit);
+
+private:
+    void onFindLinkFinished();
+
+    std::shared_ptr<Nim::Suggest::NimSuggestClientRequest> m_request;
+    Utils::ProcessLinkCallback m_callback;
+    std::unique_ptr<QTemporaryFile> m_dirtyFile;
 };
 
-} // Nim
+}

@@ -25,14 +25,43 @@
 
 #pragma once
 
-#include <coreplugin/dialogs/ioptionspage.h>
+#include <projectexplorer/buildstep.h>
+
+#include <nim/project/nimbleproject.h>
+#include <nim/project/nimblebuildsystem.h>
+
+#include <QStandardItemModel>
 
 namespace Nim {
 
-class NimCodeStyleSettingsPage final : public Core::IOptionsPage
+class NimbleTaskStep;
+
+namespace Ui { class NimbleTaskStepWidget; }
+
+class NimbleTaskStepWidget : public ProjectExplorer::BuildStepConfigWidget
 {
+    Q_OBJECT
+
 public:
-    NimCodeStyleSettingsPage();
+    explicit NimbleTaskStepWidget(NimbleTaskStep *buildStep);
+
+    ~NimbleTaskStepWidget();
+
+signals:
+    void selectedTaskChanged(const QString &name);
+
+private:
+    void updateTaskList();
+
+    void selectTask(const QString &name);
+
+    void onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight, const QVector<int> &roles);
+
+    void uncheckedAllDifferentFrom(QStandardItem *item);
+
+    Ui::NimbleTaskStepWidget *ui;
+    QStandardItemModel m_tasks;
+    bool m_selecting = false;
 };
 
-} // Nim
+}
