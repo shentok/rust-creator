@@ -27,12 +27,6 @@
         \"        <comment>Nim project file</comment>\",
         \"        <glob pattern=\'*.nimproject\'/>\",
         \"    </mime-type>\",
-
-        \"    <mime-type type=\'text/x-nimble\'>\",
-        \"        <sub-class-of type=\'text/plain\'/>\",
-        \"        <comment>Nimble project file</comment>\",
-        \"        <glob pattern=\'*.nimble\'/>\",
-        \"    </mime-type>\",
         \"</mime-info>\"
     ]
 }

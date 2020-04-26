@@ -26,7 +26,6 @@
 #include "nimbuildsystem.h"
 
 #include "nimproject.h"
-#include "nimbleproject.h"
 #include "nimprojectnode.h"
 
 #include <projectexplorer/target.h>
@@ -48,8 +47,6 @@ NimProjectScanner::NimProjectScanner(Project *project)
 {
     connect(&m_directoryWatcher, &FileSystemWatcher::directoryChanged,
             this, &NimProjectScanner::directoryChanged);
-    connect(&m_directoryWatcher, &FileSystemWatcher::fileChanged,
-            this, &NimProjectScanner::fileChanged);
 
     connect(m_project, &Project::settingsLoaded, this, &NimProjectScanner::loadSettings);
     connect(m_project, &Project::aboutToSaveSettings, this, &NimProjectScanner::saveSettings);
@@ -114,19 +111,14 @@ void NimProjectScanner::saveSettings()
     m_project->setNamedSettings(SETTINGS_KEY, settings);
 }
 
-void NimProjectScanner::watchProjectFilePath()
-{
-    m_directoryWatcher.addFile(m_project->projectFilePath().toString(), FileSystemWatcher::WatchModifiedDate);
-}
-
 void NimProjectScanner::setExcludedFiles(const QStringList &list)
 {
-    static_cast<NimbleProject *>(m_project)->setExcludedFiles(list);
+    static_cast<NimProject *>(m_project)->setExcludedFiles(list);
 }
 
 QStringList NimProjectScanner::excludedFiles() const
 {
-    return static_cast<NimbleProject *>(m_project)->excludedFiles();
+    return static_cast<NimProject *>(m_project)->excludedFiles();
 }
 
 bool NimProjectScanner::addFiles(const QStringList &filePaths)

@@ -40,7 +40,6 @@ public:
     explicit NimProjectScanner(ProjectExplorer::Project *project);
 
     void startScan();
-    void watchProjectFilePath();
 
     void setExcludedFiles(const QStringList &list);
     QStringList excludedFiles() const;
@@ -53,7 +52,6 @@ signals:
     void finished();
     void requestReparse();
     void directoryChanged(const QString &path);
-    void fileChanged(const QString &path);
 
 private:
     void loadSettings();
