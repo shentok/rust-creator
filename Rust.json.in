@@ -33,12 +33,6 @@
         \"        <comment>Nim source file</comment>\",
         \"        <glob pattern=\'*.nim\'/>\",
         \"    </mime-type>\",
-
-        \"    <mime-type type=\'text/x-nimble\'>\",
-        \"        <sub-class-of type=\'text/plain\'/>\",
-        \"        <comment>Nimble project file</comment>\",
-        \"        <glob pattern=\'*.nimble\'/>\",
-        \"    </mime-type>\",
         \"</mime-info>\"
     ]
 }

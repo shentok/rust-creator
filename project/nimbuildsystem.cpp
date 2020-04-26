@@ -26,7 +26,6 @@
 #include "nimbuildsystem.h"
 
 #include "nimproject.h"
-#include "nimbleproject.h"
 #include "nimprojectnode.h"
 
 #include <projectexplorer/target.h>
@@ -125,12 +124,12 @@ void NimProjectScanner::watchProjectFilePath()
 
 void NimProjectScanner::setExcludedFiles(const QStringList &list)
 {
-    static_cast<NimbleProject *>(m_project)->setExcludedFiles(list);
+    static_cast<NimProject *>(m_project)->setExcludedFiles(list);
 }
 
 QStringList NimProjectScanner::excludedFiles() const
 {
-    return static_cast<NimbleProject *>(m_project)->excludedFiles();
+    return static_cast<NimProject *>(m_project)->excludedFiles();
 }
 
 bool NimProjectScanner::addFiles(const QStringList &filePaths)
