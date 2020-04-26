@@ -26,17 +26,12 @@
 #include "nimplugin.h"
 
 #include "nimconstants.h"
-#include "project/nimblerunconfiguration.h"
-#include "project/nimblebuildconfiguration.h"
 #include "project/nimbuildconfiguration.h"
 #include "project/nimcompilerbuildstep.h"
 #include "project/nimcompilercleanstep.h"
 #include "project/nimproject.h"
-#include "project/nimbleproject.h"
 #include "project/nimrunconfiguration.h"
 #include "project/nimtoolchainfactory.h"
-#include "project/nimblebuildstep.h"
-#include "project/nimbletaskstep.h"
 #include "settings/nimcodestylepreferencesfactory.h"
 #include "settings/nimcodestylesettingspage.h"
 #include "settings/nimsettings.h"
@@ -56,27 +51,12 @@ class NimPluginPrivate
 public:
     NimSettings settings;
     NimBuildConfigurationFactory buildConfigFactory;
-    NimbleBuildConfigurationFactory nimbleBuildConfigFactory;
     NimRunConfigurationFactory nimRunConfigFactory;
-    NimbleRunConfigurationFactory nimbleRunConfigFactory;
-    NimbleTestConfigurationFactory nimbleTestConfigFactory;
     RunWorkerFactory nimRunWorkerFactory {
         RunWorkerFactory::make<SimpleTargetRunner>(),
         {ProjectExplorer::Constants::NORMAL_RUN_MODE},
         {nimRunConfigFactory.runConfigurationId()}
     };
-    RunWorkerFactory nimbleRunWorkerFactory {
-        RunWorkerFactory::make<SimpleTargetRunner>(),
-        {ProjectExplorer::Constants::NORMAL_RUN_MODE},
-        {nimbleRunConfigFactory.runConfigurationId()}
-    };
-    RunWorkerFactory nimbleTestWorkerFactory {
-        RunWorkerFactory::make<SimpleTargetRunner>(),
-        {ProjectExplorer::Constants::NORMAL_RUN_MODE},
-        {nimbleTestConfigFactory.runConfigurationId()}
-    };
-    NimbleBuildStepFactory nimbleBuildStepFactory;
-    NimbleTaskStepFactory nimbleTaskStepFactory;
     NimCompilerBuildStepFactory buildStepFactory;
     NimCompilerCleanStepFactory cleanStepFactory;
     NimCodeStyleSettingsPage codeStyleSettingsPage;
@@ -99,7 +79,6 @@ bool NimPlugin::initialize(const QStringList &arguments, QString *errorMessage)
     ToolChainManager::registerLanguage(Constants::C_NIMLANGUAGE_ID, Constants::C_NIMLANGUAGE_NAME);
 
     ProjectManager::registerProjectType<NimProject>(Constants::C_NIM_PROJECT_MIMETYPE);
-    ProjectManager::registerProjectType<NimbleProject>(Constants::C_NIMBLE_MIMETYPE);
 
     return true;
 }
@@ -112,7 +91,6 @@ void NimPlugin::extensionsInitialized()
         }}, Utils::Icon::Tint).icon();
     if (!icon.isNull()) {
         Core::FileIconProvider::registerIconOverlayForMimeType(icon, Constants::C_NIM_MIMETYPE);
-        Core::FileIconProvider::registerIconOverlayForMimeType(icon, Constants::C_NIMBLE_MIMETYPE);
     }
 }
 

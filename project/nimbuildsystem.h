@@ -40,7 +40,6 @@ public:
     explicit NimProjectScanner(ProjectExplorer::Project *project);
 
     void startScan();
-    void watchProjectFilePath();
 
     void setExcludedFiles(const QStringList &list);
     QStringList excludedFiles() const;
