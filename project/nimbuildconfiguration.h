@@ -44,7 +44,6 @@ public:
     Utils::FilePath outFilePath() const;
 
 private:
-    void setupBuild(const ProjectExplorer::BuildInfo *info);
     const NimCompilerBuildStep *nimCompilerBuildStep() const;
 };
 
