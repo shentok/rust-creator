@@ -49,9 +49,6 @@ NimCompilerBuildStepConfigWidget::NimCompilerBuildStepConfigWidget(NimCompilerBu
 {
     m_ui->setupUi(this);
 
-    setDisplayName(tr(Constants::C_NIMCOMPILERBUILDSTEPWIDGET_DISPLAY));
-    setSummaryText(tr(Constants::C_NIMCOMPILERBUILDSTEPWIDGET_SUMMARY));
-
     // Connect the project signals
     connect(m_buildStep->project(),
             &Project::fileListChanged,

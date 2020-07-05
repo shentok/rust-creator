@@ -53,6 +53,7 @@ public:
         {nimRunConfigFactory.runConfigurationId()}
     };
     NimCompilerBuildStepFactory buildStepFactory;
+    NimCompilerCleanStepFactory cleanStepFactory;
     NimToolChainFactory toolChainFactory;
 };
 
