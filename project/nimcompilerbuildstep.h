@@ -81,4 +81,10 @@ public:
     NimCompilerBuildStepFactory();
 };
 
+class NimCompilerCleanStepFactory : public ProjectExplorer::BuildStepFactory
+{
+public:
+    NimCompilerCleanStepFactory();
+};
+
 } // Nim

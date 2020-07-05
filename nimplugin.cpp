@@ -55,6 +55,7 @@ public:
         {nimRunConfigFactory.id()}
     };
     NimCompilerBuildStepFactory buildStepFactory;
+    NimCompilerCleanStepFactory cleanStepFactory;
     NimToolChainFactory toolChainFactory;
 };
 

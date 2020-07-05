@@ -176,7 +176,12 @@ bool NimCompilerBuildStep::init()
 
 BuildStepConfigWidget *NimCompilerBuildStep::createConfigWidget()
 {
-    return new NimCompilerBuildStepConfigWidget(this);
+    auto widget = new NimCompilerBuildStepConfigWidget(this);
+    if (id() == Constants::C_NIMCOMPILERBUILDSTEP_ID)
+        widget->setDisplayName(tr(Constants::C_NIMCOMPILERBUILDSTEPWIDGET_DISPLAY));
+    else
+        widget->setDisplayName(tr(Constants::C_NIMCOMPILERCLEANSTEPWIDGET_DISPLAY));
+    return widget;
 }
 
 bool NimCompilerBuildStep::fromMap(const QVariantMap &map)
@@ -305,6 +310,17 @@ NimCompilerBuildStepFactory::NimCompilerBuildStepFactory()
     registerStep<NimCompilerBuildStep>(Constants::C_NIMCOMPILERBUILDSTEP_ID);
     setDisplayName(NimCompilerBuildStep::tr("Rust Compiler Build Step"));
     setSupportedStepList(ProjectExplorer::Constants::BUILDSTEPS_BUILD);
+    setSupportedConfiguration(Constants::C_NIMBUILDCONFIGURATION_ID);
+    setRepeatable(false);
+}
+
+// NimCompilerCleanStepFactory
+
+NimCompilerCleanStepFactory::NimCompilerCleanStepFactory()
+{
+    registerStep<NimCompilerBuildStep>(Constants::C_NIMCOMPILERCLEANSTEP_ID);
+    setDisplayName(NimCompilerBuildStep::tr("Rust Compiler Clean Step"));
+    setSupportedStepList(ProjectExplorer::Constants::BUILDSTEPS_CLEAN);
     setSupportedConfiguration(Constants::C_NIMBUILDCONFIGURATION_ID);
     setRepeatable(false);
 }
