@@ -84,6 +84,8 @@ NimBuildConfiguration::NimBuildConfiguration(Target *target, Utils::Id id)
 
         auto buildStep = nimCompilerBuildStep();
         QTC_ASSERT(buildStep, return);
+        auto cleanStep = nimCompilerCleanStep();
+        QTC_ASSERT(cleanStep, return);
         NimCompilerBuildStep::DefaultBuildOptions defaultOption;
         switch (info.buildType) {
         case BuildConfiguration::Release:
@@ -98,13 +100,17 @@ NimBuildConfiguration::NimBuildConfiguration(Target *target, Utils::Id id)
         }
         buildStep->setDefaultCompilerOptions(defaultOption);
         buildStep->setUserCompilerOptions(QStringList() << "build");
+        cleanStep->setDefaultCompilerOptions(defaultOption);
+        cleanStep->setUserCompilerOptions(QStringList() << "clean");
 
         const Utils::FilePaths nimFiles = project()->files([](const Node *n) {
             return Project::AllFiles(n) && n->path().endsWith(".toml");
         });
 
-        if (!nimFiles.isEmpty())
+        if (!nimFiles.isEmpty()) {
             buildStep->setTargetNimFile(nimFiles.first());
+            cleanStep->setTargetNimFile(nimFiles.first());
+        }
     });
 }
 
@@ -138,6 +144,14 @@ NimCompilerBuildStep *NimBuildConfiguration::nimCompilerBuildStep()
 {
     foreach (BuildStep *step, buildSteps()->steps())
         if (step->id() == Constants::C_NIMCOMPILERBUILDSTEP_ID)
+            return qobject_cast<NimCompilerBuildStep *>(step);
+    return nullptr;
+}
+
+NimCompilerBuildStep *NimBuildConfiguration::nimCompilerCleanStep()
+{
+    foreach (BuildStep *step, cleanSteps()->steps())
+        if (step->id() == Constants::C_NIMCOMPILERCLEANSTEP_ID)
             return qobject_cast<NimCompilerBuildStep *>(step);
     return nullptr;
 }
