@@ -46,6 +46,7 @@ public:
 
 private:
     const NimCompilerBuildStep *nimCompilerBuildStep() const;
+    NimCompilerBuildStep *nimCompilerBuildStep();
 };
 
 

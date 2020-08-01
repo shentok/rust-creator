@@ -82,8 +82,8 @@ NimBuildConfiguration::NimBuildConfiguration(Target *target, Utils::Id id)
                                                 displayName(),
                                                 buildType()));
 
-        auto nimCompilerBuildStep = buildSteps()->firstOfType<NimCompilerBuildStep>();
-        QTC_ASSERT(nimCompilerBuildStep, return);
+        auto buildStep = nimCompilerBuildStep();
+        QTC_ASSERT(buildStep, return);
         NimCompilerBuildStep::DefaultBuildOptions defaultOption;
         switch (info.buildType) {
         case BuildConfiguration::Release:
@@ -96,14 +96,14 @@ NimBuildConfiguration::NimBuildConfiguration(Target *target, Utils::Id id)
             defaultOption = NimCompilerBuildStep::DefaultBuildOptions::Empty;
             break;
         }
-        nimCompilerBuildStep->setDefaultCompilerOptions(defaultOption);
+        buildStep->setDefaultCompilerOptions(defaultOption);
 
         const Utils::FilePaths nimFiles = project()->files([](const Node *n) {
             return Project::AllFiles(n) && n->path().endsWith(".nim");
         });
 
         if (!nimFiles.isEmpty())
-            nimCompilerBuildStep->setTargetNimFile(nimFiles.first());
+            buildStep->setTargetNimFile(nimFiles.first());
     });
 }
 
@@ -126,6 +126,14 @@ FilePath NimBuildConfiguration::outFilePath() const
 }
 
 const NimCompilerBuildStep *NimBuildConfiguration::nimCompilerBuildStep() const
+{
+    foreach (const BuildStep *step, buildSteps()->steps())
+        if (step->id() == Constants::C_NIMCOMPILERBUILDSTEP_ID)
+            return qobject_cast<const NimCompilerBuildStep *>(step);
+    return nullptr;
+}
+
+NimCompilerBuildStep *NimBuildConfiguration::nimCompilerBuildStep()
 {
     foreach (BuildStep *step, buildSteps()->steps())
         if (step->id() == Constants::C_NIMCOMPILERBUILDSTEP_ID)
