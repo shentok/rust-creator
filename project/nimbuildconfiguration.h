@@ -47,6 +47,7 @@ public:
 private:
     void setupBuild(const ProjectExplorer::BuildInfo *info);
     const NimCompilerBuildStep *nimCompilerBuildStep() const;
+    NimCompilerBuildStep *nimCompilerBuildStep();
 };
 
 
