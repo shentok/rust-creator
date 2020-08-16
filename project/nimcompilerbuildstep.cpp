@@ -104,8 +104,6 @@ NimCompilerBuildStep::NimCompilerBuildStep(BuildStepList *parentList, Core::Id i
             this, &NimCompilerBuildStep::updateProcessParameters);
     connect(bc, &BuildConfiguration::environmentChanged,
             this, &NimCompilerBuildStep::updateProcessParameters);
-    connect(this, &NimCompilerBuildStep::targetNimFileChanged,
-            bc, &NimBuildConfiguration::targetNimFileChanged);
     connect(bc->target()->project(), &ProjectExplorer::Project::fileListChanged,
             this, &NimCompilerBuildStep::updateTargetNimFile);
     updateProcessParameters();
