@@ -93,8 +93,6 @@ NimCompilerBuildStep::NimCompilerBuildStep(BuildStepList *parentList, Utils::Id 
             this, &NimCompilerBuildStep::updateProcessParameters);
     connect(bc, &BuildConfiguration::environmentChanged,
             this, &NimCompilerBuildStep::updateProcessParameters);
-    connect(this, &NimCompilerBuildStep::outFilePathChanged,
-            bc, &NimBuildConfiguration::outFilePathChanged);
     connect(project(), &ProjectExplorer::Project::fileListChanged,
             this, &NimCompilerBuildStep::updateTargetNimFile);
     updateProcessParameters();

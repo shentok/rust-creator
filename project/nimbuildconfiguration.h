@@ -43,9 +43,6 @@ public:
     Utils::FilePath cacheDirectory() const;
     Utils::FilePath outFilePath() const;
 
-signals:
-    void outFilePathChanged(const Utils::FilePath &outFilePath);
-
 private:
     void setupBuild(const ProjectExplorer::BuildInfo *info);
     const NimCompilerBuildStep *nimCompilerBuildStep() const;
