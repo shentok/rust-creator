@@ -126,7 +126,8 @@ FilePath NimBuildConfiguration::outFilePath() const
 {
     const NimCompilerBuildStep *step = nimCompilerBuildStep();
     QTC_ASSERT(step, return FilePath());
-    return step->outFilePath();
+    const QString targetName = Utils::HostOsInfo::withExecutableSuffix(step->targetNimFile().toFileInfo().baseName());
+    return buildDirectory().pathAppended(targetName);
 }
 
 const NimCompilerBuildStep *NimBuildConfiguration::nimCompilerBuildStep() const

@@ -46,7 +46,7 @@ public:
     Utils::FilePath outFilePath() const;
 
 signals:
-    void outFilePathChanged(const Utils::FilePath &outFilePath);
+    void targetNimFileChanged(const Utils::FilePath &targetNimFile);
 
 private:
     void setupBuild(const ProjectExplorer::BuildInfo *info);
