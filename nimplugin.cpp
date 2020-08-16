@@ -28,7 +28,6 @@
 #include "nimconstants.h"
 #include "project/nimbuildconfiguration.h"
 #include "project/nimcompilerbuildstep.h"
-#include "project/nimcompilercleanstep.h"
 #include "project/nimproject.h"
 #include "project/nimrunconfiguration.h"
 #include "project/nimtoolchainfactory.h"
@@ -56,7 +55,6 @@ public:
         {nimRunConfigFactory.id()}
     };
     NimCompilerBuildStepFactory buildStepFactory;
-    NimCompilerCleanStepFactory cleanStepFactory;
     NimToolChainFactory toolChainFactory;
 };
 
