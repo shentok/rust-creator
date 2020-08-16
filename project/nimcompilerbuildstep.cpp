@@ -170,32 +170,12 @@ void NimCompilerBuildStep::setTargetNimFile(const FilePath &targetNimFile)
     updateProcessParameters();
 }
 
-FilePath NimCompilerBuildStep::outFilePath() const
-{
-    return m_outFilePath;
-}
-
-void NimCompilerBuildStep::setOutFilePath(const FilePath &outFilePath)
-{
-    if (outFilePath == m_outFilePath)
-        return;
-    m_outFilePath = outFilePath;
-    emit outFilePathChanged(outFilePath);
-}
-
 void NimCompilerBuildStep::updateProcessParameters()
 {
-    updateOutFilePath();
     updateCommand();
     updateWorkingDirectory();
     updateEnvironment();
     emit processParametersChanged();
-}
-
-void NimCompilerBuildStep::updateOutFilePath()
-{
-    const QString targetName = Utils::HostOsInfo::withExecutableSuffix(m_targetNimFile.toFileInfo().baseName());
-    setOutFilePath(buildDirectory().pathAppended(targetName));
 }
 
 void NimCompilerBuildStep::updateWorkingDirectory()
@@ -223,7 +203,7 @@ void NimCompilerBuildStep::updateCommand()
     else if (m_defaultOptions == Debug)
         cmd.addArgs({"--debugInfo", "--lineDir:on"});
 
-    cmd.addArg("--out:" + m_outFilePath.toString());
+    cmd.addArg("--out:" + bc->outFilePath().toString());
     cmd.addArg("--nimCache:" + bc->cacheDirectory().toString());
 
     for (const QString &arg : m_userCompilerOptions) {
