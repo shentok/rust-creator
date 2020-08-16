@@ -18,7 +18,6 @@ HEADERS += \
     project/nimbuildconfiguration.h \
     project/nimcompilerbuildstep.h \
     project/nimcompilerbuildstepconfigwidget.h \
-    project/nimcompilercleanstep.h \
     project/nimrunconfiguration.h \
     project/nimtoolchain.h \
     project/nimtoolchainfactory.h \
@@ -31,7 +30,6 @@ SOURCES += \
     project/nimbuildconfiguration.cpp \
     project/nimcompilerbuildstep.cpp \
     project/nimcompilerbuildstepconfigwidget.cpp \
-    project/nimcompilercleanstep.cpp \
     project/nimrunconfiguration.cpp \
     project/nimtoolchain.cpp \
     project/nimtoolchainfactory.cpp \
