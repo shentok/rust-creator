@@ -25,31 +25,35 @@
 
 #pragma once
 
-#include <projectexplorer/buildstep.h>
+#include "nimbuildconfiguration.h"
+
+#include <projectexplorer/namedwidget.h>
 
 namespace Nim {
 
-class NimCompilerBuildStep;
+namespace Ui { class NimBuildConfigurationWidget; }
 
-namespace Ui { class NimCompilerBuildStepConfigWidget; }
-
-class NimCompilerBuildStepConfigWidget : public ProjectExplorer::BuildStepConfigWidget
+class NimBuildConfigurationWidget : public ProjectExplorer::NamedWidget
 {
     Q_OBJECT
 
 public:
-    NimCompilerBuildStepConfigWidget(NimCompilerBuildStep *buildStep);
-    ~NimCompilerBuildStepConfigWidget();
+    NimBuildConfigurationWidget(NimBuildConfiguration *buildConfiguration);
+    ~NimBuildConfigurationWidget();
+
+signals:
+    void processParametersChanged();
 
 private:
     void updateUi();
-    void updateCommandLineText();
-    void updateAdditionalArgumentsLineEdit();
+    void updateTargetComboBox();
+    void updateDefaultArgumentsComboBox();
 
-    void onAdditionalArgumentsTextEdited(const QString &text);
+    void onTargetChanged(int index);
+    void onDefaultArgumentsComboBoxIndexChanged(int index);
 
-    NimCompilerBuildStep *m_buildStep;
-    QScopedPointer<Ui::NimCompilerBuildStepConfigWidget> m_ui;
+    NimBuildConfiguration *m_buildConfiguration;
+    QScopedPointer<Ui::NimBuildConfigurationWidget> m_ui;
 };
 
 }
