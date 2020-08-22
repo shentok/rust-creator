@@ -39,16 +39,36 @@ class NimBuildConfiguration : public ProjectExplorer::BuildConfiguration
     friend class ProjectExplorer::BuildConfigurationFactory;
     NimBuildConfiguration(ProjectExplorer::Target *target, Core::Id id);
 
+    ProjectExplorer::NamedWidget *createConfigWidget() override;
+
     bool fromMap(const QVariantMap &map) override;
 
+    QVariantMap toMap() const override;
+
 public:
+    enum DefaultBuildOptions { Empty = 0, Debug, Release};
+
+    DefaultBuildOptions defaultCompilerOptions() const;
+    void setDefaultCompilerOptions(DefaultBuildOptions options);
+
+    Utils::FilePath targetNimFile() const;
+    void setTargetNimFile(const Utils::FilePath &targetNimFile);
+
     Utils::FilePath outFilePath() const;
 
+signals:
+    void defaultCompilerOptionsChanged(DefaultBuildOptions options);
+    void targetNimFileChanged(const Utils::FilePath &targetNimFile);
+    void processParametersChanged();
+
 private:
-    void setupBuild(const ProjectExplorer::BuildInfo *info);
+    void updateTargetNimFile();
     const NimCompilerBuildStep *nimCompilerBuildStep() const;
     NimCompilerBuildStep *nimCompilerBuildStep();
     NimCompilerBuildStep *nimCompilerCleanStep();
+
+    DefaultBuildOptions m_defaultOptions;
+    Utils::FilePath m_targetNimFile;
 };
 
 

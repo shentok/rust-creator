@@ -60,38 +60,18 @@ NimCompilerBuildStepConfigWidget::NimCompilerBuildStepConfigWidget(NimCompilerBu
             this, &NimCompilerBuildStepConfigWidget::updateUi);
 
     // Connect UI signals
-    connect(m_ui->targetComboBox, QOverload<int>::of(&QComboBox::activated),
-            this, &NimCompilerBuildStepConfigWidget::onTargetChanged);
     connect(m_ui->additionalArgumentsLineEdit, &QLineEdit::textEdited,
             this, &NimCompilerBuildStepConfigWidget::onAdditionalArgumentsTextEdited);
-    connect(m_ui->defaultArgumentsComboBox, QOverload<int>::of(&QComboBox::activated),
-            this, &NimCompilerBuildStepConfigWidget::onDefaultArgumentsComboBoxIndexChanged);
 
     updateUi();
 }
 
 NimCompilerBuildStepConfigWidget::~NimCompilerBuildStepConfigWidget() = default;
 
-void NimCompilerBuildStepConfigWidget::onTargetChanged(int index)
-{
-    Q_UNUSED(index)
-    auto data = m_ui->targetComboBox->currentData();
-    FilePath path = FilePath::fromString(data.toString());
-    m_buildStep->setTargetNimFile(path);
-}
-
-void NimCompilerBuildStepConfigWidget::onDefaultArgumentsComboBoxIndexChanged(int index)
-{
-    auto options = static_cast<NimCompilerBuildStep::DefaultBuildOptions>(index);
-    m_buildStep->setDefaultCompilerOptions(options);
-}
-
 void NimCompilerBuildStepConfigWidget::updateUi()
 {
     updateCommandLineText();
-    updateTargetComboBox();
     updateAdditionalArgumentsLineEdit();
-    updateDefaultArgumentsComboBox();
 }
 
 void NimCompilerBuildStepConfigWidget::onAdditionalArgumentsTextEdited(const QString &text)
@@ -109,34 +89,10 @@ void NimCompilerBuildStepConfigWidget::updateCommandLineText()
     m_ui->commandTextEdit->setText(parts.join(QChar::LineFeed));
 }
 
-void NimCompilerBuildStepConfigWidget::updateTargetComboBox()
-{
-    QTC_ASSERT(m_buildStep, return );
-
-    // Re enter the files
-    m_ui->targetComboBox->clear();
-
-    const FilePaths nimFiles = m_buildStep->project()->files([](const Node *n) {
-        return Project::AllFiles(n) && n->path().endsWith(".toml");
-    });
-
-    for (const FilePath &file : nimFiles)
-        m_ui->targetComboBox->addItem(file.fileName(), file.toString());
-
-    const int index = m_ui->targetComboBox->findData(m_buildStep->targetNimFile().toString());
-    m_ui->targetComboBox->setCurrentIndex(index);
-}
-
 void NimCompilerBuildStepConfigWidget::updateAdditionalArgumentsLineEdit()
 {
     const QString text = m_buildStep->userCompilerOptions().join(QChar::Space);
     m_ui->additionalArgumentsLineEdit->setText(text);
-}
-
-void NimCompilerBuildStepConfigWidget::updateDefaultArgumentsComboBox()
-{
-    const int index = m_buildStep->defaultCompilerOptions();
-    m_ui->defaultArgumentsComboBox->setCurrentIndex(index);
 }
 
 }

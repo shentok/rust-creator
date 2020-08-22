@@ -16,6 +16,7 @@ HEADERS += \
     project/nimproject.h \
     project/nimprojectnode.h \
     project/nimbuildconfiguration.h \
+    project/nimbuildconfigurationwidget.h \
     project/nimcompilerbuildstep.h \
     project/nimcompilerbuildstepconfigwidget.h \
     project/nimrunconfiguration.h \
@@ -29,6 +30,7 @@ SOURCES += \
     project/nimproject.cpp \
     project/nimprojectnode.cpp \
     project/nimbuildconfiguration.cpp \
+    project/nimbuildconfigurationwidget.cpp \
     project/nimcompilerbuildstep.cpp \
     project/nimcompilerbuildstepconfigwidget.cpp \
     project/nimrunconfiguration.cpp \
@@ -37,6 +39,7 @@ SOURCES += \
     project/nimtoolchainfactory.cpp \
 
 FORMS += \
+    project/nimbuildconfigurationwidget.ui \
     project/nimcompilerbuildstepconfigwidget.ui \
 
 include(nim_dependencies.pri)
