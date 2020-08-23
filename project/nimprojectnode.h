@@ -25,6 +25,7 @@
 
 #pragma once
 
+#include <projectexplorer/buildtargetinfo.h>
 #include <projectexplorer/projectnodes.h>
 
 namespace Nim {
@@ -33,6 +34,23 @@ class NimProjectNode : public ProjectExplorer::ProjectNode
 {
 public:
     NimProjectNode(const Utils::FilePath &projectFilePath);
+};
+
+class NimTargetNode : public ProjectExplorer::ProjectNode
+{
+public:
+    NimTargetNode(const ProjectExplorer::BuildTargetInfo &buildTargetInfo);
+
+    void setTargetInformation(const QList<Utils::FilePath> &artifacts, const QString &type);
+
+    QString tooltip() const final;
+    QString buildKey() const final;
+
+    Utils::optional<Utils::FilePath> visibleAfterAddFileAction() const override;
+
+private:
+    QString m_tooltip;
+    ProjectExplorer::BuildTargetInfo m_targetBuildInfo;
 };
 
 }
