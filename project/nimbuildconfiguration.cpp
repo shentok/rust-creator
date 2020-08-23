@@ -88,19 +88,19 @@ NimBuildConfiguration::NimBuildConfiguration(Target *target, Core::Id id)
         QTC_ASSERT(buildStep, return);
         auto cleanStep = nimCompilerCleanStep();
         QTC_ASSERT(cleanStep, return);
-        DefaultBuildOptions defaultOption;
+        NimBuildType defaultOption;
         switch (info.buildType) {
         case BuildConfiguration::Release:
-            defaultOption = DefaultBuildOptions::Release;
+            defaultOption = NimBuildType::Release;
             break;
         case BuildConfiguration::Debug:
-            defaultOption = DefaultBuildOptions::Debug;
+            defaultOption = NimBuildType::Debug;
             break;
         default:
-            defaultOption = DefaultBuildOptions::Empty;
+            defaultOption = NimBuildType::Default;
             break;
         }
-        setDefaultCompilerOptions(defaultOption);
+        setNimBuildType(defaultOption);
         buildStep->setUserCompilerOptions(QStringList() << "build");
         cleanStep->setUserCompilerOptions(QStringList() << "clean");
 
@@ -115,7 +115,7 @@ NimBuildConfiguration::NimBuildConfiguration(Target *target, Core::Id id)
 
     connect(this, &NimBuildConfiguration::targetNimFileChanged,
             this, &NimBuildConfiguration::processParametersChanged);
-    connect(this, &NimBuildConfiguration::defaultCompilerOptionsChanged,
+    connect(this, &NimBuildConfiguration::nimBuildTypeChanged,
             this, &NimBuildConfiguration::processParametersChanged);
 }
 
@@ -128,7 +128,7 @@ NamedWidget *NimBuildConfiguration::createConfigWidget()
 
 bool NimBuildConfiguration::fromMap(const QVariantMap &map)
 {
-    m_defaultOptions = static_cast<DefaultBuildOptions>(map[Constants::C_NIMCOMPILERBUILDSTEP_DEFAULTBUILDOPTIONS].toInt());
+    m_buildType = static_cast<NimBuildType>(map[Constants::C_NIMCOMPILERBUILDSTEP_BUILDTYPE].toInt());
     m_targetNimFile = FilePath::fromString(map[Constants::C_NIMCOMPILERBUILDSTEP_TARGETNIMFILE].toString());
 
     if (!ProjectExplorer::ProjectConfiguration::fromMap(map))
@@ -140,24 +140,24 @@ bool NimBuildConfiguration::fromMap(const QVariantMap &map)
 QVariantMap NimBuildConfiguration::toMap() const
 {
     QVariantMap result = BuildConfiguration::toMap();
-    result[Constants::C_NIMCOMPILERBUILDSTEP_DEFAULTBUILDOPTIONS] = m_defaultOptions;
+    result[Constants::C_NIMCOMPILERBUILDSTEP_BUILDTYPE] = m_buildType;
     result[Constants::C_NIMCOMPILERBUILDSTEP_TARGETNIMFILE] = m_targetNimFile.toString();
     return result;
 }
 
 
-NimBuildConfiguration::DefaultBuildOptions NimBuildConfiguration::defaultCompilerOptions() const
+NimBuildConfiguration::NimBuildType NimBuildConfiguration::nimBuildType() const
 {
-    return m_defaultOptions;
+    return m_buildType;
 }
 
 
-void NimBuildConfiguration::setDefaultCompilerOptions(const DefaultBuildOptions options)
+void NimBuildConfiguration::setNimBuildType(const NimBuildType buildType)
 {
-    if (m_defaultOptions == options)
+    if (m_buildType == buildType)
         return;
-    m_defaultOptions = options;
-    emit defaultCompilerOptionsChanged(options);
+    m_buildType = buildType;
+    emit nimBuildTypeChanged(buildType);
 }
 
 

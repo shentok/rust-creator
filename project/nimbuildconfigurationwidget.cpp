@@ -80,8 +80,8 @@ void NimBuildConfigurationWidget::onTargetChanged(int index)
 
 void NimBuildConfigurationWidget::onDefaultArgumentsComboBoxIndexChanged(int index)
 {
-    auto options = static_cast<NimBuildConfiguration::DefaultBuildOptions>(index);
-    m_buildConfiguration->setDefaultCompilerOptions(options);
+    auto options = static_cast<NimBuildConfiguration::NimBuildType>(index);
+    m_buildConfiguration->setNimBuildType(options);
 }
 
 void NimBuildConfigurationWidget::updateUi()
@@ -110,7 +110,9 @@ void NimBuildConfigurationWidget::updateTargetComboBox()
 
 void NimBuildConfigurationWidget::updateDefaultArgumentsComboBox()
 {
-    const int index = m_buildConfiguration->defaultCompilerOptions();
+    QTC_ASSERT(m_buildConfiguration, return);
+
+    const int index = m_buildConfiguration->nimBuildType();
     m_ui->defaultArgumentsComboBox->setCurrentIndex(index);
 }
 

@@ -244,7 +244,7 @@ void NimCompilerBuildStep::updateCommand()
             cmd.addArg(arg);
     }
 
-    if (bc->defaultCompilerOptions() == NimBuildConfiguration::Release)
+    if (bc->nimBuildType() == NimBuildConfiguration::Release)
         cmd.addArg("--release");
 
     cmd.addArg("--target-dir=" + bc->buildDirectory().toString());
