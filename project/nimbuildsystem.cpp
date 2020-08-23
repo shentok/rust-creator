@@ -81,6 +81,7 @@ NimProjectScanner::NimProjectScanner(Project *project)
             auto projectNode = std::make_unique<ProjectNode>(m_project->projectDirectory());
             projectNode->setDisplayName(m_project->displayName());
             projectNode->addNestedNodes(std::move(nodes));
+
             m_project->setRootProjectNode(std::move(projectNode));
         }
 
