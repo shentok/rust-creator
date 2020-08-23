@@ -25,10 +25,57 @@
 
 #include "nimprojectnode.h"
 
+#include "nimbuildsystem.h"
+
+#include <projectexplorer/project.h>
+#include <projectexplorer/target.h>
+
+#include <utils/algorithm.h>
+
+using namespace ProjectExplorer;
+
 namespace Nim {
 
 NimProjectNode::NimProjectNode(const Utils::FilePath &projectFilePath)
     : ProjectNode(projectFilePath)
 {}
+
+NimTargetNode::NimTargetNode(const BuildTargetInfo &buildTargetInfo) :
+    ProjectExplorer::ProjectNode(buildTargetInfo.projectFilePath),
+    m_targetBuildInfo(buildTargetInfo)
+{
+    setPriority(Node::DefaultProjectPriority + 900);
+    setIcon(QIcon(":/projectexplorer/images/build.png")); // TODO: Use proper icon!
+    setListInProject(false);
+    setProductType(ProductType::Other);
+}
+
+QString NimTargetNode::tooltip() const
+{
+    return m_tooltip;
+}
+
+QString NimTargetNode::buildKey() const
+{
+    return m_targetBuildInfo.buildKey;
+}
+
+Utils::optional<Utils::FilePath> NimTargetNode::visibleAfterAddFileAction() const
+{
+    return filePath().pathAppended("CMakeLists.txt");
+}
+
+void NimTargetNode::setTargetInformation(const QList<Utils::FilePath> &artifacts,
+                                           const QString &type)
+{
+    m_tooltip = QCoreApplication::translate("CMakeTargetNode", "Target type: ") + type + "<br>";
+    if (artifacts.isEmpty()) {
+        m_tooltip += QCoreApplication::translate("CMakeTargetNode", "No build artifacts");
+    } else {
+        const QStringList tmp = Utils::transform(artifacts, &Utils::FilePath::toUserOutput);
+        m_tooltip += QCoreApplication::translate("CMakeTargetNode", "Build artifacts:") + "<br>"
+                + tmp.join("<br>");
+    }
+}
 
 } // namespace Nim
