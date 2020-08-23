@@ -46,10 +46,10 @@ class NimBuildConfiguration : public ProjectExplorer::BuildConfiguration
     QVariantMap toMap() const override;
 
 public:
-    enum DefaultBuildOptions { Empty = 0, Debug, Release};
+    enum NimBuildType { Default = 0, Debug, Release};
 
-    DefaultBuildOptions defaultCompilerOptions() const;
-    void setDefaultCompilerOptions(DefaultBuildOptions options);
+    NimBuildType nimBuildType() const;
+    void setNimBuildType(NimBuildType buildType);
 
     Utils::FilePath targetNimFile() const;
     void setTargetNimFile(const Utils::FilePath &targetNimFile);
@@ -57,7 +57,7 @@ public:
     Utils::FilePath outFilePath() const;
 
 signals:
-    void defaultCompilerOptionsChanged(DefaultBuildOptions options);
+    void nimBuildTypeChanged(NimBuildType options);
     void targetNimFileChanged(const Utils::FilePath &targetNimFile);
     void processParametersChanged();
 
@@ -67,7 +67,7 @@ private:
     NimCompilerBuildStep *nimCompilerBuildStep();
     NimCompilerBuildStep *nimCompilerCleanStep();
 
-    DefaultBuildOptions m_defaultOptions;
+    NimBuildType m_buildType;
     Utils::FilePath m_targetNimFile;
 };
 

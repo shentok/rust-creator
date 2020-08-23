@@ -44,7 +44,7 @@ const char C_NIMBUILDCONFIGURATION_ID[] = "Rust.RustBuildConfiguration";
 const char C_NIMCOMPILERBUILDSTEP_ID[] = "Rust.RustCompilerBuildStep";
 const char C_NIMCOMPILERBUILDSTEP_DISPLAY[] = QT_TRANSLATE_NOOP("RustCompilerBuildStep", "Rust Compiler Build Step");
 const QString C_NIMCOMPILERBUILDSTEP_USERCOMPILEROPTIONS = QStringLiteral("Rust.RustCompilerBuildStep.UserCompilerOptions");
-const QString C_NIMCOMPILERBUILDSTEP_DEFAULTBUILDOPTIONS = QStringLiteral("Rust.RustCompilerBuildStep.DefaultBuildOptions");
+const QString C_NIMCOMPILERBUILDSTEP_BUILDTYPE = QStringLiteral("Rust.RustCompilerBuildStep.BuildType");
 const QString C_NIMCOMPILERBUILDSTEP_TARGETNIMFILE = QStringLiteral("Rust.RustCompilerBuildStep.TargetRustFile");
 
 // RustCompilerBuildStepWidget
