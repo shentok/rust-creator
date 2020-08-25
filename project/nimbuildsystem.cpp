@@ -82,32 +82,43 @@ void NimProjectScanner::startScan()
 
         m_project->setDisplayName(ownPackage["name"].toString());
 
+        auto projectNode = std::make_unique<ProjectNode>(m_project->projectDirectory());
+        projectNode->setDisplayName(m_project->displayName());
+        projectNode->setIcon(QIcon(":/rust/images/ferris.png"));
+
         // Collect scanned nodes
-        std::vector<std::unique_ptr<FileNode>> nodes;
         for (const QJsonValue &package : doc["packages"].toArray()) {
+            auto subProjectNode = std::make_unique<ProjectNode>(FilePath::fromString(package["manifest_path"].toString()));
+            subProjectNode->setDisplayName(package["name"].toString());
+            subProjectNode->setIcon(QIcon(":/rust/images/package.png"));
+
             for (const QJsonValue &target : package["targets"].toArray()) {
-                nodes.emplace_back(std::make_unique<FileNode>(FilePath::fromString(target["src_path"].toString()), FileType::Source));
+                auto mainSourceFile = std::make_unique<FileNode>(FilePath::fromString(target["src_path"].toString()), FileType::Source);
+                auto targetNode = std::make_unique<ProjectNode>(FilePath::fromString(package["manifest_path"].toString()));
+                targetNode->setDisplayName(target["name"].toString());
+                targetNode->setIcon(QIcon(":/rust/images/" + target["kind"].toArray()[0].toString() + ".png"));
+                targetNode->addNode(std::move(mainSourceFile));
+                subProjectNode->addNode(std::move(targetNode));
             }
 
-            nodes.emplace_back(std::make_unique<FileNode>(FilePath::fromString(package["manifest_path"].toString()), FileType::Project));
+            auto cargoTomlNode = std::make_unique<FileNode>(FilePath::fromString(package["manifest_path"].toString()), FileType::Project);
+            subProjectNode->addNode(std::move(cargoTomlNode));
+
+            projectNode->addNode(std::move(subProjectNode));
         }
 
         // Sync watched dirs
-        const QSet<QString> fsDirs = Utils::transform<QSet>(nodes, &FileNode::directory);
+        const QSet<QString> fsDirs = Utils::transform<QSet>(projectNode->nodes(), &FileNode::directory);
         const QSet<QString> projectDirs = Utils::toSet(m_directoryWatcher.directories());
         m_directoryWatcher.addDirectories(Utils::toList(fsDirs - projectDirs), FileSystemWatcher::WatchAllChanges);
         m_directoryWatcher.removeDirectories(Utils::toList(projectDirs - fsDirs));
 
         // Sync project files
-        const QSet<FilePath> fsFiles = Utils::transform<QSet>(nodes, &FileNode::filePath);
+        const QSet<FilePath> fsFiles = Utils::transform<QSet>(projectNode->nodes(), &FileNode::filePath);
         const QSet<FilePath> projectFiles = Utils::toSet(m_project->files([](const Node *n) { return Project::AllFiles(n); }));
 
-        if (fsFiles != projectFiles) {
-            auto projectNode = std::make_unique<ProjectNode>(m_project->projectDirectory());
-            projectNode->setDisplayName(m_project->displayName());
-            projectNode->addNestedNodes(std::move(nodes));
+//        if (fsFiles != projectFiles)
             m_project->setRootProjectNode(std::move(projectNode));
-        }
 
         emit finished();
     });
