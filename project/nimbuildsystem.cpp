@@ -28,11 +28,21 @@
 #include "nimproject.h"
 #include "nimprojectnode.h"
 
+#include "../nimconstants.h"
+
+#include <projectexplorer/kitinformation.h>
 #include <projectexplorer/target.h>
+#include <projectexplorer/toolchain.h>
 
 #include <utils/algorithm.h>
 #include <utils/fileutils.h>
+#include <utils/icon.h>
 #include <utils/qtcassert.h>
+#include <utils/theme/theme.h>
+
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 using namespace ProjectExplorer;
 using namespace Utils;
@@ -45,11 +55,6 @@ const char EXCLUDED_FILES_KEY[] = "ExcludedFiles";
 NimProjectScanner::NimProjectScanner(Project *project)
     : m_project(project)
 {
-    m_scanner.setFilter([this](const Utils::MimeType &, const FilePath &fp) {
-        const QString path = fp.toString();
-        return excludedFiles().contains(path) || path.endsWith(".toml.user");
-    });
-
     connect(&m_directoryWatcher, &FileSystemWatcher::directoryChanged,
             this, &NimProjectScanner::directoryChanged);
     connect(&m_directoryWatcher, &FileSystemWatcher::fileChanged,
@@ -58,32 +63,51 @@ NimProjectScanner::NimProjectScanner(Project *project)
     connect(m_project, &Project::settingsLoaded, this, &NimProjectScanner::loadSettings);
     connect(m_project, &Project::aboutToSaveSettings, this, &NimProjectScanner::saveSettings);
 
-    connect(&m_scanner, &TreeScanner::finished, this, [this] {
+    connect(&m_scanner, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [this] {
+        const QJsonDocument doc = QJsonDocument::fromJson(m_scanner.readAllStandardOutput());
+        const QJsonValue ownPackage = Utils::filtered(doc["packages"].toArray(), [this](const QJsonValue &value) {
+            return FilePath::fromString(value["manifest_path"].toString()) == m_project->projectFilePath();
+        })[0];
+
+        m_project->setDisplayName(ownPackage["name"].toString());
+
+        auto projectNode = std::make_unique<ProjectNode>(m_project->projectDirectory());
+        projectNode->setDisplayName(m_project->displayName());
+        projectNode->setIcon(QIcon(":/rust/images/ferris.png"));
+
         // Collect scanned nodes
-        std::vector<std::unique_ptr<FileNode>> nodes;
-        for (FileNode *node : m_scanner.release()) {
-            if (!node->path().endsWith(".toml"))
-                node->setEnabled(false); // Disable files that do not end in .toml
-            nodes.emplace_back(node);
+        for (const QJsonValue &package : doc["packages"].toArray()) {
+            auto subProjectNode = std::make_unique<ProjectNode>(FilePath::fromString(package["manifest_path"].toString()));
+            subProjectNode->setDisplayName(package["name"].toString());
+            subProjectNode->setIcon(QIcon(":/rust/images/package.png"));
+
+            for (const QJsonValue &target : package["targets"].toArray()) {
+                auto mainSourceFile = std::make_unique<FileNode>(FilePath::fromString(target["src_path"].toString()), FileType::Source);
+                auto targetNode = std::make_unique<ProjectNode>(FilePath::fromString(package["manifest_path"].toString()));
+                targetNode->setDisplayName(target["name"].toString());
+                targetNode->setIcon(QIcon(":/rust/images/" + target["kind"].toArray()[0].toString() + ".png"));
+                targetNode->addNode(std::move(mainSourceFile));
+                subProjectNode->addNode(std::move(targetNode));
+            }
+
+            auto cargoTomlNode = std::make_unique<FileNode>(FilePath::fromString(package["manifest_path"].toString()), FileType::Project);
+            subProjectNode->addNode(std::move(cargoTomlNode));
+
+            projectNode->addNode(std::move(subProjectNode));
         }
 
         // Sync watched dirs
-        const QSet<QString> fsDirs = Utils::transform<QSet>(nodes, &FileNode::directory);
+        const QSet<QString> fsDirs = Utils::transform<QSet>(projectNode->nodes(), &FileNode::directory);
         const QSet<QString> projectDirs = Utils::toSet(m_directoryWatcher.directories());
         m_directoryWatcher.addDirectories(Utils::toList(fsDirs - projectDirs), FileSystemWatcher::WatchAllChanges);
         m_directoryWatcher.removeDirectories(Utils::toList(projectDirs - fsDirs));
 
         // Sync project files
-        const QSet<FilePath> fsFiles = Utils::transform<QSet>(nodes, &FileNode::filePath);
+        const QSet<FilePath> fsFiles = Utils::transform<QSet>(projectNode->nodes(), &FileNode::filePath);
         const QSet<FilePath> projectFiles = Utils::toSet(m_project->files([](const Node *n) { return Project::AllFiles(n); }));
 
-        if (fsFiles != projectFiles) {
-            auto projectNode = std::make_unique<ProjectNode>(m_project->projectDirectory());
-            projectNode->setDisplayName(m_project->displayName());
-            projectNode->addNestedNodes(std::move(nodes));
-
+//        if (fsFiles != projectFiles)
             m_project->setRootProjectNode(std::move(projectNode));
-        }
 
         emit finished();
     });
@@ -107,7 +131,20 @@ void NimProjectScanner::saveSettings()
 
 void NimProjectScanner::startScan()
 {
-    m_scanner.asyncScanForFiles(m_project->projectDirectory());
+    QTC_ASSERT(m_project->activeTarget(), return);
+    QTC_ASSERT(m_project->activeTarget()->kit(), return);
+    Kit *kit = m_project->activeTarget()->kit();
+    auto tc = ToolChainKitAspect::toolChain(kit, Constants::C_NIMLANGUAGE_ID);
+    QTC_ASSERT(tc, return);
+
+    const auto args = QStringList()
+        << "metadata"
+        << "--no-deps"
+        << "--offline"
+        << "--manifest-path=" + m_project->projectFilePath().toString()
+        << "--format-version=1";
+
+    m_scanner.start(tc->compilerCommand().toString(), args);
 }
 
 void NimProjectScanner::watchProjectFilePath()

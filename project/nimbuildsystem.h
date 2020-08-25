@@ -26,9 +26,10 @@
 #pragma once
 
 #include <projectexplorer/buildsystem.h>
-#include <projectexplorer/treescanner.h>
 
 #include <utils/filesystemwatcher.h>
+
+#include <QProcess>
 
 namespace Nim {
 
@@ -60,7 +61,7 @@ private:
     void saveSettings();
 
     ProjectExplorer::Project *m_project = nullptr;
-    ProjectExplorer::TreeScanner m_scanner;
+    QProcess m_scanner;
     Utils::FileSystemWatcher m_directoryWatcher;
 };
 
