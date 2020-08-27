@@ -75,6 +75,7 @@ void RustCWorker::start(const FilePath &mainSourceFile)
             QString line = ts.readLine().trimmed();
             line.chop(1);
             auto file = FilePath::fromString(m_rustc.workingDirectory()).pathAppended(line);
+            qDebug() << file;
             auto mainSourceFile = std::make_unique<FileNode>(file, FileType::Source);
             files.emplace_back(std::move(mainSourceFile));
         }
