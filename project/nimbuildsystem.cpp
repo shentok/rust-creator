@@ -52,6 +52,49 @@ namespace Nim {
 const char SETTINGS_KEY[] = "Rust.BuildSystem";
 const char EXCLUDED_FILES_KEY[] = "ExcludedFiles";
 
+RustCWorker::RustCWorker(ProjectNode* node, QObject* parent) :
+    QObject(parent),
+    m_rustc(this),
+    m_node(node)
+{
+    m_fileSaver.setAutoRemove(true);
+}
+
+void RustCWorker::start(const FilePath &mainSourceFile)
+{
+    m_rustc.setWorkingDirectory(mainSourceFile.toFileInfo().dir().absolutePath());
+
+    connect(&m_rustc, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [this] {
+        if (!m_node)
+            return;
+
+        std::vector<std::unique_ptr<FileNode>> files;
+        QTextStream ts(m_fileSaver.file());
+        while (!ts.atEnd())
+        {
+            QString line = ts.readLine().trimmed();
+            line.chop(1);
+            auto file = FilePath::fromString(m_rustc.workingDirectory()).pathAppended(line);
+            auto mainSourceFile = std::make_unique<FileNode>(file, FileType::Source);
+            files.emplace_back(std::move(mainSourceFile));
+        }
+
+        m_node->addNestedNodes(std::move(files));
+
+        deleteLater();
+    });
+
+
+    const QStringList args = QStringList()
+            << "--emit"
+            << "dep-info"
+            << "-o"
+            << m_fileSaver.fileName()
+            << mainSourceFile.toString();
+
+    m_rustc.start("rustc", args);
+}
+
 NimProjectScanner::NimProjectScanner(Project *project)
     : m_project(project)
 {
@@ -82,13 +125,14 @@ NimProjectScanner::NimProjectScanner(Project *project)
             subProjectNode->setIcon(QIcon(":/rust/images/package.png"));
 
             for (const QJsonValue &target : package["targets"].toArray()) {
-                auto mainSourceFile = std::make_unique<FileNode>(FilePath::fromString(target["src_path"].toString()), FileType::Source);
                 auto targetNode = std::make_unique<ProjectNode>(FilePath::fromString(package["manifest_path"].toString()));
                 targetNode->setDisplayName(target["name"].toString());
                 const QString iconPath = ":/rust/images/" + target["kind"].toArray()[0].toString() + ".png";
                 targetNode->setIcon(QIcon(QFileInfo::exists(iconPath) ? iconPath : ":/rust/images/target.png"));
-                targetNode->addNode(std::move(mainSourceFile));
+                RustCWorker *worker = new RustCWorker(targetNode.get(), this);
                 subProjectNode->addNode(std::move(targetNode));
+
+                worker->start(FilePath::fromString(target["src_path"].toString()));
             }
 
             auto cargoTomlNode = std::make_unique<FileNode>(FilePath::fromString(package["manifest_path"].toString()), FileType::Project);

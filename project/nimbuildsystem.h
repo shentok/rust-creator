@@ -33,6 +33,20 @@
 
 namespace Nim {
 
+class RustCWorker : public QObject
+{
+    Q_OBJECT
+public:
+    RustCWorker(ProjectExplorer::ProjectNode *node, QObject *parent);
+
+    void start(const Utils::FilePath& mainSourceFile);
+
+private:
+    Utils::TempFileSaver m_fileSaver;
+    QProcess m_rustc;
+    ProjectExplorer::ProjectNode *m_node;
+};
+
 class NimProjectScanner : public QObject
 {
     Q_OBJECT
