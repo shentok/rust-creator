@@ -96,7 +96,8 @@ void NimProjectScanner::startScan()
                 auto mainSourceFile = std::make_unique<FileNode>(FilePath::fromString(target["src_path"].toString()), FileType::Source);
                 auto targetNode = std::make_unique<ProjectNode>(FilePath::fromString(package["manifest_path"].toString()));
                 targetNode->setDisplayName(target["name"].toString());
-                targetNode->setIcon(QIcon(":/rust/images/" + target["kind"].toArray()[0].toString() + ".png"));
+                const QString iconPath = ":/rust/images/" + target["kind"].toArray()[0].toString() + ".png";
+                targetNode->setIcon(QIcon(QFileInfo::exists(iconPath) ? iconPath : ":/rust/images/target.png"));
                 targetNode->addNode(std::move(mainSourceFile));
                 subProjectNode->addNode(std::move(targetNode));
             }
