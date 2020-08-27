@@ -14,5 +14,7 @@
         <file>images/example.png</file>
         <file>images/ferris.png</file>
         <file>images/ferris@2x.png</file>
+        <file>images/target.png</file>
+        <file>images/target@2x.png</file>
     </qresource>
 </RCC>
