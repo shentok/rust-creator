@@ -27,12 +27,17 @@
 
 #include "../nimconstants.h"
 
+#include <projectexplorer/buildconfiguration.h>
 #include <projectexplorer/target.h>
 #include <projectexplorer/taskhub.h>
 
 #include <utils/algorithm.h>
+#include <utils/hostosinfo.h>
 #include <utils/qtcassert.h>
 
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QProcess>
 
 using namespace ProjectExplorer;
@@ -40,49 +45,23 @@ using namespace Utils;
 
 namespace Nim {
 
-static QList<QByteArray> linesFromProcessOutput(QProcess *process)
+static NimbleMetadata parseMetadata(const QString &nimblePath, const QString &projectFilePath)
 {
-    QList<QByteArray> lines = process->readAllStandardOutput().split('\n');
-    lines = Utils::transform(lines, [](const QByteArray &line){ return line.trimmed(); });
-    Utils::erase(lines, [](const QByteArray &line) { return line.isEmpty(); });
-    return lines;
-}
+    const auto args = QStringList()
+        << "metadata"
+        << "--no-deps"
+        << "--offline"
+        << "--manifest-path=" + projectFilePath
+        << "--format-version=1";
 
-static std::vector<NimbleTask> parseTasks(const QString &nimblePath, const QString &workingDirectory)
-{
     QProcess process;
-    process.setWorkingDirectory(workingDirectory);
-    process.start(nimblePath, {"tasks"});
+    process.start(nimblePath, args);
     process.waitForFinished();
 
-    std::vector<NimbleTask> result;
-
-    if (process.exitCode() != 0) {
-        TaskHub::addTask(Task(Task::Error,
-                              QString::fromUtf8(process.readAllStandardOutput()),
-                              {}, -1, Constants::C_NIMPARSE_ID));
-        return result;
-    }
-
-    const QList<QByteArray> &lines = linesFromProcessOutput(&process);
-
-    for (const QByteArray &line : lines) {
-        QList<QByteArray> tokens = line.trimmed().split(' ');
-        QTC_ASSERT(!tokens.empty(), continue);
-        QString taskName = QString::fromUtf8(tokens.takeFirst());
-        QString taskDesc = QString::fromUtf8(tokens.join(' '));
-        result.push_back({std::move(taskName), std::move(taskDesc)});
-    }
-
-    return result;
-}
-
-static NimbleMetadata parseMetadata(const QString &nimblePath, const QString &workingDirectory)
-{
-    QProcess process;
-    process.setWorkingDirectory(workingDirectory);
-    process.start(nimblePath, {"dump"});
-    process.waitForFinished();
+    const QJsonDocument doc = QJsonDocument::fromJson(process.readAllStandardOutput());
+    const QJsonValue ownPackage = Utils::filtered(doc["packages"].toArray(), [projectFilePath](const QJsonValue &value) {
+        return value["manifest_path"].toString() == projectFilePath;
+    })[0];
 
     NimbleMetadata result = {};
 
@@ -92,28 +71,14 @@ static NimbleMetadata parseMetadata(const QString &nimblePath, const QString &wo
                               {}, -1, Constants::C_NIMPARSE_ID));
         return result;
     }
-    const QList<QByteArray> &lines = linesFromProcessOutput(&process);
 
-    for (const QByteArray &line : lines) {
-        QList<QByteArray> tokens = line.trimmed().split(':');
-        QTC_ASSERT(tokens.size() == 2, continue);
-        QString name = QString::fromUtf8(tokens.takeFirst()).trimmed();
-        QString value = QString::fromUtf8(tokens.takeFirst()).trimmed();
-        QTC_ASSERT(value.size() >= 2, continue);
-        QTC_ASSERT(value.front() == QChar('"'), continue);
-        QTC_ASSERT(value.back() == QChar('"'), continue);
-        value.remove(0, 1);
-        value.remove(value.size() - 1, 1);
+    result.projectName = ownPackage["name"].toString();
 
-        if (name == "binDir")
-            result.binDir = value;
-        else if (name == "srcDir")
-            result.srcDir = value;
-        else if (name == "bin") {
-            QStringList bin = value.split(',');
-            bin = Utils::transform(bin, [](const QString &x){ return x.trimmed(); });
-            Utils::erase(bin, [](const QString &x) { return x.isEmpty(); });
-            result.bin = std::move(bin);
+    for (const QJsonValue &target : ownPackage["targets"].toArray()) {
+        const QString kind = target["kind"][0].toString();
+        const QString name = target["name"].toString();
+        if (kind == "bin") {
+            result.bin.append(name);
         }
     }
 
@@ -164,22 +129,34 @@ void NimbleBuildSystem::updateProject()
     const FilePath nimble = Nim::nimblePathFromKit(kit());
 
     const NimbleMetadata metadata = parseMetadata(nimble.toString(), projectDir.toString());
-    const FilePath binDir = projectDir.pathAppended(metadata.binDir);
-    const FilePath srcDir = projectDir.pathAppended("src");
 
-    QList<BuildTargetInfo> targets = Utils::transform(metadata.bin, [&](const QString &bin){
-        BuildTargetInfo info = {};
-        info.displayName = bin;
-        info.targetFilePath = binDir.pathAppended(bin);
-        info.projectFilePath = projectFilePath();
-        info.workingDirectory = binDir;
-        info.buildKey = bin;
-        return info;
-    });
+    QList<BuildTargetInfo> targets;
+    std::vector<NimbleTask> tasks;
+
+    if (target()->activeBuildConfiguration()) {
+        const FilePath buildDirectory = target()->activeBuildConfiguration()->buildDirectory();
+
+        targets = Utils::transform(metadata.bin, [&](const QString &bin) {
+            BuildTargetInfo info = {};
+            info.displayName = bin;
+            info.targetFilePath = buildDirectory.pathAppended(HostOsInfo::withExecutableSuffix(bin));
+            info.projectFilePath = projectFilePath();
+            info.workingDirectory = buildDirectory;
+            info.buildKey = bin;
+            return info;
+        });
+
+        tasks = Utils::transform(metadata.bin, [&](const QString &bin) {
+            NimbleTask task = {};
+            task.name = bin;
+            task.description = bin;
+            return task;
+        }).toVector().toStdVector();
+    }
 
     setApplicationTargets(std::move(targets));
+    project()->setDisplayName(metadata.projectName);
 
-    std::vector<NimbleTask> tasks = parseTasks(nimble.toString(), projectDir.toString());
     if (tasks != m_tasks) {
         m_tasks = std::move(tasks);
         emit tasksChanged();
