@@ -43,12 +43,11 @@ struct NimbleTask
 
 struct NimbleMetadata
 {
+    QString projectName;
     QStringList bin;
-    QString binDir;
-    QString srcDir;
 
     bool operator==(const NimbleMetadata &o) const {
-        return bin == o.bin && binDir == o.binDir && srcDir == o.srcDir;
+        return projectName == o.projectName && bin == o.bin;
     }
     bool operator!=(const NimbleMetadata &o) const {
         return  !operator==(o);
