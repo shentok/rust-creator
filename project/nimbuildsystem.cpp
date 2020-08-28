@@ -45,14 +45,6 @@ const char EXCLUDED_FILES_KEY[] = "ExcludedFiles";
 NimProjectScanner::NimProjectScanner(Project *project)
     : m_project(project)
 {
-    m_scanner.setFilter([this](const Utils::MimeType &, const FilePath &fp) {
-        const QString path = fp.toString();
-        return excludedFiles().contains(path)
-                || path.endsWith(".nimproject")
-                || path.contains(".nimproject.user")
-                || path.contains(".nimble.user");
-    });
-
     connect(&m_directoryWatcher, &FileSystemWatcher::directoryChanged,
             this, &NimProjectScanner::directoryChanged);
     connect(&m_directoryWatcher, &FileSystemWatcher::fileChanged,
@@ -60,11 +52,23 @@ NimProjectScanner::NimProjectScanner(Project *project)
 
     connect(m_project, &Project::settingsLoaded, this, &NimProjectScanner::loadSettings);
     connect(m_project, &Project::aboutToSaveSettings, this, &NimProjectScanner::saveSettings);
+}
 
-    connect(&m_scanner, &TreeScanner::finished, this, [this] {
+void NimProjectScanner::startScan()
+{
+    m_scanner = std::make_unique<TreeScanner>();
+    m_scanner->setFilter([this](const Utils::MimeType &, const FilePath &fp) {
+        const QString path = fp.toString();
+        return excludedFiles().contains(path)
+                || path.endsWith(".nimproject")
+                || path.contains(".nimproject.user")
+                || path.contains(".nimble.user");
+    });
+
+    connect(m_scanner.get(), &TreeScanner::finished, this, [this] {
         // Collect scanned nodes
         std::vector<std::unique_ptr<FileNode>> nodes;
-        for (FileNode *node : m_scanner.release()) {
+        for (FileNode *node : m_scanner->release()) {
             if (!node->path().endsWith(".nim") && !node->path().endsWith(".nimble"))
                 node->setEnabled(false); // Disable files that do not end in .nim
             nodes.emplace_back(node);
@@ -89,6 +93,8 @@ NimProjectScanner::NimProjectScanner(Project *project)
 
         emit finished();
     });
+
+    m_scanner->asyncScanForFiles(m_project->projectDirectory());
 }
 
 void NimProjectScanner::loadSettings()
@@ -105,11 +111,6 @@ void NimProjectScanner::saveSettings()
     QVariantMap settings;
     settings.insert(EXCLUDED_FILES_KEY, excludedFiles());
     m_project->setNamedSettings(SETTINGS_KEY, settings);
-}
-
-void NimProjectScanner::startScan()
-{
-    m_scanner.asyncScanForFiles(m_project->projectDirectory());
 }
 
 void NimProjectScanner::setExcludedFiles(const QStringList &list)

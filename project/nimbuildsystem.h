@@ -59,7 +59,7 @@ private:
     void saveSettings();
 
     ProjectExplorer::Project *m_project = nullptr;
-    ProjectExplorer::TreeScanner m_scanner;
+    std::unique_ptr<ProjectExplorer::TreeScanner> m_scanner;
     Utils::FileSystemWatcher m_directoryWatcher;
 };
 
