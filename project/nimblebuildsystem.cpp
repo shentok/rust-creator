@@ -25,11 +25,16 @@
 
 #include "nimblebuildsystem.h"
 
+#include <projectexplorer/buildconfiguration.h>
 #include <projectexplorer/target.h>
 
 #include <utils/algorithm.h>
+#include <utils/hostosinfo.h>
 #include <utils/qtcassert.h>
 
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QProcess>
 #include <QStandardPaths>
 
@@ -38,63 +43,33 @@ using namespace Utils;
 
 namespace Nim {
 
-static std::vector<NimbleTask> parseTasks(const QString &nimblePath, const QString &workingDirectory)
+static NimbleMetadata parseMetadata(const QString &nimblePath, const FilePath &projectFilePath)
 {
+    const auto args = QStringList()
+        << "metadata"
+        << "--no-deps"
+        << "--offline"
+        << "--manifest-path=" + projectFilePath.toString()
+        << "--format-version=1";
+
     QProcess process;
-    process.setWorkingDirectory(workingDirectory);
-    process.start(QStandardPaths::findExecutable(nimblePath), {"tasks"});
+    process.start(QStandardPaths::findExecutable(nimblePath), args);
     process.waitForFinished();
 
-    std::vector<NimbleTask> result;
-
-    QList<QByteArray> lines = process.readAllStandardOutput().split('\n');
-    lines = Utils::transform(lines, [](const QByteArray &line){ return line.trimmed(); });
-    Utils::erase(lines, [](const QByteArray &line) { return line.isEmpty(); });
-
-    for (const QByteArray &line : lines) {
-        QList<QByteArray> tokens = line.trimmed().split(' ');
-        QTC_ASSERT(!tokens.empty(), continue);
-        QString taskName = QString::fromUtf8(tokens.takeFirst());
-        QString taskDesc = QString::fromUtf8(tokens.join(' '));
-        result.push_back({std::move(taskName), std::move(taskDesc)});
-    }
-
-    return result;
-}
-
-static NimbleMetadata parseMetadata(const QString &nimblePath, const QString &workingDirectory)
-{
-    QProcess process;
-    process.setWorkingDirectory(workingDirectory);
-    process.start(QStandardPaths::findExecutable(nimblePath), {"dump"});
-    process.waitForFinished();
+    const QJsonDocument doc = QJsonDocument::fromJson(process.readAllStandardOutput());
+    const QJsonValue ownPackage = Utils::filtered(doc["packages"].toArray(), [projectFilePath](const QJsonValue &value) {
+        return FilePath::fromString(value["manifest_path"].toString()) == projectFilePath;
+    })[0];
 
     NimbleMetadata result = {};
 
-    QList<QByteArray> lines = process.readAllStandardOutput().split('\n');
-    lines = Utils::transform(lines, [](const QByteArray &line){ return line.trimmed(); });
-    Utils::erase(lines, [](const QByteArray &line) { return line.isEmpty(); });
+    result.projectName = ownPackage["name"].toString();
 
-    for (const QByteArray &line : lines) {
-        QList<QByteArray> tokens = line.trimmed().split(':');
-        QTC_ASSERT(tokens.size() == 2, continue);
-        QString name = QString::fromUtf8(tokens.takeFirst()).trimmed();
-        QString value = QString::fromUtf8(tokens.takeFirst()).trimmed();
-        QTC_ASSERT(value.size() >= 2, continue);
-        QTC_ASSERT(value.front() == QChar('"'), continue);
-        QTC_ASSERT(value.back() == QChar('"'), continue);
-        value.remove(0, 1);
-        value.remove(value.size() - 1, 1);
-
-        if (name == "binDir")
-            result.binDir = value;
-        else if (name == "srcDir")
-            result.srcDir = value;
-        else if (name == "bin") {
-            QStringList bin = value.split(',');
-            bin = Utils::transform(bin, [](const QString &x){ return x.trimmed(); });
-            Utils::erase(bin, [](const QString &x) { return x.isEmpty(); });
-            result.bin = std::move(bin);
+    for (const QJsonValue &target : ownPackage["targets"].toArray()) {
+        const QString kind = target["kind"][0].toString();
+        const QString name = target["name"].toString();
+        if (kind == "bin") {
+            result.bin.append(name);
         }
     }
 
@@ -142,23 +117,35 @@ void NimbleBuildSystem::updateProject()
 {
     const FilePath projectDir = projectDirectory();
 
-    const NimbleMetadata metadata = parseMetadata(QStandardPaths::findExecutable("nimble"), projectDir.toString());
-    const FilePath binDir = projectDir.pathAppended(metadata.binDir);
-    const FilePath srcDir = projectDir.pathAppended("src");
+    const NimbleMetadata metadata = parseMetadata(QStandardPaths::findExecutable("cargo"), projectFilePath());
 
-    QList<BuildTargetInfo> targets = Utils::transform(metadata.bin, [&](const QString &bin){
-        BuildTargetInfo info = {};
-        info.displayName = bin;
-        info.targetFilePath = binDir.pathAppended(bin);
-        info.projectFilePath = projectFilePath();
-        info.workingDirectory = binDir;
-        info.buildKey = bin;
-        return info;
-    });
+    QList<BuildTargetInfo> targets;
+    std::vector<NimbleTask> tasks;
+
+    if (target()->activeBuildConfiguration()) {
+        const FilePath buildDirectory = target()->activeBuildConfiguration()->buildDirectory();
+
+        targets = Utils::transform(metadata.bin, [&](const QString &bin) {
+            BuildTargetInfo info = {};
+            info.displayName = bin;
+            info.targetFilePath = buildDirectory.pathAppended(HostOsInfo::withExecutableSuffix(bin));
+            info.projectFilePath = projectFilePath();
+            info.workingDirectory = buildDirectory;
+            info.buildKey = bin;
+            return info;
+        });
+
+        tasks = Utils::transform(metadata.bin, [&](const QString &bin) {
+            NimbleTask task = {};
+            task.name = bin;
+            task.description = bin;
+            return task;
+        }).toVector().toStdVector();
+    }
 
     setApplicationTargets(std::move(targets));
+    project()->setDisplayName(metadata.projectName);
 
-    std::vector<NimbleTask> tasks = parseTasks(QStandardPaths::findExecutable("nimble"), projectDir.toString());
     if (tasks != m_tasks) {
         m_tasks = std::move(tasks);
         emit tasksChanged();
