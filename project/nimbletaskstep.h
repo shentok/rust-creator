@@ -25,7 +25,7 @@
 
 #pragma once
 
-#include <projectexplorer/processstep.h>
+#include <projectexplorer/abstractprocessstep.h>
 
 namespace Nim {
 
@@ -34,7 +34,7 @@ class NimbleTaskStep : public ProjectExplorer::AbstractProcessStep
     Q_OBJECT
 
 public:
-    NimbleTaskStep(ProjectExplorer::BuildStepList *parentList, Core::Id id);
+    NimbleTaskStep(ProjectExplorer::BuildStepList *parentList, Utils::Id id);
 
     bool init() override;
 
