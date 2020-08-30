@@ -39,9 +39,9 @@ class NimCompilerBuildStep : public ProjectExplorer::AbstractProcessStep
 public:
     enum DefaultBuildOptions { Empty = 0, Debug, Release};
 
-    NimCompilerBuildStep(ProjectExplorer::BuildStepList *parentList, Core::Id id);
+    NimCompilerBuildStep(ProjectExplorer::BuildStepList *parentList, Utils::Id id);
 
-    bool init() override;
+    void setupOutputFormatter(Utils::OutputFormatter *formatter) override;
     ProjectExplorer::BuildStepConfigWidget *createConfigWidget() override;
 
     bool fromMap(const QVariantMap &map) override;

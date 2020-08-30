@@ -34,10 +34,10 @@ class NimbleBuildStep : public ProjectExplorer::AbstractProcessStep
     Q_OBJECT
 
 public:
-    NimbleBuildStep(ProjectExplorer::BuildStepList *parentList, Core::Id id);
+    NimbleBuildStep(ProjectExplorer::BuildStepList *parentList, Utils::Id id);
 
     bool init() override;
-
+    void setupOutputFormatter(Utils::OutputFormatter *formatter) override;
     ProjectExplorer::BuildStepConfigWidget *createConfigWidget() override;
 
     QString arguments() const;
