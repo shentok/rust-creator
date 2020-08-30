@@ -32,7 +32,6 @@
 #include "project/nimtoolchainfactory.h"
 #include "project/nimblebuildstep.h"
 #include "project/nimbletaskstep.h"
-#include "settings/nimsettings.h"
 
 #include <coreplugin/fileiconprovider.h>
 #include <projectexplorer/projectmanager.h>
@@ -47,7 +46,6 @@ namespace Nim {
 class NimPluginPrivate
 {
 public:
-    NimSettings settings;
     NimbleBuildConfigurationFactory nimbleBuildConfigFactory;
     NimbleRunConfigurationFactory nimbleRunConfigFactory;
     NimbleTestConfigurationFactory nimbleTestConfigFactory;
