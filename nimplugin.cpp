@@ -32,7 +32,6 @@
 #include "project/nimproject.h"
 #include "project/nimrunconfiguration.h"
 #include "project/nimtoolchainfactory.h"
-#include "settings/nimsettings.h"
 
 #include <coreplugin/fileiconprovider.h>
 #include <projectexplorer/projectmanager.h>
@@ -47,7 +46,6 @@ namespace Nim {
 class NimPluginPrivate
 {
 public:
-    NimSettings settings;
     NimBuildConfigurationFactory buildConfigFactory;
     NimRunConfigurationFactory nimRunConfigFactory;
     RunWorkerFactory nimRunWorkerFactory {
