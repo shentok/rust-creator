@@ -20,7 +20,6 @@ HEADERS += \
     project/nimoutputtaskparser.h \
     project/nimbuildsystem.h \
     project/nimblebuildsystem.h \
-    settings/nimsettings.h \
     project/nimtoolchain.h \
     project/nimtoolchainfactory.h \
 
@@ -34,7 +33,6 @@ SOURCES += \
     project/nimoutputtaskparser.cpp \
     project/nimbuildsystem.cpp \
     project/nimblebuildsystem.cpp \
-    settings/nimsettings.cpp \
     project/nimtoolchain.cpp \
     project/nimtoolchainfactory.cpp \
 
