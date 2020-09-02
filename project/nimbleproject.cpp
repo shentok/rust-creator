@@ -29,7 +29,6 @@
 
 #include <coreplugin/icontext.h>
 #include <projectexplorer/projectexplorerconstants.h>
-#include <utils/qtcassert.h>
 
 using namespace Nim;
 using namespace ProjectExplorer;
@@ -43,29 +42,3 @@ NimbleProject::NimbleProject(const Utils::FilePath &fileName)
     setProjectLanguages(Core::Context(ProjectExplorer::Constants::CXX_LANGUAGE_ID));
     setBuildSystemCreator([] (Target *t) { return new NimbleBuildSystem(t); });
 }
-
-QVariantMap NimbleProject::toMap() const
-{
-    QVariantMap result = Project::toMap();
-    result[Constants::C_NIMPROJECT_EXCLUDEDFILES] = m_excludedFiles;
-    return result;
-}
-
-Project::RestoreResult NimbleProject::fromMap(const QVariantMap &map, QString *errorMessage)
-{
-    auto result = Project::fromMap(map, errorMessage);
-    m_excludedFiles = map.value(Constants::C_NIMPROJECT_EXCLUDEDFILES).toStringList();
-    return result;
-}
-
-QStringList NimbleProject::excludedFiles() const
-{
-    return m_excludedFiles;
-}
-
-void NimbleProject::setExcludedFiles(const QStringList &excludedFiles)
-{
-    m_excludedFiles = excludedFiles;
-}
-
-

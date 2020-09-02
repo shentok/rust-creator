@@ -37,9 +37,6 @@ const char C_NIMBLEPROJECT_ID[] = "Nim.NimbleProject";
 // NimToolChain
 const char C_NIMTOOLCHAIN_TYPEID[] = "Nim.NimToolChain";
 
-// NimProject
-const char C_NIMPROJECT_EXCLUDEDFILES[] = "Nim.NimProjectExcludedFiles";
-
 // NimBuildConfiguration
 const char C_NIMBUILDCONFIGURATION_ID[] = "Nim.NimBuildConfiguration";
 const char C_NIMBLEBUILDCONFIGURATION_ID[] = "Nim.NimbleBuildConfiguration";
