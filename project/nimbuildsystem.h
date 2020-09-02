@@ -32,30 +32,6 @@
 
 namespace Nim {
 
-class NimProjectScanner : public QObject
-{
-    Q_OBJECT
-
-public:
-    explicit NimProjectScanner(ProjectExplorer::Project *project);
-
-    void startScan();
-
-    bool addFiles(const QStringList &filePaths);
-    ProjectExplorer::RemovedFilesFromProject removeFiles(const QStringList &filePaths);
-    bool renameFile(const QString &from, const QString &to);
-
-signals:
-    void finished();
-    void requestReparse();
-    void directoryChanged(const QString &path);
-
-private:
-    ProjectExplorer::Project *m_project = nullptr;
-    std::unique_ptr<ProjectExplorer::TreeScanner> m_scanner;
-    Utils::FileSystemWatcher m_directoryWatcher;
-};
-
 class NimBuildSystem : public ProjectExplorer::BuildSystem
 {
     Q_OBJECT
@@ -81,7 +57,8 @@ protected:
     void collectProjectFiles();
 
     ParseGuard m_guard;
-    NimProjectScanner m_projectScanner;
+    std::unique_ptr<ProjectExplorer::TreeScanner> m_scanner;
+    Utils::FileSystemWatcher m_directoryWatcher;
 };
 
 } // namespace Nim

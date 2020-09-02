@@ -39,15 +39,10 @@ using namespace Utils;
 
 namespace Nim {
 
-NimProjectScanner::NimProjectScanner(Project *project)
-    : m_project(project)
+void NimBuildSystem::triggerParsing()
 {
-    connect(&m_directoryWatcher, &FileSystemWatcher::directoryChanged,
-            this, &NimProjectScanner::directoryChanged);
-}
+    m_guard = guardParsingRun();
 
-void NimProjectScanner::startScan()
-{
     m_scanner = std::make_unique<TreeScanner>();
     m_scanner->setFilter([](const Utils::MimeType &, const FilePath &fp) {
         return fp.endsWith(".toml.user");
@@ -70,67 +65,33 @@ void NimProjectScanner::startScan()
 
         // Sync project files
         const QSet<FilePath> fsFiles = Utils::transform<QSet>(nodes, &FileNode::filePath);
-        const QSet<FilePath> projectFiles = Utils::toSet(m_project->files([](const Node *n) { return Project::AllFiles(n); }));
+        const QSet<FilePath> projectFiles = Utils::toSet(project()->files([](const Node *n) { return Project::AllFiles(n); }));
 
         if (fsFiles != projectFiles) {
-            auto projectNode = std::make_unique<ProjectNode>(m_project->projectDirectory());
-            projectNode->setDisplayName(m_project->displayName());
+            auto projectNode = std::make_unique<ProjectNode>(project()->projectDirectory());
+            projectNode->setDisplayName(project()->displayName());
             projectNode->addNestedNodes(std::move(nodes));
-            m_project->setRootProjectNode(std::move(projectNode));
+            project()->setRootProjectNode(std::move(projectNode));
         }
 
-        emit finished();
-    });
-
-    m_scanner->asyncScanForFiles(m_project->projectDirectory());
-}
-
-bool NimProjectScanner::addFiles(const QStringList &)
-{
-    requestReparse();
-
-    return true;
-}
-
-RemovedFilesFromProject NimProjectScanner::removeFiles(const QStringList &)
-{
-    requestReparse();
-
-    return RemovedFilesFromProject::Ok;
-}
-
-bool NimProjectScanner::renameFile(const QString &, const QString &)
-{
-    requestReparse();
-
-    return true;
-}
-
-NimBuildSystem::NimBuildSystem(Target *target)
-    : BuildSystem(target), m_projectScanner(target->project())
-{
-    connect(&m_projectScanner, &NimProjectScanner::finished, this, [this] {
         m_guard.markAsSuccess();
         m_guard = {}; // Trigger destructor of previous object, emitting parsingFinished()
 
         emitBuildSystemUpdated();
     });
 
-    connect(&m_projectScanner, &NimProjectScanner::requestReparse,
-            this, &NimBuildSystem::requestDelayedParse);
+    m_scanner->asyncScanForFiles(project()->projectDirectory());
+}
 
-    connect(&m_projectScanner, &NimProjectScanner::directoryChanged, this, [this] {
+NimBuildSystem::NimBuildSystem(Target *target)
+    : BuildSystem(target)
+{
+    connect(&m_directoryWatcher, &FileSystemWatcher::directoryChanged, this, [this] {
         if (!isWaitingForParse())
             requestDelayedParse();
     });
 
     requestDelayedParse();
-}
-
-void NimBuildSystem::triggerParsing()
-{
-    m_guard = guardParsingRun();
-    m_projectScanner.startScan();
 }
 
 bool NimBuildSystem::supportsAction(Node *context, ProjectAction action, const Node *node) const
@@ -147,16 +108,20 @@ bool NimBuildSystem::supportsAction(Node *context, ProjectAction action, const N
     return BuildSystem::supportsAction(context, action, node);
 }
 
-bool NimBuildSystem::addFiles(Node *, const QStringList &filePaths, QStringList *)
+bool NimBuildSystem::addFiles(Node *, const QStringList &, QStringList *)
 {
-    return m_projectScanner.addFiles(filePaths);
+    requestDelayedParse();
+
+    return true;
 }
 
 RemovedFilesFromProject NimBuildSystem::removeFiles(Node *,
-                                                    const QStringList &filePaths,
+                                                    const QStringList &,
                                                     QStringList *)
 {
-    return m_projectScanner.removeFiles(filePaths);
+    requestDelayedParse();
+
+    return RemovedFilesFromProject::Ok;
 }
 
 bool NimBuildSystem::deleteFiles(Node *, const QStringList &)
@@ -164,9 +129,11 @@ bool NimBuildSystem::deleteFiles(Node *, const QStringList &)
     return true;
 }
 
-bool NimBuildSystem::renameFile(Node *, const QString &filePath, const QString &newFilePath)
+bool NimBuildSystem::renameFile(Node *, const QString &, const QString &)
 {
-    return m_projectScanner.renameFile(filePath, newFilePath);
+    requestDelayedParse();
+
+    return true;
 }
 
 } // namespace Nim
