@@ -47,9 +47,6 @@ public:
     void startScan();
     void watchProjectFilePath();
 
-    void setExcludedFiles(const QStringList &list);
-    QStringList excludedFiles() const;
-
     bool addFiles(const QStringList &filePaths);
     ProjectExplorer::RemovedFilesFromProject removeFiles(const QStringList &filePaths);
     bool renameFile(const QString &from, const QString &to);
@@ -61,9 +58,6 @@ signals:
     void fileChanged(const QString &path);
 
 private:
-    void loadSettings();
-    void saveSettings();
-
     ProjectExplorer::Project *m_project = nullptr;
     std::unique_ptr<ProjectExplorer::TreeScanner> m_scanner;
     Utils::FileSystemWatcher m_directoryWatcher;
