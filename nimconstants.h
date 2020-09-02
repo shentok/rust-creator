@@ -37,9 +37,6 @@ const char C_NIMPROJECT_ID[] = "Nim.NimProject";
 const char C_NIMTOOLCHAIN_TYPEID[] = "Nim.NimToolChain";
 const char C_NIMTOOLCHAIN_COMPILER_COMMAND_KEY[] = "Nim.NimToolChain.CompilerCommand";
 
-// NimProject
-const char C_NIMPROJECT_EXCLUDEDFILES[] = "Nim.NimProjectExcludedFiles";
-
 // NimBuildConfiguration
 const char C_NIMBUILDCONFIGURATION_ID[] = "Nim.NimBuildConfiguration";
 
