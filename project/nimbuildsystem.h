@@ -26,9 +26,10 @@
 #pragma once
 
 #include <projectexplorer/buildsystem.h>
-#include <projectexplorer/treescanner.h>
 
 #include <utils/filesystemwatcher.h>
+
+#include <QProcess>
 
 namespace Nim {
 
@@ -57,7 +58,7 @@ protected:
     void collectProjectFiles();
 
     ParseGuard m_guard;
-    std::unique_ptr<ProjectExplorer::TreeScanner> m_scanner;
+    std::unique_ptr<QProcess> m_scanner;
     Utils::FileSystemWatcher m_directoryWatcher;
 };
 

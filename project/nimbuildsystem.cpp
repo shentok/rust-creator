@@ -28,11 +28,21 @@
 #include "nimproject.h"
 #include "nimprojectnode.h"
 
+#include "../nimconstants.h"
+
+#include <projectexplorer/kitinformation.h>
 #include <projectexplorer/target.h>
+#include <projectexplorer/toolchain.h>
 
 #include <utils/algorithm.h>
 #include <utils/fileutils.h>
+#include <utils/icon.h>
 #include <utils/qtcassert.h>
+#include <utils/theme/theme.h>
+
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 using namespace ProjectExplorer;
 using namespace Utils;
@@ -41,20 +51,32 @@ namespace Nim {
 
 void NimBuildSystem::triggerParsing()
 {
+    QTC_ASSERT(project()->activeTarget(), return);
+    QTC_ASSERT(project()->activeTarget()->kit(), return);
+    Kit *kit = project()->activeTarget()->kit();
+    auto tc = ToolChainKitAspect::toolChain(kit, Constants::C_NIMLANGUAGE_ID);
+    QTC_ASSERT(tc, return);
+
     m_guard = guardParsingRun();
 
-    m_scanner = std::make_unique<TreeScanner>();
-    m_scanner->setFilter([](const Utils::MimeType &, const FilePath &fp) {
-        return fp.endsWith(".toml.user");
-    });
+    m_scanner = std::make_unique<QProcess>();
 
-    connect(m_scanner.get(), &TreeScanner::finished, this, [this] {
+    connect(m_scanner.get(), QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, [this] {
+        const QJsonDocument doc = QJsonDocument::fromJson(m_scanner->readAllStandardOutput());
+        const QJsonValue ownPackage = Utils::filtered(doc["packages"].toArray(), [this](const QJsonValue &value) {
+            return FilePath::fromString(value["manifest_path"].toString()) == project()->projectFilePath();
+        })[0];
+
+        project()->setDisplayName(ownPackage["name"].toString());
+
         // Collect scanned nodes
         std::vector<std::unique_ptr<FileNode>> nodes;
-        for (FileNode *node : m_scanner->release()) {
-            if (!node->path().endsWith(".toml"))
-                node->setEnabled(false); // Disable files that do not end in .toml
-            nodes.emplace_back(node);
+        for (const QJsonValue &package : doc["packages"].toArray()) {
+            for (const QJsonValue &target : package["targets"].toArray()) {
+                nodes.emplace_back(std::make_unique<FileNode>(FilePath::fromString(target["src_path"].toString()), FileType::Source));
+            }
+
+            nodes.emplace_back(std::make_unique<FileNode>(FilePath::fromString(package["manifest_path"].toString()), FileType::Project));
         }
 
         // Sync watched dirs
@@ -80,7 +102,14 @@ void NimBuildSystem::triggerParsing()
         emitBuildSystemUpdated();
     });
 
-    m_scanner->asyncScanForFiles(project()->projectDirectory());
+    const auto args = QStringList()
+        << "metadata"
+        << "--no-deps"
+        << "--offline"
+        << "--manifest-path=" + project()->projectFilePath().toString()
+        << "--format-version=1";
+
+    m_scanner->start(tc->compilerCommand().toString(), args);
 }
 
 NimBuildSystem::NimBuildSystem(Target *target)
