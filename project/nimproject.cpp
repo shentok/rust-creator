@@ -62,28 +62,4 @@ Tasks NimProject::projectIssues(const Kit *k) const
     return result;
 }
 
-QVariantMap NimProject::toMap() const
-{
-    QVariantMap result = Project::toMap();
-    result[Constants::C_NIMPROJECT_EXCLUDEDFILES] = m_excludedFiles;
-    return result;
-}
-
-Project::RestoreResult NimProject::fromMap(const QVariantMap &map, QString *errorMessage)
-{
-    auto result = Project::fromMap(map, errorMessage);
-    m_excludedFiles = map.value(Constants::C_NIMPROJECT_EXCLUDEDFILES).toStringList();
-    return result;
-}
-
-QStringList NimProject::excludedFiles() const
-{
-    return m_excludedFiles;
-}
-
-void NimProject::setExcludedFiles(const QStringList &excludedFiles)
-{
-    m_excludedFiles = excludedFiles;
-}
-
 } // namespace Nim
