@@ -24,8 +24,6 @@
 ****************************************************************************/
 
 #include "nimblebuildsystem.h"
-#include "nimbleproject.h"
-#include "nimproject.h"
 
 #include <projectexplorer/target.h>
 
