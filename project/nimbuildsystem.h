@@ -25,7 +25,6 @@
 
 #pragma once
 
-#include <projectexplorer/buildsystem.h>
 #include <projectexplorer/treescanner.h>
 
 #include <utils/filesystemwatcher.h>
@@ -61,33 +60,6 @@ private:
     ProjectExplorer::Project *m_project = nullptr;
     ProjectExplorer::TreeScanner m_scanner;
     Utils::FileSystemWatcher m_directoryWatcher;
-};
-
-class NimBuildSystem : public ProjectExplorer::BuildSystem
-{
-    Q_OBJECT
-
-public:
-    explicit NimBuildSystem(ProjectExplorer::Target *target);
-
-    bool supportsAction(ProjectExplorer::Node *,
-                        ProjectExplorer::ProjectAction action,
-                        const ProjectExplorer::Node *node) const final;
-    bool addFiles(ProjectExplorer::Node *node,
-                  const Utils::FilePaths &filePaths, Utils::FilePaths *) final;
-    ProjectExplorer::RemovedFilesFromProject removeFiles(ProjectExplorer::Node *node,
-                                                         const Utils::FilePaths &filePaths,
-                                                         Utils::FilePaths *) override;
-    bool deleteFiles(ProjectExplorer::Node *, const Utils::FilePaths &) final;
-    bool renameFile(ProjectExplorer::Node *,
-                    const Utils::FilePath &oldFilePath, const Utils::FilePath &newFilePath) final;
-    QString name() const final { return QLatin1String("nim"); }
-
-    void triggerParsing() override;
-
-protected:
-    ParseGuard m_guard;
-    NimProjectScanner m_projectScanner;
 };
 
 } // namespace Nim
