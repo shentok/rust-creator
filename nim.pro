@@ -23,11 +23,6 @@ HEADERS += \
     tools/sourcecodestream.h \
     project/nimbuildsystem.h \
     project/nimblebuildsystem.h \
-    project/nimproject.h \
-    project/nimbuildconfiguration.h \
-    project/nimcompilerbuildstep.h \
-    project/nimcompilercleanstep.h \
-    project/nimrunconfiguration.h \
     settings/nimcodestylesettingspage.h \
     settings/nimcodestylepreferencesfactory.h \
     settings/nimsettings.h \
@@ -47,11 +42,6 @@ SOURCES += \
     tools/nimlexer.cpp \
     project/nimbuildsystem.cpp \
     project/nimblebuildsystem.cpp \
-    project/nimproject.cpp \
-    project/nimbuildconfiguration.cpp \
-    project/nimcompilerbuildstep.cpp \
-    project/nimcompilercleanstep.cpp \
-    project/nimrunconfiguration.cpp \
     settings/nimcodestylesettingspage.cpp \
     settings/nimcodestylepreferencesfactory.cpp \
     settings/nimsettings.cpp \

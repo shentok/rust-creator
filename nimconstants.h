@@ -31,7 +31,6 @@
 namespace Nim {
 namespace Constants {
 
-const char C_NIMPROJECT_ID[] = "Nim.NimProject";
 const char C_NIMBLEPROJECT_ID[] = "Nim.NimbleProject";
 
 // NimToolChain
@@ -39,7 +38,6 @@ const char C_NIMTOOLCHAIN_TYPEID[] = "Nim.NimToolChain";
 const char C_NIMTOOLCHAIN_COMPILER_COMMAND_KEY[] = "Nim.NimToolChain.CompilerCommand";
 
 // NimBuildConfiguration
-const char C_NIMBUILDCONFIGURATION_ID[] = "Nim.NimBuildConfiguration";
 const char C_NIMBLEBUILDCONFIGURATION_ID[] = "Nim.NimbleBuildConfiguration";
 const char C_NIMBLEBUILDCONFIGURATION_BUILDTYPE[] = "Nim.NimbleBuildConfiguration.BuildType";
 
@@ -52,15 +50,6 @@ const char C_NIMBLETASKSTEP_ID[] = "Nim.NimbleTaskStep";
 const char C_NIMBLETASKSTEP_DISPLAY[] = QT_TRANSLATE_NOOP("NimbleTaskStep", "Nimble Task");
 const QString C_NIMBLETASKSTEP_TASKNAME = QStringLiteral("Nim.NimbleTaskStep.TaskName");
 const QString C_NIMBLETASKSTEP_TASKARGS = QStringLiteral("Nim.NimbleTaskStep.TaskArgs");
-
-// NimCompilerBuildStep
-const char C_NIMCOMPILERBUILDSTEP_ID[] = "Nim.NimCompilerBuildStep";
-const QString C_NIMCOMPILERBUILDSTEP_USERCOMPILEROPTIONS = QStringLiteral("Nim.NimCompilerBuildStep.UserCompilerOptions");
-const QString C_NIMCOMPILERBUILDSTEP_DEFAULTBUILDOPTIONS = QStringLiteral("Nim.NimCompilerBuildStep.DefaultBuildOptions");
-const QString C_NIMCOMPILERBUILDSTEP_TARGETNIMFILE = QStringLiteral("Nim.NimCompilerBuildStep.TargetNimFile");
-
-// NimCompilerCleanStep
-const char C_NIMCOMPILERCLEANSTEP_ID[] = "Nim.NimCompilerCleanStep";
 
 const char C_NIMLANGUAGE_ID[] = "Nim";
 const char C_NIMCODESTYLESETTINGSPAGE_ID[] = "Nim.NimCodeStyleSettings";
@@ -96,7 +85,6 @@ const char C_NIMCODESTYLEPREVIEWSNIPPET[] =
  ******************************************************************************/
 const char C_NIM_MIMETYPE[] = "text/x-nim";
 const char C_NIMBLE_MIMETYPE[] = "text/x-nimble";
-const char C_NIM_PROJECT_MIMETYPE[] = "text/x-nim-project";
 
 }
 }
