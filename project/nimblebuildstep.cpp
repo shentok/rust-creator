@@ -108,8 +108,12 @@ private:
 NimbleBuildStep::NimbleBuildStep(BuildStepList *parentList, Utils::Id id)
     : AbstractProcessStep(parentList, id)
 {
-    setDefaultDisplayName(tr(Constants::C_NIMBLEBUILDSTEP_DISPLAY));
-    setDisplayName(tr(Constants::C_NIMBLEBUILDSTEP_DISPLAY));
+    if (id == Constants::C_NIMBLEBUILDSTEP_ID) {
+        setDefaultDisplayName(tr(Constants::C_NIMBLEBUILDSTEP_DISPLAY));
+    }
+    else if (id == Constants::C_NIMBLECLEANSTEP_ID) {
+        setDefaultDisplayName(tr(Constants::C_NIMBLECLEANSTEP_DISPLAY));
+    }
     QTC_ASSERT(buildConfiguration(), return);
     QObject::connect(buildConfiguration(), &BuildConfiguration::buildTypeChanged, this, &NimbleBuildStep::resetArguments);
     QObject::connect(this, &NimbleBuildStep::argumentsChanged, this, &NimbleBuildStep::onArgumentsChanged);
@@ -122,7 +126,7 @@ bool NimbleBuildStep::init()
     params->setEnvironment(buildEnvironment());
     params->setMacroExpander(macroExpander());
     params->setWorkingDirectory(project()->projectDirectory());
-    params->setCommandLine({QStandardPaths::findExecutable("cargo"), QStringList("build") << m_arguments.split(QChar::Space)});
+    params->setCommandLine({QStandardPaths::findExecutable("cargo"), m_arguments.split(QChar::Space)});
     return AbstractProcessStep::init();
 }
 
@@ -172,28 +176,39 @@ QVariantMap NimbleBuildStep::toMap() const
 
 QString NimbleBuildStep::defaultArguments() const
 {
+    const QString subCommand = id() == Constants::C_NIMBLEBUILDSTEP_ID ? "build" : "clean";
+
     switch (buildType()) {
     case BuildConfiguration::Debug:
-        return {};
+        return {subCommand};
     case BuildConfiguration::Unknown:
     case BuildConfiguration::Profile:
     case BuildConfiguration::Release:
     default:
-        return {"--release"};
+        return {subCommand + " --release"};
     }
 }
 
 void NimbleBuildStep::onArgumentsChanged()
 {
     ProcessParameters* params = processParameters();
-    params->setCommandLine({QStandardPaths::findExecutable("cargo"), QStringList("build") << m_arguments.split(QChar::Space)});
+    params->setCommandLine({QStandardPaths::findExecutable("cargo"), m_arguments.split(QChar::Space)});
 }
 
 NimbleBuildStepFactory::NimbleBuildStepFactory()
 {
     registerStep<NimbleBuildStep>(Constants::C_NIMBLEBUILDSTEP_ID);
-    setDisplayName(NimbleBuildStep::tr("Cargo Build"));
+    setDisplayName(NimbleBuildStep::tr(Constants::C_NIMBLEBUILDSTEP_DISPLAY));
     setSupportedStepList(ProjectExplorer::Constants::BUILDSTEPS_BUILD);
+    setSupportedConfiguration(Constants::C_NIMBLEBUILDCONFIGURATION_ID);
+    setRepeatable(true);
+}
+
+NimbleCleanStepFactory::NimbleCleanStepFactory()
+{
+    registerStep<NimbleBuildStep>(Constants::C_NIMBLECLEANSTEP_ID);
+    setDisplayName(NimbleBuildStep::tr(Constants::C_NIMBLECLEANSTEP_DISPLAY));
+    setSupportedStepList(ProjectExplorer::Constants::BUILDSTEPS_CLEAN);
     setSupportedConfiguration(Constants::C_NIMBLEBUILDCONFIGURATION_ID);
     setRepeatable(true);
 }

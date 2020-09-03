@@ -67,4 +67,10 @@ public:
     NimbleBuildStepFactory();
 };
 
+class NimbleCleanStepFactory : public ProjectExplorer::BuildStepFactory
+{
+public:
+    NimbleCleanStepFactory();
+};
+
 }
