@@ -53,6 +53,7 @@ NimbleBuildConfiguration::NimbleBuildConfiguration(Target *target, Core::Id id)
     setConfigWidgetHasFrame(true);
     setBuildDirectorySettingsKey("Nim.NimbleBuildConfiguration.BuildDirectory");
     appendInitialBuildStep(Constants::C_NIMBLEBUILDSTEP_ID);
+    appendInitialCleanStep(Constants::C_NIMBLECLEANSTEP_ID);
 }
 
 BuildConfiguration::BuildType NimbleBuildConfiguration::buildType() const

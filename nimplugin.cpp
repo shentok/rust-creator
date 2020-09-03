@@ -60,6 +60,7 @@ public:
         {nimbleTestConfigFactory.id()}
     };
     NimbleBuildStepFactory nimbleBuildStepFactory;
+    NimbleCleanStepFactory nimbleCleanStepFactory;
     NimbleTaskStepFactory nimbleTaskStepFactory;
     NimToolChainFactory toolChainFactory;
 };
