@@ -66,9 +66,6 @@ signals:
     void tasksChanged();
 
 private:
-    void loadSettings();
-    void saveSettings();
-
     void updateProject();
 
     bool supportsAction(ProjectExplorer::Node *,
