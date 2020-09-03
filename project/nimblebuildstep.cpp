@@ -94,9 +94,11 @@ void NimbleBuildStep::setupOutputFormatter(OutputFormatter *formatter)
 
 QString NimbleBuildStep::defaultArguments() const
 {
+    const QString subCommand = id() == Constants::C_NIMBLEBUILDSTEP_ID ? "build" : "clean";
+
     if (buildType() == BuildConfiguration::Debug)
-        return {"build"};
-    return {"build\n--release"};
+        return subCommand;
+    return subCommand + "\n--release";
 }
 
 NimbleBuildStepFactory::NimbleBuildStepFactory()
@@ -104,6 +106,15 @@ NimbleBuildStepFactory::NimbleBuildStepFactory()
     registerStep<NimbleBuildStep>(Constants::C_NIMBLEBUILDSTEP_ID);
     setDisplayName(NimbleBuildStep::tr("Cargo Build"));
     setSupportedStepList(ProjectExplorer::Constants::BUILDSTEPS_BUILD);
+    setSupportedConfiguration(Constants::C_NIMBLEBUILDCONFIGURATION_ID);
+    setRepeatable(true);
+}
+
+NimbleCleanStepFactory::NimbleCleanStepFactory()
+{
+    registerStep<NimbleBuildStep>(Constants::C_NIMBLECLEANSTEP_ID);
+    setDisplayName(NimbleBuildStep::tr("Cargo Clean"));
+    setSupportedStepList(ProjectExplorer::Constants::BUILDSTEPS_CLEAN);
     setSupportedConfiguration(Constants::C_NIMBLEBUILDCONFIGURATION_ID);
     setRepeatable(true);
 }

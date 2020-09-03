@@ -44,6 +44,10 @@ const char C_NIMBLEBUILDCONFIGURATION_BUILDTYPE[] = "Rust.CargoBuildConfiguratio
 const char C_NIMBLEBUILDSTEP_ID[] = "Rust.CargoBuildStep";
 const char C_NIMBLEBUILDSTEP_ARGUMENTS[] = "Rust.CargoBuildStep.Arguments";
 
+// CargoCleanStep
+const char C_NIMBLECLEANSTEP_ID[] = "Rust.CargoCleanStep";
+const char C_NIMBLECLEANSTEP_ARGUMENTS[] = "Rust.CargoCleanStep.Arguments";
+
 // CargoTaskStep
 const char C_NIMBLETASKSTEP_ID[] = "Rust.CargoTaskStep";
 const char C_NIMBLETASKSTEP_DISPLAY[] = QT_TRANSLATE_NOOP("CargoTaskStep", "Cargo Task");
