@@ -38,9 +38,6 @@ using namespace Utils;
 
 namespace Nim {
 
-const char C_NIMBLEPROJECT_TASKS[] = "Nim.NimbleProject.Tasks";
-const char C_NIMBLEPROJECT_METADATA[] = "Nim.NimbleProject.Metadata";
-
 static std::vector<NimbleTask> parseTasks(const QString &nimblePath, const QString &workingDirectory)
 {
     QProcess process;
@@ -172,32 +169,6 @@ void NimbleBuildSystem::updateProject()
 std::vector<NimbleTask> NimbleBuildSystem::tasks() const
 {
     return m_tasks;
-}
-
-void NimbleBuildSystem::saveSettings()
-{
-    QStringList result;
-    for (const NimbleTask &task : m_tasks) {
-        result.push_back(task.name);
-        result.push_back(task.description);
-    }
-
-    project()->setNamedSettings(C_NIMBLEPROJECT_TASKS, result);
-}
-
-void NimbleBuildSystem::loadSettings()
-{
-    QStringList list = project()->namedSettings(C_NIMBLEPROJECT_TASKS).toStringList();
-
-    m_tasks.clear();
-    if (list.size() % 2 != 0)
-        return;
-
-    std::vector<NimbleTask> result;
-    for (int i = 0; i < list.size(); i += 2)
-        result.push_back({list[i], list[i + 1]});
-
-    requestParse();
 }
 
 bool NimbleBuildSystem::supportsAction(Node *context, ProjectAction action, const Node *node) const
