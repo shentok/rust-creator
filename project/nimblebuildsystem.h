@@ -27,6 +27,8 @@
 
 #include "nimbuildsystem.h"
 
+#include <projectexplorer/buildsystem.h>
+
 namespace Nim {
 
 struct NimbleTask
