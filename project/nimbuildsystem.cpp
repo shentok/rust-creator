@@ -27,6 +27,7 @@
 
 #include "nimprojectnode.h"
 
+#include <projectexplorer/project.h>
 #include <projectexplorer/target.h>
 
 #include <utils/algorithm.h>
@@ -113,69 +114,6 @@ bool NimProjectScanner::renameFile(const QString &, const QString &)
     requestReparse();
 
     return true;
-}
-
-NimBuildSystem::NimBuildSystem(Target *target)
-    : BuildSystem(target), m_projectScanner(target->project())
-{
-    connect(&m_projectScanner, &NimProjectScanner::finished, this, [this] {
-        m_guard.markAsSuccess();
-        m_guard = {}; // Trigger destructor of previous object, emitting parsingFinished()
-
-        emitBuildSystemUpdated();
-    });
-
-    connect(&m_projectScanner, &NimProjectScanner::requestReparse,
-            this, &NimBuildSystem::requestDelayedParse);
-
-    connect(&m_projectScanner, &NimProjectScanner::directoryChanged, this, [this] {
-        if (!isWaitingForParse())
-            requestDelayedParse();
-    });
-
-    requestDelayedParse();
-}
-
-void NimBuildSystem::triggerParsing()
-{
-    m_guard = guardParsingRun();
-    m_projectScanner.startScan();
-}
-
-bool NimBuildSystem::supportsAction(Node *context, ProjectAction action, const Node *node) const
-{
-    if (node->asFileNode()) {
-        return action == ProjectAction::Rename
-            || action == ProjectAction::RemoveFile;
-    }
-    if (node->isFolderNodeType() || node->isProjectNodeType()) {
-        return action == ProjectAction::AddNewFile
-            || action == ProjectAction::RemoveFile
-            || action == ProjectAction::AddExistingFile;
-    }
-    return BuildSystem::supportsAction(context, action, node);
-}
-
-bool NimBuildSystem::addFiles(Node *, const QStringList &filePaths, QStringList *)
-{
-    return m_projectScanner.addFiles(filePaths);
-}
-
-RemovedFilesFromProject NimBuildSystem::removeFiles(Node *,
-                                                    const QStringList &filePaths,
-                                                    QStringList *)
-{
-    return m_projectScanner.removeFiles(filePaths);
-}
-
-bool NimBuildSystem::deleteFiles(Node *, const QStringList &)
-{
-    return true;
-}
-
-bool NimBuildSystem::renameFile(Node *, const QString &filePath, const QString &newFilePath)
-{
-    return m_projectScanner.renameFile(filePath, newFilePath);
 }
 
 } // namespace Nim
