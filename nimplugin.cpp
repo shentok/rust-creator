@@ -28,12 +28,7 @@
 #include "nimconstants.h"
 #include "project/nimblerunconfiguration.h"
 #include "project/nimblebuildconfiguration.h"
-#include "project/nimbuildconfiguration.h"
-#include "project/nimcompilerbuildstep.h"
-#include "project/nimcompilercleanstep.h"
-#include "project/nimproject.h"
 #include "project/nimbleproject.h"
-#include "project/nimrunconfiguration.h"
 #include "project/nimtoolchainfactory.h"
 #include "project/nimblebuildstep.h"
 #include "project/nimbletaskstep.h"
@@ -51,16 +46,9 @@ namespace Nim {
 class NimPluginPrivate
 {
 public:
-    NimBuildConfigurationFactory buildConfigFactory;
     NimbleBuildConfigurationFactory nimbleBuildConfigFactory;
-    NimRunConfigurationFactory nimRunConfigFactory;
     NimbleRunConfigurationFactory nimbleRunConfigFactory;
     NimbleTestConfigurationFactory nimbleTestConfigFactory;
-    RunWorkerFactory nimRunWorkerFactory {
-        RunWorkerFactory::make<SimpleTargetRunner>(),
-        {ProjectExplorer::Constants::NORMAL_RUN_MODE},
-        {nimRunConfigFactory.id()}
-    };
     RunWorkerFactory nimbleRunWorkerFactory {
         RunWorkerFactory::make<SimpleTargetRunner>(),
         {ProjectExplorer::Constants::NORMAL_RUN_MODE},
@@ -73,8 +61,6 @@ public:
     };
     NimbleBuildStepFactory nimbleBuildStepFactory;
     NimbleTaskStepFactory nimbleTaskStepFactory;
-    NimCompilerBuildStepFactory buildStepFactory;
-    NimCompilerCleanStepFactory cleanStepFactory;
     NimToolChainFactory toolChainFactory;
 };
 
@@ -92,7 +78,6 @@ bool NimPlugin::initialize(const QStringList &arguments, QString *errorMessage)
 
     ToolChainManager::registerLanguage(Constants::C_NIMLANGUAGE_ID, Constants::C_NIMLANGUAGE_NAME);
 
-    ProjectManager::registerProjectType<NimProject>(Constants::C_NIM_PROJECT_MIMETYPE);
     ProjectManager::registerProjectType<NimbleProject>(Constants::C_NIMBLE_MIMETYPE);
 
     return true;

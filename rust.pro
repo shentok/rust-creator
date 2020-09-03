@@ -21,13 +21,7 @@ HEADERS += \
     project/nimbletaskstepwidget.h \
     project/nimbuildsystem.h \
     project/nimblebuildsystem.h \
-    project/nimproject.h \
     project/nimprojectnode.h \
-    project/nimbuildconfiguration.h \
-    project/nimcompilerbuildstep.h \
-    project/nimcompilerbuildstepconfigwidget.h \
-    project/nimcompilercleanstep.h \
-    project/nimrunconfiguration.h \
     project/nimtoolchain.h \
     project/nimtoolchainfactory.h \
 
@@ -42,20 +36,13 @@ SOURCES += \
     project/nimbletaskstepwidget.cpp \
     project/nimbuildsystem.cpp \
     project/nimblebuildsystem.cpp \
-    project/nimproject.cpp \
     project/nimprojectnode.cpp \
-    project/nimbuildconfiguration.cpp \
-    project/nimcompilerbuildstep.cpp \
-    project/nimcompilerbuildstepconfigwidget.cpp \
-    project/nimcompilercleanstep.cpp \
-    project/nimrunconfiguration.cpp \
     project/nimtoolchain.cpp \
     project/nimtoolchainfactory.cpp \
 
 FORMS += \
     project/nimblebuildstepwidget.ui \
     project/nimbletaskstepwidget.ui \
-    project/nimcompilerbuildstepconfigwidget.ui \
 
 include(nim_dependencies.pri)
 
