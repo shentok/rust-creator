@@ -40,8 +40,6 @@ using namespace Utils;
 
 namespace Nim {
 
-const char C_NIMBLEPROJECT_TASKS[] = "Nim.NimbleProject.Tasks";
-
 static QList<QByteArray> linesFromProcessOutput(QProcess *process)
 {
     QList<QByteArray> lines = process->readAllStandardOutput().split('\n');
@@ -145,10 +143,6 @@ NimbleBuildSystem::NimbleBuildSystem(Target *target)
             requestDelayedParse();
     });
 
-    connect(target->project(), &ProjectExplorer::Project::settingsLoaded,
-            this, &NimbleBuildSystem::loadSettings);
-    connect(target->project(), &ProjectExplorer::Project::aboutToSaveSettings,
-            this, &NimbleBuildSystem::saveSettings);
     requestDelayedParse();
 }
 
@@ -201,31 +195,6 @@ void NimbleBuildSystem::updateProject()
 std::vector<NimbleTask> NimbleBuildSystem::tasks() const
 {
     return m_tasks;
-}
-
-void NimbleBuildSystem::saveSettings()
-{
-    // only handles nimble specific settings - NimProjectScanner handles general settings
-    QStringList result;
-    for (const NimbleTask &task : m_tasks) {
-        result.push_back(task.name);
-        result.push_back(task.description);
-    }
-
-    project()->setNamedSettings(C_NIMBLEPROJECT_TASKS, result);
-}
-
-void NimbleBuildSystem::loadSettings()
-{
-    // only handles nimble specific settings - NimProjectScanner handles general settings
-    QStringList list = project()->namedSettings(C_NIMBLEPROJECT_TASKS).toStringList();
-
-    m_tasks.clear();
-    if (list.size() % 2 != 0)
-        return;
-
-    for (int i = 0; i < list.size(); i += 2)
-        m_tasks.push_back({list[i], list[i + 1]});
 }
 
 bool NimbleBuildSystem::supportsAction(Node *context, ProjectAction action, const Node *node) const
