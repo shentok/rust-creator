@@ -69,7 +69,7 @@ NimbleBuildStep::NimbleBuildStep(BuildStepList *parentList, Id id)
 
     setCommandLineProvider([this] {
         return CommandLine(Nim::nimblePathFromKit(kit()),
-                           {"build", m_arguments->arguments(macroExpander())});
+                           m_arguments->arguments(macroExpander()).split(QChar::Space));
     });
     setWorkingDirectoryProvider([this] { return project()->projectDirectory(); });
     setEnvironmentModifier([this](Environment &env) {
@@ -99,14 +99,16 @@ void NimbleBuildStep::setupOutputFormatter(OutputFormatter *formatter)
 
 QString NimbleBuildStep::defaultArguments() const
 {
+    const QString subCommand = id() == Constants::C_NIMBLEBUILDSTEP_ID ? "build" : "clean";
+
     switch (buildType()) {
     case BuildConfiguration::Debug:
-        return {};
+        return {subCommand};
     case BuildConfiguration::Unknown:
     case BuildConfiguration::Profile:
     case BuildConfiguration::Release:
     default:
-        return {"--release"};
+        return {subCommand + " --release"};
     }
 }
 
@@ -114,14 +116,23 @@ void NimbleBuildStep::onArgumentsChanged()
 {
     ProcessParameters *params = processParameters();
     params->setCommandLine({Nim::nimblePathFromKit(kit()),
-                            {"build", m_arguments->arguments(macroExpander())}});
+                            m_arguments->arguments(macroExpander()).split(QChar::Space)});
 }
 
 NimbleBuildStepFactory::NimbleBuildStepFactory()
 {
     registerStep<NimbleBuildStep>(Constants::C_NIMBLEBUILDSTEP_ID);
-    setDisplayName(NimbleBuildStep::tr("Cargo Build"));
+    setDisplayName(NimbleBuildStep::tr(Constants::C_NIMBLEBUILDSTEP_DISPLAY));
     setSupportedStepList(ProjectExplorer::Constants::BUILDSTEPS_BUILD);
+    setSupportedConfiguration(Constants::C_NIMBLEBUILDCONFIGURATION_ID);
+    setRepeatable(true);
+}
+
+NimbleCleanStepFactory::NimbleCleanStepFactory()
+{
+    registerStep<NimbleBuildStep>(Constants::C_NIMBLECLEANSTEP_ID);
+    setDisplayName(NimbleBuildStep::tr(Constants::C_NIMBLECLEANSTEP_DISPLAY));
+    setSupportedStepList(ProjectExplorer::Constants::BUILDSTEPS_CLEAN);
     setSupportedConfiguration(Constants::C_NIMBLEBUILDCONFIGURATION_ID);
     setRepeatable(true);
 }
