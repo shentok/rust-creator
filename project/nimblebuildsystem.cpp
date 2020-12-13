@@ -24,6 +24,8 @@
 ****************************************************************************/
 
 #include "nimblebuildsystem.h"
+
+#include "nimbuildsystem.h"
 #include "nimbleproject.h"
 #include "nimproject.h"
 
@@ -46,7 +48,7 @@ static std::vector<NimbleTask> parseTasks(const QString &nimblePath, const QStri
 {
     QProcess process;
     process.setWorkingDirectory(workingDirectory);
-    process.start(QStandardPaths::findExecutable(nimblePath), {"tasks"});
+    process.start(nimblePath, {"tasks"});
     process.waitForFinished();
 
     std::vector<NimbleTask> result;
@@ -128,6 +130,10 @@ NimbleBuildSystem::NimbleBuildSystem(Target *target)
             requestDelayedParse();
     });
 
+    connect(target->project(), &ProjectExplorer::Project::settingsLoaded,
+            this, &NimbleBuildSystem::loadSettings);
+    connect(target->project(), &ProjectExplorer::Project::aboutToSaveSettings,
+            this, &NimbleBuildSystem::saveSettings);
     requestDelayedParse();
 }
 
@@ -145,8 +151,9 @@ void NimbleBuildSystem::triggerParsing()
 void NimbleBuildSystem::updateProject()
 {
     const FilePath projectDir = projectDirectory();
+    const FilePath nimble = Nim::nimblePathFromKit(kit());
 
-    m_metadata = parseMetadata(QStandardPaths::findExecutable("nimble"), projectDir.toString());
+    m_metadata = parseMetadata(nimble.toString(), projectDir.toString());
     const FilePath binDir = projectDir.pathAppended(m_metadata.binDir);
     const FilePath srcDir = projectDir.pathAppended("src");
 
@@ -162,7 +169,7 @@ void NimbleBuildSystem::updateProject()
 
     setApplicationTargets(std::move(targets));
 
-    std::vector<NimbleTask> tasks = parseTasks(QStandardPaths::findExecutable("nimble"), projectDir.toString());
+    std::vector<NimbleTask> tasks = parseTasks(nimble.toString(), projectDir.toString());
     if (tasks != m_tasks) {
         m_tasks = std::move(tasks);
         emit tasksChanged();
@@ -187,6 +194,7 @@ NimbleMetadata NimbleBuildSystem::metadata() const
 
 void NimbleBuildSystem::saveSettings()
 {
+    // only handles nimble specific settings - NimProjectScanner handles general settings
     QStringList result;
     for (const NimbleTask &task : m_tasks) {
         result.push_back(task.name);
@@ -198,17 +206,15 @@ void NimbleBuildSystem::saveSettings()
 
 void NimbleBuildSystem::loadSettings()
 {
+    // only handles nimble specific settings - NimProjectScanner handles general settings
     QStringList list = project()->namedSettings(C_NIMBLEPROJECT_TASKS).toStringList();
 
     m_tasks.clear();
     if (list.size() % 2 != 0)
         return;
 
-    std::vector<NimbleTask> result;
     for (int i = 0; i < list.size(); i += 2)
-        result.push_back({list[i], list[i + 1]});
-
-    requestParse();
+        m_tasks.push_back({list[i], list[i + 1]});
 }
 
 bool NimbleBuildSystem::supportsAction(Node *context, ProjectAction action, const Node *node) const

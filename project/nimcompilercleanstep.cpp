@@ -28,8 +28,9 @@
 
 #include "../nimconstants.h"
 
-#include <projectexplorer/projectconfigurationaspects.h>
 #include <projectexplorer/projectexplorerconstants.h>
+
+#include <utils/aspects.h>
 #include <utils/qtcassert.h>
 
 #include <QDir>
@@ -61,12 +62,9 @@ private:
 NimCompilerCleanStep::NimCompilerCleanStep(BuildStepList *parentList, Utils::Id id)
     : BuildStep(parentList, id)
 {
-    setDefaultDisplayName(tr("Nim Clean Step"));
-    setDisplayName(tr("Nim Clean Step"));
-
-    auto workingDirectory = addAspect<BaseStringAspect>();
+    auto workingDirectory = addAspect<StringAspect>();
     workingDirectory->setLabelText(tr("Working directory:"));
-    workingDirectory->setDisplayStyle(BaseStringAspect::LineEditDisplay);
+    workingDirectory->setDisplayStyle(StringAspect::LineEditDisplay);
 
     setSummaryUpdater([this, workingDirectory] {
         workingDirectory->setFilePath(buildDirectory());
@@ -139,7 +137,7 @@ NimCompilerCleanStepFactory::NimCompilerCleanStepFactory()
     setSupportedStepList(ProjectExplorer::Constants::BUILDSTEPS_CLEAN);
     setSupportedConfiguration(Constants::C_NIMBUILDCONFIGURATION_ID);
     setRepeatable(false);
-    setDisplayName(NimCompilerCleanStep::tr("Nim Compiler Clean Step"));
+    setDisplayName(NimCompilerCleanStep::tr("Nim Clean Step"));
 }
 
 } // Nim
