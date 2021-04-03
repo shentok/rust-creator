@@ -195,7 +195,8 @@ void NimPlugin::testNimParser_data()
                "\n"
                "For more information about this error, try `rustc --explain E0283`.\n"
             << OutputParserTester::STDERR
-            << QString() << QString("For more information about this error, try `rustc --explain E0283`.\n\n")
+            << QString()
+            << QString("For more information about this error, try `rustc --explain E0283`.\n\n")
             << (Tasks()
                 << compileTask(Task::Error,
                                "error[E0283]: type annotations needed\n"
@@ -227,10 +228,9 @@ void NimPlugin::testNimParser_data()
                "    |\n"
                "    = note: `#[warn(clippy::manual_range_contains)]` on by default\n"
                "    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#manual_range_contains\n"
-               "\n"
             << OutputParserTester::STDERR
             << QString()
-            << QString("\n")
+            << QString()
             << Tasks({compileTask(Task::Warning,
                       "warning: manual `RangeInclusive::contains` implementation\n"
                       "   --> crates/cargo-platform/src/cfg.rs:301:18\n"
