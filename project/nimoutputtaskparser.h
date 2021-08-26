@@ -25,14 +25,13 @@
 
 #pragma once
 
-#include <projectexplorer/projectnodes.h>
+#include <projectexplorer/ioutputparser.h>
 
 namespace Nim {
 
-class NimProjectNode : public ProjectExplorer::ProjectNode
+class NimParser : public ProjectExplorer::OutputTaskParser
 {
-public:
-    NimProjectNode(const Utils::FilePath &projectFilePath);
+    Result handleLine(const QString &line, Utils::OutputFormat) override;
 };
 
-}
+} // Nim
