@@ -28,9 +28,12 @@
 #include "nimconstants.h"
 #include "nimtoolchain.h"
 
+#include <projectexplorer/devicesupport/devicemanager.h>
+
 #include <utils/algorithm.h>
 #include <utils/environment.h>
 #include <utils/pathchooser.h>
+#include <utils/fileutils.h>
 
 #include <QFormLayout>
 #include <QProcess>
@@ -49,12 +52,13 @@ NimToolChainFactory::NimToolChainFactory()
     setUserCreatable(true);
 }
 
-QList<ToolChain *> NimToolChainFactory::autoDetect(const QList<ToolChain *> &alreadyKnown)
+QList<ToolChain *> NimToolChainFactory::autoDetect(const QList<ToolChain *> &alreadyKnown,
+                                                   const IDevice::Ptr &device)
 {
     QList<ToolChain *> result;
 
-    Environment systemEnvironment = Environment::systemEnvironment();
-    const FilePath compilerPath = systemEnvironment.searchInPath("nim");
+    IDevice::ConstPtr dev = device ? device : DeviceManager::defaultDesktopDevice();
+    const FilePath compilerPath = dev->searchExecutableInPath("nim");
     if (compilerPath.isEmpty())
         return result;
 

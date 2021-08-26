@@ -41,7 +41,6 @@
 #include "project/nimbletaskstep.h"
 #include "settings/nimcodestylepreferencesfactory.h"
 #include "settings/nimcodestylesettingspage.h"
-#include "settings/nimtoolssettingspage.h"
 #include "settings/nimsettings.h"
 #include "suggest/nimsuggestcache.h"
 
@@ -49,6 +48,7 @@
 #include <projectexplorer/projectmanager.h>
 #include <projectexplorer/toolchainmanager.h>
 #include <projectexplorer/runcontrol.h>
+#include <projectexplorer/taskhub.h>
 #include <texteditor/snippets/snippetprovider.h>
 
 using namespace Utils;
@@ -60,10 +60,9 @@ class NimPluginPrivate
 {
 public:
     NimPluginPrivate()
-        : toolsSettingsPage(&settings)
     {
-        Suggest::NimSuggestCache::instance().setExecutablePath(settings.nimSuggestPath());
-        QObject::connect(&settings, &NimSettings::nimSuggestPathChanged,
+        Suggest::NimSuggestCache::instance().setExecutablePath(settings.nimSuggestPath.value());
+        QObject::connect(&settings.nimSuggestPath, &StringAspect::valueChanged,
                          &Suggest::NimSuggestCache::instance(),
                          &Suggest::NimSuggestCache::setExecutablePath);
     }
@@ -95,7 +94,7 @@ public:
     NimCompilerBuildStepFactory buildStepFactory;
     NimCompilerCleanStepFactory cleanStepFactory;
     NimCodeStyleSettingsPage codeStyleSettingsPage;
-    NimToolsSettingsPage toolsSettingsPage;
+    NimToolsSettingsPage toolsSettingsPage{&settings};
     NimCodeStylePreferencesFactory codeStylePreferencesPage;
     NimToolChainFactory toolChainFactory;
 };
@@ -135,6 +134,7 @@ void NimPlugin::extensionsInitialized()
         Core::FileIconProvider::registerIconOverlayForMimeType(icon, Constants::C_NIM_SCRIPT_MIMETYPE);
         Core::FileIconProvider::registerIconOverlayForMimeType(icon, Constants::C_NIMBLE_MIMETYPE);
     }
+    TaskHub::addCategory(Constants::C_NIMPARSE_ID, "Nim");
 }
 
 } // namespace Nim

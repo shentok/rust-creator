@@ -97,7 +97,7 @@ QWidget *NimCompilerBuildStep::createConfigWidget()
 
     auto updateUi = [=] {
         const CommandLine cmd = commandLine();
-        const QStringList parts = QtcProcess::splitArgs(cmd.toUserOutput());
+        const QStringList parts = ProcessArgs::splitArgs(cmd.toUserOutput());
 
         commandTextEdit->setText(parts.join(QChar::LineFeed));
 
@@ -212,7 +212,7 @@ CommandLine NimCompilerBuildStep::commandLine()
 
 FilePath NimCompilerBuildStep::outFilePath() const
 {
-    const QString targetName = m_targetNimFile.toFileInfo().baseName();
+    const QString targetName = m_targetNimFile.baseName();
     return buildDirectory().pathAppended(HostOsInfo::withExecutableSuffix(targetName));
 }
 

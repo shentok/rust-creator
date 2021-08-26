@@ -69,7 +69,8 @@ NimProjectScanner::NimProjectScanner(Project *project)
     connect(&m_scanner, &TreeScanner::finished, this, [this] {
         // Collect scanned nodes
         std::vector<std::unique_ptr<FileNode>> nodes;
-        for (FileNode *node : m_scanner.release()) {
+        const TreeScanner::Result scanResult = m_scanner.release();
+        for (FileNode *node : scanResult.allFiles) {
             if (!node->path().endsWith(".nim") && !node->path().endsWith(".nimble"))
                 node->setEnabled(false); // Disable files that do not end in .nim
             nodes.emplace_back(node);
@@ -221,26 +222,26 @@ bool NimBuildSystem::supportsAction(Node *context, ProjectAction action, const N
     return BuildSystem::supportsAction(context, action, node);
 }
 
-bool NimBuildSystem::addFiles(Node *, const QStringList &filePaths, QStringList *)
+bool NimBuildSystem::addFiles(Node *, const FilePaths &filePaths, FilePaths *)
 {
-    return m_projectScanner.addFiles(filePaths);
+    return m_projectScanner.addFiles(Utils::transform(filePaths, &FilePath::toString));
 }
 
 RemovedFilesFromProject NimBuildSystem::removeFiles(Node *,
-                                                    const QStringList &filePaths,
-                                                    QStringList *)
+                                                    const FilePaths &filePaths,
+                                                    FilePaths *)
 {
-    return m_projectScanner.removeFiles(filePaths);
+    return m_projectScanner.removeFiles(Utils::transform(filePaths, &FilePath::toString));
 }
 
-bool NimBuildSystem::deleteFiles(Node *, const QStringList &)
+bool NimBuildSystem::deleteFiles(Node *, const FilePaths &)
 {
     return true;
 }
 
-bool NimBuildSystem::renameFile(Node *, const QString &filePath, const QString &newFilePath)
+bool NimBuildSystem::renameFile(Node *, const FilePath &oldFilePath, const FilePath &newFilePath)
 {
-    return m_projectScanner.renameFile(filePath, newFilePath);
+    return m_projectScanner.renameFile(oldFilePath.toString(), newFilePath.toString());
 }
 
 } // namespace Nim

@@ -65,6 +65,9 @@ const QString C_NIMCOMPILERBUILDSTEP_TARGETNIMFILE = QStringLiteral("Nim.NimComp
 // NimCompilerCleanStep
 const char C_NIMCOMPILERCLEANSTEP_ID[] = "Nim.NimCompilerCleanStep";
 
+// Nim task category (Issues pane)
+const char C_NIMPARSE_ID[] = "Nim.NimParse";
+
 const char C_NIMLANGUAGE_ID[] = "Nim";
 const char C_NIMCODESTYLESETTINGSPAGE_ID[] = "Nim.NimCodeStyleSettings";
 const char C_NIMCODESTYLESETTINGSPAGE_DISPLAY[] = QT_TRANSLATE_NOOP("NimCodeStyleSettingsPage", "Code Style");
@@ -102,10 +105,6 @@ const char C_NIMBLE_MIMETYPE[] = "text/x-nimble";
 const char C_NIM_SCRIPT_MIMETYPE[] = "text/x-nim-script";
 const char C_NIM_MIME_ICON[] = "text-x-nim";
 const char C_NIM_PROJECT_MIMETYPE[] = "text/x-nim-project";
-
-const char C_NIM_SETTINGS_GROUP[] = "Nim";
-const char C_NIM_SETTINGS_NIMSUGGEST_GROUP[] = "NimSuggest";
-const char C_NIM_SETTINGS_COMMAND[] = "Command";
 
 }
 }

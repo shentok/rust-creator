@@ -28,8 +28,10 @@
 #include "nimbuildsystem.h"
 #include "nimbleproject.h"
 #include "nimproject.h"
+#include "../nimconstants.h"
 
 #include <projectexplorer/target.h>
+#include <projectexplorer/taskhub.h>
 
 #include <utils/algorithm.h>
 #include <utils/qtcassert.h>
@@ -60,6 +62,13 @@ static std::vector<NimbleTask> parseTasks(const QString &nimblePath, const QStri
 
     std::vector<NimbleTask> result;
 
+    if (process.exitCode() != 0) {
+        TaskHub::addTask(Task(Task::Error,
+                              QString::fromUtf8(process.readAllStandardOutput()),
+                              {}, -1, Constants::C_NIMPARSE_ID));
+        return result;
+    }
+
     const QList<QByteArray> &lines = linesFromProcessOutput(&process);
 
     for (const QByteArray &line : lines) {
@@ -82,6 +91,12 @@ static NimbleMetadata parseMetadata(const QString &nimblePath, const QString &wo
 
     NimbleMetadata result = {};
 
+    if (process.exitCode() != 0) {
+        TaskHub::addTask(Task(Task::Error,
+                              QString::fromUtf8(process.readAllStandardOutput()),
+                              {}, -1, Constants::C_NIMPARSE_ID));
+        return result;
+    }
     const QList<QByteArray> &lines = linesFromProcessOutput(&process);
 
     for (const QByteArray &line : lines) {
@@ -153,6 +168,7 @@ void NimbleBuildSystem::triggerParsing()
 
 void NimbleBuildSystem::updateProject()
 {
+    TaskHub::clearTasks(Constants::C_NIMPARSE_ID);
     const FilePath projectDir = projectDirectory();
     const FilePath nimble = Nim::nimblePathFromKit(kit());
 
@@ -229,26 +245,26 @@ bool NimbleBuildSystem::supportsAction(Node *context, ProjectAction action, cons
     return BuildSystem::supportsAction(context, action, node);
 }
 
-bool NimbleBuildSystem::addFiles(Node *, const QStringList &filePaths, QStringList *)
+bool NimbleBuildSystem::addFiles(Node *, const FilePaths &filePaths, FilePaths *)
 {
-    return m_projectScanner.addFiles(filePaths);
+    return m_projectScanner.addFiles(Utils::transform(filePaths, &FilePath::toString));
 }
 
 RemovedFilesFromProject NimbleBuildSystem::removeFiles(Node *,
-                                                       const QStringList &filePaths,
-                                                       QStringList *)
+                                                       const FilePaths &filePaths,
+                                                       FilePaths *)
 {
-    return m_projectScanner.removeFiles(filePaths);
+    return m_projectScanner.removeFiles(Utils::transform(filePaths, &FilePath::toString));
 }
 
-bool NimbleBuildSystem::deleteFiles(Node *, const QStringList &)
+bool NimbleBuildSystem::deleteFiles(Node *, const FilePaths &)
 {
     return true;
 }
 
-bool NimbleBuildSystem::renameFile(Node *, const QString &filePath, const QString &newFilePath)
+bool NimbleBuildSystem::renameFile(Node *, const FilePath &oldFilePath, const FilePath &newFilePath)
 {
-    return m_projectScanner.renameFile(filePath, newFilePath);
+    return m_projectScanner.renameFile(oldFilePath.toString(), newFilePath.toString());
 }
 
 } // Nim

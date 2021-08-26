@@ -80,13 +80,13 @@ public:
                         ProjectExplorer::ProjectAction action,
                         const ProjectExplorer::Node *node) const final;
     bool addFiles(ProjectExplorer::Node *node,
-                  const QStringList &filePaths, QStringList *) final;
+                  const Utils::FilePaths &filePaths, Utils::FilePaths *) final;
     ProjectExplorer::RemovedFilesFromProject removeFiles(ProjectExplorer::Node *node,
-                                                         const QStringList &filePaths,
-                                                         QStringList *) override;
-    bool deleteFiles(ProjectExplorer::Node *, const QStringList &) final;
+                                                         const Utils::FilePaths &filePaths,
+                                                         Utils::FilePaths *) override;
+    bool deleteFiles(ProjectExplorer::Node *, const Utils::FilePaths &) final;
     bool renameFile(ProjectExplorer::Node *,
-                    const QString &filePath, const QString &newFilePath) final;
+                    const Utils::FilePath &oldFilePath, const Utils::FilePath &newFilePath) final;
 
     void triggerParsing() override;
 
