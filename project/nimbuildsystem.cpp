@@ -77,7 +77,8 @@ NimProjectScanner::NimProjectScanner(Project *project)
         }
 
         // Sync watched dirs
-        const QSet<QString> fsDirs = Utils::transform<QSet>(nodes, &FileNode::directory);
+        const QSet<QString> fsDirs = Utils::transform<QSet>(nodes,
+            [](const std::unique_ptr<FileNode> &fn) { return fn->directory().toString(); });
         const QSet<QString> projectDirs = Utils::toSet(m_directoryWatcher.directories());
         m_directoryWatcher.addDirectories(Utils::toList(fsDirs - projectDirs), FileSystemWatcher::WatchAllChanges);
         m_directoryWatcher.removeDirectories(Utils::toList(projectDirs - fsDirs));
@@ -204,7 +205,7 @@ FilePath nimblePathFromKit(Kit *kit)
     // There's no extra setting for "nimble", derive it from the "nim" path.
     const QString nimbleFromPath = QStandardPaths::findExecutable("nimble");
     const FilePath nimPath = nimPathFromKit(kit);
-    const FilePath nimbleFromKit = nimPath.pathAppended(HostOsInfo::withExecutableSuffix("nimble"));
+    const FilePath nimbleFromKit = nimPath.pathAppended("nimble").withExecutableSuffix();
     return nimbleFromKit.exists() ? nimbleFromKit.canonicalPath() : FilePath::fromString(nimbleFromPath);
 }
 

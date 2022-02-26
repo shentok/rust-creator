@@ -43,7 +43,6 @@
 #include <QTemporaryFile>
 #include <QTextStream>
 #include <QTextDocument>
-#include <QThread>
 
 using namespace ProjectExplorer;
 using namespace TextEditor;
@@ -260,7 +259,7 @@ private:
 };
 
 
-TextEditor::IAssistProcessor *NimCompletionAssistProvider::createProcessor() const
+IAssistProcessor *NimCompletionAssistProvider::createProcessor(const AssistInterface *) const
 {
     return new NimCompletionAssistProcessor();
 }
